@@ -4,35 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2059"
-version_tuple = (0, 0, 2059)
+version_str = "0.0.post2060"
+version_tuple = (0, 0, 2060)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2059")
+    pversion = V("0.0.post2060")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1968"
-data_version_tuple = (0, 0, 1968)
+data_version_str = "0.0.post1969"
+data_version_tuple = (0, 0, 1969)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1968")
+    pdata_version = V("0.0.post1969")
 except ImportError:
     pass
-data_git_hash = "7cee76bf05134c683154b26f4d18c2843cbfca64"
-data_git_describe = "v0.0-1968-g7cee76bf"
+data_git_hash = "65287f7d7b5a9b0733f37c01b292b1de08656e5c"
+data_git_describe = "v0.0-1969-g65287f7d"
 data_git_msg = """\
-commit 7cee76bf05134c683154b26f4d18c2843cbfca64
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Feb 10 16:36:26 2021 +0000
+commit 65287f7d7b5a9b0733f37c01b292b1de08656e5c
+Author: Philipp Wagner <phw@lowrisc.org>
+Date:   Thu Feb 18 11:31:46 2021 +0000
 
-    [dv] Reorder checks in sim.py
+    Fix deprecated sphinx html_context usage in conf.py
     
-    The UVM log should be checked for failures before attempting to process
-    the core trace log. A simulation failure could mean the trace log
-    doesn't exist and is is preferable to report the simulation error from
-    the log rather than trace not found as a failure cause.
+    We were using the old html_context which has been deprecated
+    for a while. This PR switches to html_css_files instead.
+    See sphinx-doc/sphinx#8885 for more information.
 
 """
 
