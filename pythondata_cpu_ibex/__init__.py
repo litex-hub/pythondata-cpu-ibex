@@ -4,34 +4,41 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2060"
-version_tuple = (0, 0, 2060)
+version_str = "0.0.post2061"
+version_tuple = (0, 0, 2061)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2060")
+    pversion = V("0.0.post2061")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1969"
-data_version_tuple = (0, 0, 1969)
+data_version_str = "0.0.post1970"
+data_version_tuple = (0, 0, 1970)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1969")
+    pdata_version = V("0.0.post1970")
 except ImportError:
     pass
-data_git_hash = "65287f7d7b5a9b0733f37c01b292b1de08656e5c"
-data_git_describe = "v0.0-1969-g65287f7d"
+data_git_hash = "99b8f612234adc76e70cfc53f00a451b3ad4662a"
+data_git_describe = "v0.0-1970-g99b8f612"
 data_git_msg = """\
-commit 65287f7d7b5a9b0733f37c01b292b1de08656e5c
-Author: Philipp Wagner <phw@lowrisc.org>
-Date:   Thu Feb 18 11:31:46 2021 +0000
+commit 99b8f612234adc76e70cfc53f00a451b3ad4662a
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Feb 10 16:25:51 2021 +0000
 
-    Fix deprecated sphinx html_context usage in conf.py
+    [rtl] Debug mode controller changes
     
-    We were using the old html_context which has been deprecated
-    for a while. This PR switches to html_css_files instead.
-    See sphinx-doc/sphinx#8885 for more information.
+    * `if` in `DBG_TAKEN_IF` is needless as the conditions it checks will be
+      true if controller enters `DBG_TAKEN_IF` state
+    
+    * flop `enter_debug_mode` so `FLUSH` state looks at what
+      `enter_debug_mode` was when it was seen in `DECODE` state rather than
+      what it has become. In particular the controller could enter `FLUSH`
+      on the basis of performing a WFI then divert down the debug control
+      path due to a new debug request being raised. In this instance it is
+      preferable for the WFI to complete entering `SLEEP` before the debug
+      request wakes the core back up.
 
 """
 
