@@ -4,30 +4,42 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2066"
-version_tuple = (0, 0, 2066)
+version_str = "0.0.post2067"
+version_tuple = (0, 0, 2067)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2066")
+    pversion = V("0.0.post2067")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1975"
-data_version_tuple = (0, 0, 1975)
+data_version_str = "0.0.post1976"
+data_version_tuple = (0, 0, 1976)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1975")
+    pdata_version = V("0.0.post1976")
 except ImportError:
     pass
-data_git_hash = "faa1e98a6e1cfa8bea95a86d1ba8db5f7818ac0d"
-data_git_describe = "v0.0-1975-gfaa1e98a"
+data_git_hash = "82d0654c97e55a5b1ce70b2d14b4705dc266eb0d"
+data_git_describe = "v0.0-1976-g82d0654c"
 data_git_msg = """\
-commit faa1e98a6e1cfa8bea95a86d1ba8db5f7818ac0d
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Feb 26 10:04:58 2021 +0000
+commit 82d0654c97e55a5b1ce70b2d14b4705dc266eb0d
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Mon Feb 1 12:08:41 2021 +0000
 
-    [dv] Fix bug in sim.py and type in testlist
+    Don't automatically generate disassembly in the example Makefile
+    
+    Anyone who needs to disassemble their generated ELF can probably just
+    call objdump directly and the precise set of flags have already
+    confused at least one potential contributor[1].
+    
+    We're keeping the canned objdump command for "engineers that know
+    where to look" because some have said they find it useful. Run it with
+    e.g.
+    
+        make -C examples/sw/simple_system/hello_test disassemble
+    
+    [1] https://github.com/lowRISC/ibex/issues/1263
 
 """
 
