@@ -4,52 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2077"
-version_tuple = (0, 0, 2077)
+version_str = "0.0.post2078"
+version_tuple = (0, 0, 2078)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2077")
+    pversion = V("0.0.post2078")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1982"
-data_version_tuple = (0, 0, 1982)
+data_version_str = "0.0.post1983"
+data_version_tuple = (0, 0, 1983)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1982")
+    pdata_version = V("0.0.post1983")
 except ImportError:
     pass
-data_git_hash = "70c3702421feccc0774a9a948aebe94cfa289623"
-data_git_describe = "v0.0-1982-g70c37024"
+data_git_hash = "50f09b71a96f87d46bbedead0cce5218c981d680"
+data_git_describe = "v0.0-1983-g50f09b71"
 data_git_msg = """\
-commit 70c3702421feccc0774a9a948aebe94cfa289623
-Author: Udi Jonnalagadda <udij@google.com>
-Date:   Fri Mar 5 15:09:39 2021 -0800
+commit 50f09b71a96f87d46bbedead0cce5218c981d680
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Mar 10 16:34:57 2021 +0000
 
-    [dv/ibex] filter out tests on a per-config basis
-    
-    This PR adds functionality to filter out tests during regressions for a
-    particular config.
-    
-    e.g. if a full regression is kicked off using the `small` config, we
-    don't want to attempt to run any PMP and bitmanip tests as the RTL
-    parameter-set will not support it.
-    
-    To do this, a new YAML field called `rtl_params` is added to relevant
-    test entries, to indicate what parameters (if any) are required to be
-    able to run the particular test, along with the required value of said
-    parameters.
-    
-    `sim.py` will then parse this field (if it exists), and using
-    information from `ibex_configs.yaml` pertaining to the current config,
-    will remove tests from being run on-the-fly.
-    
-    This also gives us the convenient side effect of not having to re-run
-    instruction generation if there is a parameter/config mismatch, we can
-    just rerun the RTL compilation and simulation stages safely.
-    
-    Signed-off-by: Udi Jonnalagadda <udij@google.com>
+    [rtl] Fix lint issues
 
 """
 
