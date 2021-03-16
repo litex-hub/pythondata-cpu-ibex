@@ -4,37 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2081"
-version_tuple = (0, 0, 2081)
+version_str = "0.0.post2082"
+version_tuple = (0, 0, 2082)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2081")
+    pversion = V("0.0.post2082")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1986"
-data_version_tuple = (0, 0, 1986)
+data_version_str = "0.0.post1987"
+data_version_tuple = (0, 0, 1987)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1986")
+    pdata_version = V("0.0.post1987")
 except ImportError:
     pass
-data_git_hash = "6576247a1ee68baf4d1abd43e04a5bfdde169ecb"
-data_git_describe = "v0.0-1986-g6576247a"
+data_git_hash = "62b1a30c7d0d8fa60a0476d896fec7551cb4c96f"
+data_git_describe = "v0.0-1987-g62b1a30c"
 data_git_msg = """\
-commit 6576247a1ee68baf4d1abd43e04a5bfdde169ecb
-Author: Udi Jonnalagadda <udij@google.com>
-Date:   Fri Mar 12 17:55:39 2021 -0800
+commit 62b1a30c7d0d8fa60a0476d896fec7551cb4c96f
+Author: Yusef Karim <48184686+yusefkarim@users.noreply.github.com>
+Date:   Mon Mar 15 16:25:50 2021 -0400
 
-    [ci/ibex] temporarily remove pmp_full_random_test
+    Fix spacing for bullet points to appear
     
-    this test is arbitrarily failing in regressions on a Spike timeout,
-    temporarily remove this to avoid blocking.
-    
-    @udinator to fix this in the near future.
-    
-    Signed-off-by: Udi Jonnalagadda <udij@google.com>
+    Bullet points now appear properly for the last paragraph under the Data Independent Timing section.
 
 """
 
