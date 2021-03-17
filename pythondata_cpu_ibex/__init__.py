@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2082"
-version_tuple = (0, 0, 2082)
+version_str = "0.0.post2084"
+version_tuple = (0, 0, 2084)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2082")
+    pversion = V("0.0.post2084")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1987"
-data_version_tuple = (0, 0, 1987)
+data_version_str = "0.0.post1989"
+data_version_tuple = (0, 0, 1989)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1987")
+    pdata_version = V("0.0.post1989")
 except ImportError:
     pass
-data_git_hash = "62b1a30c7d0d8fa60a0476d896fec7551cb4c96f"
-data_git_describe = "v0.0-1987-g62b1a30c"
+data_git_hash = "d78e0d9a068b4b37b79d205a1f3de1fea907e07d"
+data_git_describe = "v0.0-1989-gd78e0d9a"
 data_git_msg = """\
-commit 62b1a30c7d0d8fa60a0476d896fec7551cb4c96f
-Author: Yusef Karim <48184686+yusefkarim@users.noreply.github.com>
-Date:   Mon Mar 15 16:25:50 2021 -0400
+commit d78e0d9a068b4b37b79d205a1f3de1fea907e07d
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Fri Mar 12 17:47:31 2021 +0000
 
-    Fix spacing for bullet points to appear
+    [rtl] Hard wire dcsr.stepie to 0
     
-    Bullet points now appear properly for the last paragraph under the Data Independent Timing section.
+    This indicates interrupts do not occur in single step mode.
+    
+    Fixes #1279
 
 """
 
