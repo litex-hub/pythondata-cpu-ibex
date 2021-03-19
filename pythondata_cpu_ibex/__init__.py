@@ -4,34 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2084"
-version_tuple = (0, 0, 2084)
+version_str = "0.0.post2086"
+version_tuple = (0, 0, 2086)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2084")
+    pversion = V("0.0.post2086")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1989"
-data_version_tuple = (0, 0, 1989)
+data_version_str = "0.0.post1991"
+data_version_tuple = (0, 0, 1991)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1989")
+    pdata_version = V("0.0.post1991")
 except ImportError:
     pass
-data_git_hash = "d78e0d9a068b4b37b79d205a1f3de1fea907e07d"
-data_git_describe = "v0.0-1989-gd78e0d9a"
+data_git_hash = "4b43afa53315d00784d5c3b714583276127eddcc"
+data_git_describe = "v0.0-1991-g4b43afa5"
 data_git_msg = """\
-commit d78e0d9a068b4b37b79d205a1f3de1fea907e07d
+commit 4b43afa53315d00784d5c3b714583276127eddcc
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Mar 12 17:47:31 2021 +0000
+Date:   Thu Mar 18 16:18:56 2021 +0000
 
-    [rtl] Hard wire dcsr.stepie to 0
-    
-    This indicates interrupts do not occur in single step mode.
-    
-    Fixes #1279
+    [doc] Fix table rendering for `mseccfg`
 
 """
 
