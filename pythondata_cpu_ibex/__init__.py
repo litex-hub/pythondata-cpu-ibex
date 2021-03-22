@@ -4,30 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2086"
-version_tuple = (0, 0, 2086)
+version_str = "0.0.post2090"
+version_tuple = (0, 0, 2090)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2086")
+    pversion = V("0.0.post2090")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1991"
-data_version_tuple = (0, 0, 1991)
+data_version_str = "0.0.post1995"
+data_version_tuple = (0, 0, 1995)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1991")
+    pdata_version = V("0.0.post1995")
 except ImportError:
     pass
-data_git_hash = "4b43afa53315d00784d5c3b714583276127eddcc"
-data_git_describe = "v0.0-1991-g4b43afa5"
+data_git_hash = "c1e287e13b6877589944a4e91e2bae11ea2bd508"
+data_git_describe = "v0.0-1995-gc1e287e1"
 data_git_msg = """\
-commit 4b43afa53315d00784d5c3b714583276127eddcc
+commit c1e287e13b6877589944a4e91e2bae11ea2bd508
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Mar 18 16:18:56 2021 +0000
+Date:   Thu Mar 18 14:35:03 2021 +0000
 
-    [doc] Fix table rendering for `mseccfg`
+    [dv] Fix riscv_nested_interrupt_test
+    
+    This broke due to changes in IRQ sequences. It relies on the inner
+    interrupt being an NMI. This alters the test to use the specific NMI
+    sequence.
 
 """
 
