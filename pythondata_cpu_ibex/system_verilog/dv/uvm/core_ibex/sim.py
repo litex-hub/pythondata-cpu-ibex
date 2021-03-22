@@ -436,7 +436,7 @@ def compare_test_run(test, idx, iss, output_dir, report):
     with open(report, 'a') as report_fd:
         test_name = test['test']
         elf = os.path.join(output_dir,
-                           'instr_gen/asm_test/{}.{}.o'.format(test_name, idx))
+                           'instr_gen/asm_test/{}_{}.o'.format(test_name, idx))
 
         logging.info("Comparing %s/DUT sim result : %s" % (iss, elf))
 
@@ -706,7 +706,7 @@ def main():
             raise RuntimeError("Cannot find %s in %s" %
                                (args.test, args.testlist))
 
-        matched_list = filter_tests_by_config(args.ibex_config, matched_list);
+        matched_list = filter_tests_by_config(args.ibex_config, matched_list)
 
     # Compile TB
     if steps['compile']:
