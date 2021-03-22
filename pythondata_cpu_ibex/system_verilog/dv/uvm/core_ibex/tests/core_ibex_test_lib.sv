@@ -195,33 +195,58 @@ class core_ibex_debug_intr_basic_test extends core_ibex_base_test;
     check_next_core_status(INITIALIZED, "Core initialization handshake failure", 5000);
   endtask
 
-  virtual task send_irq_stimulus_start(input bit no_nmi,
-                                       input bit no_fast,
-                                       output bit ret_val);
+  function bit determine_irq_from_txn();
     bit irq_valid;
-    // send the interrupt
-    if (cfg.enable_irq_single_seq)        vseq.start_irq_raise_single_seq(no_nmi, no_fast);
-    else if (cfg.enable_irq_multiple_seq) vseq.start_irq_raise_seq(no_nmi, no_fast);
-    irq_collected_port.get(irq_txn);
+
     irq = {irq_txn.irq_nm, irq_txn.irq_fast, 4'b0, irq_txn.irq_external, 3'b0,
            irq_txn.irq_timer, 3'b0, irq_txn.irq_software, 3'b0};
     `uvm_info(`gfn, $sformatf("irq: 0x%0x", irq), UVM_LOW)
-    // Get the bit position of the highest priority interrupt - ibex will only handle this one if
-    // there are multiple irqs asserted at once.
+
     irq_valid = get_max_valid_irq_id(irq);
     `uvm_info(`gfn, $sformatf("irq_id: 0x%0x", irq_id), UVM_LOW)
+
+    return irq_valid;
+  endfunction
+
+  virtual task send_irq_stimulus_start(input bit no_nmi,
+                                       input bit no_fast,
+                                       output bit ret_val);
+    // send the interrupt
+    if (cfg.enable_irq_single_seq)        vseq.start_irq_raise_single_seq(no_nmi, no_fast);
+    else if (cfg.enable_irq_multiple_seq) vseq.start_irq_raise_seq(no_nmi, no_fast);
+
+    send_irq_stimulus_inner(ret_val);
+  endtask
+
+  virtual task send_nmi_stimulus_start(output bit ret_val);
+    vseq.start_nmi_raise_seq();
+    send_irq_stimulus_inner(ret_val);
+  endtask
+
+  virtual task send_irq_stimulus_inner(output bit ret_val);
+    bit irq_valid;
+    irq_collected_port.get(irq_txn);
+    // Get the bit position of the highest priority interrupt - ibex will only handle this one if
+    // there are multiple irqs asserted at once.
+    irq_valid = determine_irq_from_txn();
     // If the interrupt is maskable, and the corresponding bit in MIE is not set, skip the next
     // checks, as it means the interrupt in question is not enabled by Ibex, and drop the interrupt
     // lines to avoid locking up the simulation.
     if (!irq_valid) begin
       vseq.start_irq_drop_seq();
       irq_collected_port.get(irq_txn);
-      irq = {irq_txn.irq_nm, irq_txn.irq_fast, 4'b0, irq_txn.irq_external, 3'b0,
-             irq_txn.irq_timer, 3'b0, irq_txn.irq_software, 3'b0};
+      determine_irq_from_txn();
       `DV_CHECK_EQ_FATAL(irq, 0, "Interrupt lines have not been dropped")
       ret_val = irq_valid;
       return;
     end
+
+    check_irq_handle();
+
+    ret_val = irq_valid;
+  endtask
+
+  virtual task check_irq_handle();
     check_next_core_status(HANDLING_IRQ, "Core did not jump to vectored interrupt handler", 750);
     check_priv_mode(PRIV_LVL_M);
     operating_mode = dut_vif.dut_cb.priv_mode;
@@ -250,8 +275,6 @@ class core_ibex_debug_intr_basic_test extends core_ibex_base_test;
       `DV_CHECK_EQ_FATAL(mip[irq_id], 1'b1,
           $sformatf("mip[%0d] is not set, but core responded to corresponding interrupt", irq_id))
     end
-    ret_val = irq_valid;
-    return;
   endtask
 
   virtual task send_irq_stimulus_end();
@@ -273,6 +296,12 @@ class core_ibex_debug_intr_basic_test extends core_ibex_base_test;
   virtual task send_irq_stimulus(bit no_nmi = 1'b0, bit no_fast = 1'b0);
     bit ret_val;
     send_irq_stimulus_start(no_nmi, no_fast, ret_val);
+    if (ret_val) send_irq_stimulus_end();
+  endtask
+
+  virtual task send_nmi_stimulus();
+    bit ret_val;
+    send_nmi_stimulus_start(ret_val);
     if (ret_val) send_irq_stimulus_end();
   endtask
 
@@ -323,25 +352,30 @@ class core_ibex_debug_intr_basic_test extends core_ibex_base_test;
     join_none
   endtask
 
+  // Task that waits for xRET to be asserted, with no timeout or objection
+  virtual task wait_ret_raw(string ret);
+      priv_lvl_e tgt_mode;
+      case (ret)
+        "dret": begin
+          wait (dut_vif.dut_cb.dret === 1'b1);
+        end
+        "mret": begin
+          wait (dut_vif.dut_cb.mret === 1'b1);
+        end
+        default: begin
+          `uvm_fatal(`gfn, $sformatf("Invalid xRET instruction %0s", ret))
+        end
+      endcase
+      tgt_mode = select_mode();
+      wait (dut_vif.dut_cb.priv_mode === tgt_mode);
+  endtask
+
   // Task that waits for xRET to be asserted within a certain number of cycles
   virtual task wait_ret(string ret, int timeout);
     cur_run_phase.raise_objection(this);
     fork
       begin
-        priv_lvl_e tgt_mode;
-        case (ret)
-          "dret": begin
-            wait (dut_vif.dut_cb.dret === 1'b1);
-          end
-          "mret": begin
-            wait (dut_vif.dut_cb.mret === 1'b1);
-          end
-          default: begin
-            `uvm_fatal(`gfn, $sformatf("Invalid xRET instruction %0s", ret))
-          end
-        endcase
-        tgt_mode = select_mode();
-        wait (dut_vif.dut_cb.priv_mode === tgt_mode);
+        wait_ret_raw(ret);
       end
       begin : ret_timeout
         clk_vif.wait_clks(timeout);
@@ -730,29 +764,89 @@ class core_ibex_irq_in_debug_test extends core_ibex_directed_test;
 
   virtual task check_stimulus();
     bit detected_irq = 1'b0;
+    bit seen_dret = 1'b0;
+    bit irq_valid = 1'b0;
+
     forever begin
       // Drive core into debug mode
       vseq.start_debug_single_seq();
       check_next_core_status(IN_DEBUG_MODE, "Core did not enter debug mode properly", 1000);
       check_priv_mode(PRIV_LVL_M);
       wait_for_csr_write(CSR_DCSR, 500);
-      check_dcsr_prv(operating_mode);
+      check_dcsr_prv(init_operating_mode);
       check_dcsr_cause(DBG_CAUSE_HALTREQ);
-      clk_vif.wait_clks($urandom_range(25, 50));
-      // Raise interrupts while the core is in debug mode
-      vseq.start_irq_raise_seq();
+
+      seen_dret = 1'b0;
+      detected_irq = 1'b0;
+      irq_valid = 1'b0;
+
+      // Test will generate an IRQ whilst in debug mode, depending on the random delay on the IRQ it
+      // may remain enabled when DRET is executed (so the IRQ should be taken). The fork below
+      // splits into three, one process stimulates the IRQ and waits for the DRET. The others check
+      // for the IRQ being handled during debug and deal with the IRQ remained asserted after DRET
+      // case.
       fork
         begin : wait_irq
-          wait_for_core_status(HANDLING_IRQ);
-          `uvm_fatal(`gfn, "Core is handling interrupt detected in debug mode")
+          // Get IRQ raise transaction from IRQ monitor
+          irq_collected_port.get(irq_txn);
+          irq_valid = determine_irq_from_txn();
+          detected_irq = 1'b1;
+
+          if (!seen_dret) begin
+            // If the DRET hasn't been seen yet await IRQ handler, if it is seen before this process
+            // is disabled there is an error.
+            wait_for_core_status(HANDLING_IRQ);
+            `uvm_fatal(`gfn, "Core is handling interrupt detected in debug mode")
+          end
         end
-        begin
+        begin : wait_dret
+          wait_ret_raw("dret");
+          seen_dret = 1'b1;
+
+          wait (detected_irq);
+
+          // If execution reaches this point the DRET has been seen whilst an IRQ id raised.
+          // Disable `wait_irq` at this point as it's no longer an error for the interrupt handler
+          // to execute
+          disable wait_irq;
+
+          `uvm_info(`gfn, "dret seen before IRQ dropped", UVM_LOW)
+
+          if (irq_valid) begin
+            // IRQ isn't disabled so IRQ will get handled
+            `uvm_info(`gfn, "IRQ is enabled, interrupt should be taken", UVM_LOW)
+            check_irq_handle();
+            send_irq_stimulus_end();
+          end else begin
+            `uvm_info(`gfn, "IRQ is disabled, no interrupt should be taken", UVM_LOW)
+            // IRQ is disabled so just drop IRQ
+            vseq.start_irq_drop_seq();
+            irq_collected_port.get(irq_txn);
+          end
+        end
+        begin : dbg_irq_stimulate
+          // Raise interrupts while the core is in debug mode
+          vseq.start_irq_raise_seq();
           clk_vif.wait_clks(100);
+          if (!seen_dret) begin
+            // Reached end of wait and DRET not seen, so core remains in debug mode. Disable
+            // `wait_dret` and `wait_irq` as we're dropping the IRQ now
+            disable wait_dret;
+            disable wait_irq;
+
+            if (detected_irq) begin
+              // Drop the IRQ if one was raised
+              vseq.start_irq_drop_seq();
+            end
+
+            // Wait for DRET
+            wait_ret("dret", 5000);
+            // Get IRQ drop transaction from IRQ monitor
+            irq_collected_port.get(irq_txn);
+          end
         end
-      join_any
-      disable fork;
-      vseq.start_irq_drop_seq();
-      wait_ret("dret", 5000);
+      join
+
       clk_vif.wait_clks($urandom_range(250, 500));
     end
   endtask
@@ -803,16 +897,16 @@ class core_ibex_nested_irq_test extends core_ibex_directed_test;
     forever begin
       send_irq_stimulus_start(1'b1, 1'b0, valid_irq);
       if (valid_irq) begin
-        initial_irq_delay = vseq.irq_raise_seq_h.max_delay;
-        vseq.irq_raise_seq_h.max_delay = 0;
+        initial_irq_delay = vseq.irq_raise_nmi_seq_h.max_delay;
+        vseq.irq_raise_nmi_seq_h.max_delay = 0;
         // Send nested interrupt after the checks of the first interrupt have finished
         in_nested_trap = 1'b1;
         // wait until we are setting mstatus.mie to 1'b1 to send the next set of interrupts
         wait (csr_vif.csr_cb.csr_access === 1'b1 &&
              csr_vif.csr_cb.csr_addr === CSR_MSTATUS &&
              csr_vif.csr_cb.csr_op != CSR_OP_READ);
-        send_irq_stimulus(1'b0);
-        vseq.irq_raise_seq_h.max_delay = initial_irq_delay;
+        send_nmi_stimulus();
+        vseq.irq_raise_nmi_seq_h.max_delay = initial_irq_delay;
         in_nested_trap = 1'b0;
         send_irq_stimulus_end();
       end
