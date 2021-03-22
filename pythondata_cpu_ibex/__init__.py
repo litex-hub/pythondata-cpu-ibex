@@ -4,34 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2090"
-version_tuple = (0, 0, 2090)
+version_str = "0.0.post2092"
+version_tuple = (0, 0, 2092)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2090")
+    pversion = V("0.0.post2092")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1995"
-data_version_tuple = (0, 0, 1995)
+data_version_str = "0.0.post1997"
+data_version_tuple = (0, 0, 1997)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1995")
+    pdata_version = V("0.0.post1997")
 except ImportError:
     pass
-data_git_hash = "c1e287e13b6877589944a4e91e2bae11ea2bd508"
-data_git_describe = "v0.0-1995-gc1e287e1"
+data_git_hash = "69ae65c71352028cd175fe3ce99f2404f46b14c5"
+data_git_describe = "v0.0-1997-g69ae65c7"
 data_git_msg = """\
-commit c1e287e13b6877589944a4e91e2bae11ea2bd508
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Mar 18 14:35:03 2021 +0000
+commit 69ae65c71352028cd175fe3ce99f2404f46b14c5
+Author: Philipp Wagner <phw@lowrisc.org>
+Date:   Mon Mar 22 16:33:08 2021 +0000
 
-    [dv] Fix riscv_nested_interrupt_test
+    [dv] Remove semicolon
     
-    This broke due to changes in IRQ sequences. It relies on the inner
-    interrupt being an NMI. This alters the test to use the specific NMI
-    sequence.
+    It's Python.
 
 """
 
