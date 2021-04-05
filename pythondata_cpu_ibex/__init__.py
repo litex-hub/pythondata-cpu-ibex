@@ -4,32 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2092"
-version_tuple = (0, 0, 2092)
+version_str = "0.0.post2093"
+version_tuple = (0, 0, 2093)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2092")
+    pversion = V("0.0.post2093")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1997"
-data_version_tuple = (0, 0, 1997)
+data_version_str = "0.0.post1998"
+data_version_tuple = (0, 0, 1998)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1997")
+    pdata_version = V("0.0.post1998")
 except ImportError:
     pass
-data_git_hash = "69ae65c71352028cd175fe3ce99f2404f46b14c5"
-data_git_describe = "v0.0-1997-g69ae65c7"
+data_git_hash = "b04c1850b69eee3979f485eb21d4645d73c631ba"
+data_git_describe = "v0.0-1998-gb04c1850"
 data_git_msg = """\
-commit 69ae65c71352028cd175fe3ce99f2404f46b14c5
-Author: Philipp Wagner <phw@lowrisc.org>
-Date:   Mon Mar 22 16:33:08 2021 +0000
+commit b04c1850b69eee3979f485eb21d4645d73c631ba
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Mon Apr 5 12:39:09 2021 +0100
 
-    [dv] Remove semicolon
+    Avoid encumbered name in ibex_icache_testplan.hjson
     
-    It's Python.
+    With this change, we no longer use "sanity" in non-vendored code.
 
 """
 
