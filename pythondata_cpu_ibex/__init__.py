@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2093"
-version_tuple = (0, 0, 2093)
+version_str = "0.0.post2095"
+version_tuple = (0, 0, 2095)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2093")
+    pversion = V("0.0.post2095")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post1998"
-data_version_tuple = (0, 0, 1998)
+data_version_str = "0.0.post2000"
+data_version_tuple = (0, 0, 2000)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post1998")
+    pdata_version = V("0.0.post2000")
 except ImportError:
     pass
-data_git_hash = "b04c1850b69eee3979f485eb21d4645d73c631ba"
-data_git_describe = "v0.0-1998-gb04c1850"
+data_git_hash = "c7f44557d2e14810889b9bcf853495b4a9a4f124"
+data_git_describe = "v0.0-2000-gc7f44557"
 data_git_msg = """\
-commit b04c1850b69eee3979f485eb21d4645d73c631ba
+commit c7f44557d2e14810889b9bcf853495b4a9a4f124
 Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Mon Apr 5 12:39:09 2021 +0100
+Date:   Mon Apr 5 12:35:06 2021 +0100
 
-    Avoid encumbered name in ibex_icache_testplan.hjson
-    
-    With this change, we no longer use "sanity" in non-vendored code.
+    Fix initialisation in ibex_icache_env_cfg.sv
 
 """
 
