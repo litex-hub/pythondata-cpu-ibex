@@ -4,38 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2099"
-version_tuple = (0, 0, 2099)
+version_str = "0.0.post2102"
+version_tuple = (0, 0, 2102)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2099")
+    pversion = V("0.0.post2102")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2004"
-data_version_tuple = (0, 0, 2004)
+data_version_str = "0.0.post2007"
+data_version_tuple = (0, 0, 2007)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2004")
+    pdata_version = V("0.0.post2007")
 except ImportError:
     pass
-data_git_hash = "a799a92e5eef5fbaa7b2a3054c88e5e48260f04f"
-data_git_describe = "v0.0-2004-ga799a92e"
+data_git_hash = "a88f5eb91218f0c30ca5dc0dac30bbd3d0f2810e"
+data_git_describe = "v0.0-2007-ga88f5eb9"
 data_git_msg = """\
-commit a799a92e5eef5fbaa7b2a3054c88e5e48260f04f
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Tue Apr 6 15:12:47 2021 +0200
+commit a88f5eb91218f0c30ca5dc0dac30bbd3d0f2810e
+Author: Tom Roberts <tomroberts@lowrisc.org>
+Date:   Thu Mar 25 17:11:50 2021 +0000
 
-    [rtl] Add SVA to ensure valid_i in compressed decoder is known
+    [rtl] Add dual core lockstep option
     
-    This signal is used to gate several assertions related to
-    unknown/invalid selector signals. We want to be sure to catch any X
-    values entering the compressed decoder and ultimately ID.
+    Note that the alert output is tied off for now until an option is added
+    to reset all registers (otherwise there will be X propagation).
     
-    This is related to lowRISC/Ibex#540.
-    
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    Signed-off-by: Tom Roberts <tomroberts@lowrisc.org>
 
 """
 
