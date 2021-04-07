@@ -22,7 +22,7 @@ module tb #(parameter bit ICacheECC = 1'b0);
   ibex_icache_mem_if  mem_if  (.clk(clk), .rst_n(rst_n));
 
   // dut
-  ibex_icache #(
+  ic_top #(
     .ICacheECC (ICacheECC)
   ) dut (
     .clk_i               (clk),
@@ -41,7 +41,6 @@ module tb #(parameter bit ICacheECC = 1'b0);
     .addr_o              (core_if.addr),
     .err_o               (core_if.err),
     .err_plus2_o         (core_if.err_plus2),
-    .ram_cfg_i           ('0),
     .icache_enable_i     (core_if.enable),
     .icache_inval_i      (core_if.invalidate),
     .busy_o              (core_if.busy),
@@ -60,7 +59,7 @@ module tb #(parameter bit ICacheECC = 1'b0);
   // each data ram, binding them into the RAMs themselves. ECC tests can use these to insert errors
   // into memory lookups.
   generate if (dut.ICacheECC) begin : gen_ecc
-    for (genvar w = 0; w < dut.NumWays; w++) begin : gen_ecc_ifs
+    for (genvar w = 0; w < ibex_pkg::IC_NUM_WAYS; w++) begin : gen_ecc_ifs
       bind dut.gen_rams[w].tag_bank.gen_badbit.u_impl_badbit  ibex_icache_ecc_if tag_bank_if (.*);
       bind dut.gen_rams[w].data_bank.gen_badbit.u_impl_badbit ibex_icache_ecc_if data_bank_if (.*);
 
@@ -93,7 +92,7 @@ module tb #(parameter bit ICacheECC = 1'b0);
 
     // Record the number of (ECC) ways in the config database. The top-level environment's config
     // will use this to decide how many agents to create.
-    uvm_config_db#(int unsigned)::set(null, "*", "num_ecc_ways", dut.ICacheECC ? dut.NumWays : 0);
+    uvm_config_db#(int unsigned)::set(null, "*", "num_ecc_ways", dut.ICacheECC ? ibex_pkg::IC_NUM_WAYS : 0);
 
     $timeformat(-12, 0, " ps", 12);
     run_test();
