@@ -4,35 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2102"
-version_tuple = (0, 0, 2102)
+version_str = "0.0.post2103"
+version_tuple = (0, 0, 2103)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2102")
+    pversion = V("0.0.post2103")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2007"
-data_version_tuple = (0, 0, 2007)
+data_version_str = "0.0.post2008"
+data_version_tuple = (0, 0, 2008)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2007")
+    pdata_version = V("0.0.post2008")
 except ImportError:
     pass
-data_git_hash = "a88f5eb91218f0c30ca5dc0dac30bbd3d0f2810e"
-data_git_describe = "v0.0-2007-ga88f5eb9"
+data_git_hash = "25cd6600c64e6eec4c3f5ee20237b53e4d5a3a52"
+data_git_describe = "v0.0-2008-g25cd6600"
 data_git_msg = """\
-commit a88f5eb91218f0c30ca5dc0dac30bbd3d0f2810e
-Author: Tom Roberts <tomroberts@lowrisc.org>
-Date:   Thu Mar 25 17:11:50 2021 +0000
+commit 25cd6600c64e6eec4c3f5ee20237b53e4d5a3a52
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Apr 7 16:07:49 2021 +0100
 
-    [rtl] Add dual core lockstep option
+    [dv] Don't kill regression on sim error
     
-    Note that the alert output is tied off for now until an option is added
-    to reset all registers (otherwise there will be X propagation).
-    
-    Signed-off-by: Tom Roberts <tomroberts@lowrisc.org>
+    When the simulator terminates with an error code that is reported as a
+    test failure and the regression continues. A new check for a plain
+    'Error' message is required to catch simulator reported errors that
+    don't become a UVM_FATAL or UVM_ERROR message (e.g. hitting an illegal
+    coverage bin). Previously any such simulation error would kill the whole
+    regression.
 
 """
 
