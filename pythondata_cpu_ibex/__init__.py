@@ -4,37 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2103"
-version_tuple = (0, 0, 2103)
+version_str = "0.0.post2104"
+version_tuple = (0, 0, 2104)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2103")
+    pversion = V("0.0.post2104")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2008"
-data_version_tuple = (0, 0, 2008)
+data_version_str = "0.0.post2009"
+data_version_tuple = (0, 0, 2009)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2008")
+    pdata_version = V("0.0.post2009")
 except ImportError:
     pass
-data_git_hash = "25cd6600c64e6eec4c3f5ee20237b53e4d5a3a52"
-data_git_describe = "v0.0-2008-g25cd6600"
+data_git_hash = "550487611050155c30ee02db7cb26521a0c34666"
+data_git_describe = "v0.0-2009-g55048761"
 data_git_msg = """\
-commit 25cd6600c64e6eec4c3f5ee20237b53e4d5a3a52
+commit 550487611050155c30ee02db7cb26521a0c34666
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Apr 7 16:07:49 2021 +0100
+Date:   Fri Mar 26 14:28:21 2021 +0000
 
-    [dv] Don't kill regression on sim error
-    
-    When the simulator terminates with an error code that is reported as a
-    test failure and the regression continues. A new check for a plain
-    'Error' message is required to catch simulator reported errors that
-    don't become a UVM_FATAL or UVM_ERROR message (e.g. hitting an illegal
-    coverage bin). Previously any such simulation error would kill the whole
-    regression.
+    [dv] Add known failure detection to riscv_debug_ebreakmu_test
 
 """
 
