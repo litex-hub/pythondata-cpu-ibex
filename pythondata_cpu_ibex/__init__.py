@@ -4,30 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2104"
-version_tuple = (0, 0, 2104)
+version_str = "0.0.post2106"
+version_tuple = (0, 0, 2106)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2104")
+    pversion = V("0.0.post2106")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2009"
-data_version_tuple = (0, 0, 2009)
+data_version_str = "0.0.post2011"
+data_version_tuple = (0, 0, 2011)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2009")
+    pdata_version = V("0.0.post2011")
 except ImportError:
     pass
-data_git_hash = "550487611050155c30ee02db7cb26521a0c34666"
-data_git_describe = "v0.0-2009-g55048761"
+data_git_hash = "ed5f12c99e2dc822dd74961b82c973eacdb5deb5"
+data_git_describe = "v0.0-2011-ged5f12c9"
 data_git_msg = """\
-commit 550487611050155c30ee02db7cb26521a0c34666
+commit ed5f12c99e2dc822dd74961b82c973eacdb5deb5
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Mar 26 14:28:21 2021 +0000
+Date:   Thu Apr 8 17:29:03 2021 +0100
 
-    [dv] Add known failure detection to riscv_debug_ebreakmu_test
+    [rtl] Fix RF read enables for illegal instruction/fetch error
+    
+    The read enables should only be asserted where an actual RF read will
+    occur. Where there is an illegal instruction or a fetch error the raw
+    decoder signals might still be asserted but should be squashed before
+    they become the true enable signals.
 
 """
 
