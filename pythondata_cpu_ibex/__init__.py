@@ -4,34 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2109"
-version_tuple = (0, 0, 2109)
+version_str = "0.0.post2110"
+version_tuple = (0, 0, 2110)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2109")
+    pversion = V("0.0.post2110")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2014"
-data_version_tuple = (0, 0, 2014)
+data_version_str = "0.0.post2015"
+data_version_tuple = (0, 0, 2015)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2014")
+    pdata_version = V("0.0.post2015")
 except ImportError:
     pass
-data_git_hash = "48a886a25fc788ea4529872047811f79bca4877f"
-data_git_describe = "v0.0-2014-g48a886a2"
+data_git_hash = "1b59c67b5064d03ec62a2877de4e94d2802a2225"
+data_git_describe = "v0.0-2015-g1b59c67b"
 data_git_msg = """\
-commit 48a886a25fc788ea4529872047811f79bca4877f
-Author: Philipp Wagner <phw@lowrisc.org>
-Date:   Tue Feb 9 15:35:59 2021 +0000
+commit 1b59c67b5064d03ec62a2877de4e94d2802a2225
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Tue Apr 13 14:34:05 2021 +0100
 
-    Update README to match design
+    [dv] Remove MISA from csr_description.yaml
     
-    Since this part of the README was written the design moved on. Let's
-    update it. This update follows the text we have at
-    https://ibex-core.readthedocs.io/en/latest/index.html.
+    The value of `misa` will change depending on whether M or B are enabled.
+    The presence and read values of other CSRs may also depend upon the Ibex
+    configuration. A fix is required to allow riscv_csr_test to deal with
+    different CSR descriptions for different Ibex configurations. For now
+    just comment out `misa` from the descriptions file to enable
+    riscv_csr_test to run on a wider range of configurations.
 
 """
 
