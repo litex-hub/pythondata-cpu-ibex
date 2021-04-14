@@ -4,35 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2106"
-version_tuple = (0, 0, 2106)
+version_str = "0.0.post2107"
+version_tuple = (0, 0, 2107)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2106")
+    pversion = V("0.0.post2107")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2011"
-data_version_tuple = (0, 0, 2011)
+data_version_str = "0.0.post2012"
+data_version_tuple = (0, 0, 2012)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2011")
+    pdata_version = V("0.0.post2012")
 except ImportError:
     pass
-data_git_hash = "ed5f12c99e2dc822dd74961b82c973eacdb5deb5"
-data_git_describe = "v0.0-2011-ged5f12c9"
+data_git_hash = "69e715b2878c1ee7fdca2c3d1ed3396e6bdadb64"
+data_git_describe = "v0.0-2012-g69e715b2"
 data_git_msg = """\
-commit ed5f12c99e2dc822dd74961b82c973eacdb5deb5
+commit 69e715b2878c1ee7fdca2c3d1ed3396e6bdadb64
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Apr 8 17:29:03 2021 +0100
+Date:   Mon Apr 12 11:57:18 2021 +0100
 
-    [rtl] Fix RF read enables for illegal instruction/fetch error
+    [dv] Improvements to functional coverage
     
-    The read enables should only be asserted where an actual RF read will
-    occur. Where there is an illegal instruction or a fetch error the raw
-    decoder signals might still be asserted but should be squashed before
-    they become the true enable signals.
+    This adds more instruction categories and corrects various issues in the
+    categorization code. Further cross coverage has been added including
+    illegal bins to remove bins that cannot occur.
+    
+    The concept of using SVAs with cross coverage has been dropped. The
+    systemverilog scheduling model makes the concept unworkable.
 
 """
 
