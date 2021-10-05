@@ -86,7 +86,54 @@ class dv_base_vseq #(type RAL_T               = dv_base_reg_block,
 
   virtual task apply_reset(string kind = "HARD");
     if (kind == "HARD") begin
-      cfg.clk_rst_vif.apply_reset();
+      if (cfg.clk_rst_vifs.size() > 0) begin
+        fork
+          begin : isolation_fork
+            foreach (cfg.clk_rst_vifs[i]) begin
+              automatic string ral_name = i;
+              fork
+                cfg.clk_rst_vifs[ral_name].apply_reset();
+              join_none
+            end
+            wait fork;
+          end : isolation_fork
+        join
+      end else begin // no ral model and only has default clk_rst_vif
+        cfg.clk_rst_vif.apply_reset();
+      end
+    end // if (kind == "HARD")
+  endtask
+
+  // Apply all resets in the DUT concurrently to generate a random in-test reset scenario.
+  //
+  // - Assert resets concurrently to make sure all resets are issued.
+  // - Deassert resets concurrently is a specific requirement of the `stress_all_with_rand_reset`
+  // sequence, which will randomly issue resets and terminate the parallel sequence once all DUT
+  // resets are deasserted. If DUT resets are deasserted at different time, the parallel sequence
+  // might send a transaction request to driver between different resets are deasserting. Then when
+  // `stress_all_with_rand_reset` sequence tries to terminate the parallel sequence, an UVM_ERROR
+  // will be thrown by the sequencer saying `task responsible for requesting a wait_for_grant has
+  // been killed`.
+  // In order to ensure all resets at least being asserted for one clock cycle, this task takes an
+  // optional input `reset_duration_ps` if the DUT has additional resets. The task uses this input
+  // to compute the minimal time required to keep all resets asserted.
+  virtual task apply_resets_concurrently(int reset_duration_ps = 0);
+
+    // Has one or more RAL models in DUT.
+    if (cfg.clk_rst_vifs.size() > 0) begin
+      foreach (cfg.clk_rst_vifs[i]) begin
+        cfg.clk_rst_vifs[i].drive_rst_pin(0);
+        reset_duration_ps = max2(reset_duration_ps, cfg.clk_rst_vifs[i].clk_period_ps);
+      end
+      #(reset_duration_ps * $urandom_range(2, 10) * 1ps);
+      foreach (cfg.clk_rst_vifs[i]) cfg.clk_rst_vifs[i].drive_rst_pin(1);
+
+    // No RAL model and only has default clk_rst_vif.
+    end else begin
+      cfg.clk_rst_vif.drive_rst_pin(0);
+      reset_duration_ps = max2(reset_duration_ps, cfg.clk_rst_vif.clk_period_ps);
+      #(reset_duration_ps * $urandom_range(2, 10) * 1ps);
+      cfg.clk_rst_vif.drive_rst_pin(1);
     end
   endtask
 
@@ -109,62 +156,37 @@ class dv_base_vseq #(type RAL_T               = dv_base_reg_block,
     csr_utils_pkg::wait_no_outstanding_access();
   endtask
 
-  // function to add csr exclusions of the given type using the csr_excl_item item
-  // arg csr_test_type: this the the type of csr test run - we may want additional exclusions
-  // depending on what test seq we are running
-  // arg csr_excl: this is the csr exclusion object that maintains the list of exclusions
-  // the same object handle is to be passed to csr sequences in csr_seq_lib so that they can query
-  // those exclusions
-  virtual function void add_csr_exclusions(string           csr_test_type,
-                                           csr_excl_item    csr_excl,
-                                           string           scope = "ral");
-    `uvm_info(`gfn, "no exclusion item added from this function", UVM_DEBUG)
-  endfunction
-
-  // TODO: temp support, can delete this once all IPs update their exclusion in hjson
-  virtual function csr_excl_item add_and_return_csr_excl(string csr_test_type);
-    add_csr_exclusions(csr_test_type, ral.csr_excl);
-    ral.csr_excl.print_exclusions();
-    return ral.csr_excl;
-  endfunction
-
   // wrapper task around run_csr_vseq - the purpose is to be able to call this directly for actual
   // csr tests (as opposed to higher level stress test that could also run csr seq as a fork by
   // calling run_csr_vseq(..) task)
   virtual task run_csr_vseq_wrapper(int num_times = 1);
     string        csr_test_type;
-    csr_excl_item csr_excl;
 
     // env needs to have a ral instance
-    `DV_CHECK_EQ_FATAL(cfg.has_ral, 1'b1)
+    `DV_CHECK_GE_FATAL(cfg.ral_models.size(), 1)
 
     // get csr_test_type from plusarg
     void'($value$plusargs("csr_%0s", csr_test_type));
-
-    // create csr exclusions before running the csr seq
-    csr_excl = add_and_return_csr_excl(csr_test_type);
 
     // run the csr seq
     for (int i = 1; i <= num_times; i++) begin
       `uvm_info(`gfn, $sformatf("running csr %0s vseq iteration %0d/%0d",
                                 csr_test_type, i, num_times), UVM_LOW)
-      run_csr_vseq(.csr_test_type(csr_test_type), .csr_excl(csr_excl));
+      run_csr_vseq(.csr_test_type(csr_test_type));
     end
   endtask
 
   // capture the entire csr seq as a task that can be overridden if desired
   // arg csr_test_type: what csr test to run {hw_reset, rw, bit_bash, aliasing}
-  // arg csr_excl: csr exclusion object - needs to be created and exclusions set before call
   // arg num_test_csrs:instead of testing the entire ral model or passing test chunk info via
   // plusarg, provide ability to set a random number of csrs to test from higher level sequence
   virtual task run_csr_vseq(string          csr_test_type = "",
-                            csr_excl_item   csr_excl = null,
                             int             num_test_csrs = 0,
                             bit             do_rand_wr_and_reset = 1);
     csr_base_seq  m_csr_seq;
 
     // env needs to have a ral instance
-    `DV_CHECK_EQ_FATAL(cfg.has_ral, 1'b1)
+    `DV_CHECK_GE_FATAL(cfg.ral_models.size(), 1)
 
     // check which csr test type
     case (csr_test_type)
@@ -190,10 +212,13 @@ class dv_base_vseq #(type RAL_T               = dv_base_reg_block,
 
       // run write-only sequence to randomize the csr values
       m_csr_write_seq = csr_write_seq::type_id::create("m_csr_write_seq");
-      m_csr_write_seq.models = cfg.ral_models;
+      // We have to assign this array in a loop because the element types aren't equivalent, so
+      // the array types aren't assignment compatible.
+      foreach (cfg.ral_models[i]) begin
+        m_csr_write_seq.models[i] = cfg.ral_models[i];
+      end
       m_csr_write_seq.external_checker = cfg.en_scb;
       m_csr_write_seq.en_rand_backdoor_write = 1'b1;
-      m_csr_write_seq.set_csr_excl_item(csr_excl);
       m_csr_write_seq.start(null);
 
       // run dut_shutdown before asserting reset
@@ -208,10 +233,13 @@ class dv_base_vseq #(type RAL_T               = dv_base_reg_block,
 
     // create base csr seq and pass our ral
     m_csr_seq = csr_base_seq::type_id::create("m_csr_seq");
-    m_csr_seq.models = cfg.ral_models;
+    // We have to assign this array in a loop because the element types aren't equivalent, so
+    // the array types aren't assignment compatible.
+    foreach (cfg.ral_models[i])  begin
+      m_csr_seq.models[i] = cfg.ral_models[i];
+    end
     m_csr_seq.external_checker = cfg.en_scb;
     m_csr_seq.num_test_csrs = num_test_csrs;
-    m_csr_seq.set_csr_excl_item(csr_excl);
     m_csr_seq.start(null);
   endtask
 

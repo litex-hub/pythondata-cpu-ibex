@@ -13,29 +13,30 @@
 `include "prim_assert.sv"
 
 module ibex_fetch_fifo #(
-  parameter int unsigned NUM_REQS = 2
+  parameter int unsigned NUM_REQS = 2,
+  parameter bit          ResetAll = 1'b0
 ) (
-    input  logic                clk_i,
-    input  logic                rst_ni,
+  input  logic                clk_i,
+  input  logic                rst_ni,
 
-    // control signals
-    input  logic                clear_i,   // clears the contents of the FIFO
-    output logic [NUM_REQS-1:0] busy_o,
+  // control signals
+  input  logic                clear_i,   // clears the contents of the FIFO
+  output logic [NUM_REQS-1:0] busy_o,
 
-    // input port
-    input  logic                in_valid_i,
-    input  logic [31:0]         in_addr_i,
-    input  logic [31:0]         in_rdata_i,
-    input  logic                in_err_i,
+  // input port
+  input  logic                in_valid_i,
+  input  logic [31:0]         in_addr_i,
+  input  logic [31:0]         in_rdata_i,
+  input  logic                in_err_i,
 
-    // output port
-    output logic                out_valid_o,
-    input  logic                out_ready_i,
-    output logic [31:0]         out_addr_o,
-    output logic [31:0]         out_addr_next_o,
-    output logic [31:0]         out_rdata_o,
-    output logic                out_err_o,
-    output logic                out_err_plus2_o
+  // output port
+  output logic                out_valid_o,
+  input  logic                out_ready_i,
+  output logic [31:0]         out_addr_o,
+  output logic [31:0]         out_addr_next_o,
+  output logic [31:0]         out_rdata_o,
+  output logic                out_err_o,
+  output logic                out_err_plus2_o
 );
 
   localparam int unsigned DEPTH = NUM_REQS+1;
@@ -149,9 +150,19 @@ module ibex_fetch_fifo #(
   assign instr_addr_d = clear_i ? in_addr_i[31:1] :
                                   instr_addr_next;
 
-  always_ff @(posedge clk_i) begin
-    if (instr_addr_en) begin
-      instr_addr_q <= instr_addr_d;
+  if (ResetAll) begin : g_instr_addr_ra
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        instr_addr_q <= '0;
+      end else if (instr_addr_en) begin
+        instr_addr_q <= instr_addr_d;
+      end
+    end
+  end else begin : g_instr_addr_nr
+    always_ff @(posedge clk_i) begin
+      if (instr_addr_en) begin
+        instr_addr_q <= instr_addr_d;
+      end
     end
   end
 
@@ -227,10 +238,22 @@ module ibex_fetch_fifo #(
   end
 
   for (genvar i = 0; i < DEPTH; i++) begin : g_fifo_regs
-    always_ff @(posedge clk_i) begin
-      if (entry_en[i]) begin
-        rdata_q[i]   <= rdata_d[i];
-        err_q[i]     <= err_d[i];
+    if (ResetAll) begin : g_rdata_ra
+      always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+          rdata_q[i] <= '0;
+          err_q[i]   <= '0;
+        end else if (entry_en[i]) begin
+          rdata_q[i] <= rdata_d[i];
+          err_q[i]   <= err_d[i];
+        end
+      end
+    end else begin : g_rdata_nr
+      always_ff @(posedge clk_i) begin
+        if (entry_en[i]) begin
+          rdata_q[i] <= rdata_d[i];
+          err_q[i]   <= err_d[i];
+        end
       end
     end
   end

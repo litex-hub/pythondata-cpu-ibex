@@ -34,10 +34,6 @@ Ibex implements all the Control and Status Registers (CSRs) listed in the follow
 +---------+--------------------+--------+-----------------------------------------------+
 |  0x344  | ``mip``            | R      | Machine Interrupt Pending Register            |
 +---------+--------------------+--------+-----------------------------------------------+
-|  0x390  | ``mseccfg``        | WARL   | Machine Security Configuration                |
-+---------+--------------------+--------+-----------------------------------------------+
-|  0x391  | ``mseccfgh``       | WARL   | Upper 32 bits of ``mseccfg``                  |
-+---------+--------------------+--------+-----------------------------------------------+
 |  0x3A0  | ``pmpcfg0``        | WARL   | PMP Configuration Register                    |
 +---------+--------------------+--------+-----------------------------------------------+
 |     .             .               .                    .                              |
@@ -49,6 +45,10 @@ Ibex implements all the Control and Status Registers (CSRs) listed in the follow
 |     .             .               .                    .                              |
 +---------+--------------------+--------+-----------------------------------------------+
 |  0x3BF  | ``pmpaddr15``      | WARL   | PMP Address Register                          |
++---------+--------------------+--------+-----------------------------------------------+
+|  0x747  | ``mseccfg``        | WARL   | Machine Security Configuration                |
++---------+--------------------+--------+-----------------------------------------------+
+|  0x757  | ``mseccfgh``       | WARL   | Upper 32 bits of ``mseccfg``                  |
 +---------+--------------------+--------+-----------------------------------------------+
 |  0x7A0  | ``tselect``        | WARL   | Trigger Select Register                       |
 +---------+--------------------+--------+-----------------------------------------------+
@@ -93,6 +93,12 @@ Ibex implements all the Control and Status Registers (CSRs) listed in the follow
 |     .             .               .                    .                              |
 +---------+--------------------+--------+-----------------------------------------------+
 |  0xB9F  | ``mhpmcounter31h`` | WARL   | Upper 32 bits of ``mhmpcounter31``            |
++---------+--------------------+--------+-----------------------------------------------+
+|  0xF11  | ``mvendorid``      | R      | Machine Vendor ID                             |
++---------+--------------------+--------+-----------------------------------------------+
+|  0xF12  | ``marchid``        | R      | Machine Architecture ID                       |
++---------+--------------------+--------+-----------------------------------------------+
+|  0xF13  | ``mimpid``         | R      | Machine Implementation ID                     |
 +---------+--------------------+--------+-----------------------------------------------+
 |  0xF14  | ``mhartid``        | R      | Hardware Thread ID                            |
 +---------+--------------------+--------+-----------------------------------------------+
@@ -250,29 +256,6 @@ A particular bit in the register reads as one if the corresponding interrupt inp
 | 3     | **Machine Software Interrupt Pending (MSIP):** if set, ``irq_software_i`` is pending. |
 +-------+---------------------------------------------------------------------------------------+
 
-Machine Security Configuration (mseccfg/mseccfgh)
-----------------------------------------
-
-CSR Address: ``0x390 - 0x391``
-
-Reset Value: ``0x0000_0000_0000_0000``
-
-+------+-----------------------------------------------------------------------------------------------------------------------------------+
-| Bit# | Definition                                                                                                                        |
-+------+-----------------------------------------------------------------------------------------------------------------------------------+
-| 2    | **Rule Locking Bypass (RLB):** If set locked PMP entries can be modified                                                          |
-+------+-----------------------------------------------------------------------------------------------------------------------------------+
-| 1    | **Machine Mode Whitelist Policy (MMWP):** If set default policy for PMP is deny for M-Mode accesses that don't match a PMP region |
-+------+-----------------------------------------------------------------------------------------------------------------------------------+
-| 0    | **Machine Mode Lockdown (MML):** Alters behaviour of ``pmpcfgX`` bits                                                             |
-+------+-----------------------------------------------------------------------------------------------------------------------------------+
-
-``mseccfg`` is specified in the Trusted Execution Environment (TEE) working group proposal :download:`PMP Enhancements for memory access and execution prevention on Machine mode <../03_reference/pdfs/riscv-epmp.pdf>`, which gives the full details of it's functionality including the new PMP behaviour when ``mseccfg.MML`` is set.
-Note that the reset value means PMP behavior out of reset matches the RISC-V Privileged Architecture.
-A write to ``mseccfg`` is required to change it.
-Note ``mseccfgh`` reads as all 0s and ignores all writes.
-Any access to ``mseccfg`` or ``mseccfgh`` when using an Ibex configuration without PMP (``PMPEnable`` is 0) will trigger an illegal instruction exception.
-
 PMP Configuration Register (pmpcfgx)
 ------------------------------------
 
@@ -324,6 +307,29 @@ Reset Value: ``0x0000_0000``
 +----------------+
 | address[33:2]  |
 +----------------+
+
+Machine Security Configuration (mseccfg/mseccfgh)
+-------------------------------------------------
+
+CSR Address: ``mseccfg``: ``0x747``  ``mseccfg``: ``0x757``
+
+Reset Value: ``0x0000_0000_0000_0000``
+
++------+-----------------------------------------------------------------------------------------------------------------------------------+
+| Bit# | Definition                                                                                                                        |
++------+-----------------------------------------------------------------------------------------------------------------------------------+
+| 2    | **Rule Locking Bypass (RLB):** If set locked PMP entries can be modified                                                          |
++------+-----------------------------------------------------------------------------------------------------------------------------------+
+| 1    | **Machine Mode Whitelist Policy (MMWP):** If set default policy for PMP is deny for M-Mode accesses that don't match a PMP region |
++------+-----------------------------------------------------------------------------------------------------------------------------------+
+| 0    | **Machine Mode Lockdown (MML):** Alters behaviour of ``pmpcfgX`` bits                                                             |
++------+-----------------------------------------------------------------------------------------------------------------------------------+
+
+``mseccfg`` is specified in the Trusted Execution Environment (TEE) working group proposal `PMP Enhancements for memory access and execution prevention on Machine mode (Smepmp) version 0.9.3 <https://github.com/riscv/riscv-tee/blob/61455747230a26002d741f64879dd78cc9689323/Smepmp/Smepmp.pdf>`_, which gives the full details of it's functionality including the new PMP behaviour when ``mseccfg.MML`` is set.
+Note that the reset value means PMP behavior out of reset matches the RISC-V Privileged Architecture.
+A write to ``mseccfg`` is required to change it.
+Note ``mseccfgh`` reads as all 0s and ignores all writes.
+Any access to ``mseccfg`` or ``mseccfgh`` when using an Ibex configuration without PMP (``PMPEnable`` is 0) will trigger an illegal instruction exception.
 
 .. _csr-tselect:
 
@@ -575,6 +581,38 @@ CSR Address: ``0xC01 / 0xC81``
 The User Mode ``time(h)`` registers are not implemented in Ibex.
 Any access to these registers will trap.
 It is recommended that trap handler software provides a means of accessing platform-defined ``mtime(h)`` timers where available.
+
+Machine Vendor ID (mvendorid)
+-----------------------------
+
+CSR Address: ``0xF11``
+
+Reset Value: ``0x0000_0000``
+
+Use the ``CSR_MVENDORID_VALUE`` parameter in :file:`rtl/ibex_pkg.sv` to change the fixed value.
+Details of what the ID represents can be found in the RISC-V Privileged Specification.
+
+Machine Architecture ID (marchid)
+---------------------------------
+
+CSR Address: ``0xF12``
+
+Reset Value: ``0x0000_0016``
+
+Use the ``CSR_MARCHID_VALUE`` parameter in :file:`rtl/ibex_pkg.sv` to change the fixed value.
+The value used is allocated specifically to Ibex.
+If significant changes are made a different ID should be used.
+Details of what the ID represents can be found in the RISC-V Privileged Specification.
+
+Machine Implementation ID (mimpid)
+----------------------------------
+
+CSR Address: ``0xF13``
+
+Reset Value: ``0x0000_0000``
+
+Use the ``CSR_MIMPID_VALUE`` parameter in :file:`rtl/ibex_pkg.sv` to change the fixed value.
+Details of what the ID represents can be found in the RISC-V Privileged Specification.
 
 .. _csr-mhartid:
 

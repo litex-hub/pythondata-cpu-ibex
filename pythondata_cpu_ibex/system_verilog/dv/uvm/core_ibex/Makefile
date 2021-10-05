@@ -65,7 +65,7 @@ PMP_REGIONS         := 16
 # PMP Granularity
 PMP_GRANULARITY     := 0
 
-IBEX_CONFIG         := experimental-maxperf-pmp-bmfull-icache
+IBEX_CONFIG         := opentitan
 
 # TODO(udinator) - might need options for SAIL/Whisper/Spike
 ifeq (${ISS},ovpsim)
@@ -92,7 +92,7 @@ all: sim
 
 instr: iss_sim
 
-sim: post_compare gen_cov
+sim: post_compare $(if $(filter 1,$(COV)),gen_cov,)
 
 .PHONY: clean
 clean:
@@ -211,6 +211,18 @@ FORCE:
 vars-prereq = $(if $(call vars-differ,$(1),$(2),$(3)),FORCE,)
 
 ###############################################################################
+# Get a list of tests and seeds
+#
+# Run list_tests.py to list the things we need to run in the format
+# TESTNAME.SEED and store it in a variable.
+tests-and-seeds := \
+  $(shell ./list_tests.py \
+	--start_seed $(SEED) \
+	--test "$(TEST)" \
+	--iterations $(ITERATIONS) \
+	--ibex-config $(IBEX_CONFIG))
+
+###############################################################################
 # Generate random instructions
 #
 # This depends on the vendored in code in $(GEN_DIR). It also depends on the
@@ -306,6 +318,7 @@ $(metadata)/instr_gen.iss.stamp: \
      ${TEST_OPTS} \
      --iss="${ISS}" \
      --iss_opts="${ISS_OPTS}" \
+     --isa="${ISA}" \
      ${RISCV_DV_OPTS}
 	$(call dump-vars,$(metadata)/iss-vars.mk,iss,$(iss-var-deps))
 	@touch $@
@@ -353,7 +366,6 @@ $(OUT-DIR)rtl_sim/.compile.stamp: \
 	$(verb)./sim.py \
 	 --o=$(OUT-DIR) \
 	 --steps=compile \
-	 --ibex_config=$(IBEX_CONFIG) \
 	 ${COMMON_OPTS} \
 	 --simulator="${SIMULATOR}" --simulator_yaml=yaml/rtl_simulation.yaml \
 	 $(cov-arg) $(wave-arg) $(lsf-arg) \
@@ -381,38 +393,61 @@ $(metadata)/rtl_sim.compile.stamp: \
 	cp -r $(OUT-DIR)rtl_sim $(OUT-SEED)
 	@touch $@
 
-# This rule actually runs the simulation. It depends on the copied-in testbench
-# and also on us having already compiled the test programs.
-$(metadata)/rtl_sim.run.stamp: \
+rtl-sim-dirs := $(addprefix $(OUT-SEED)/rtl_sim/,$(tests-and-seeds))
+rtl-sim-logs := $(addsuffix /sim.log,$(rtl-sim-dirs))
+
+$(rtl-sim-logs): \
+  %/sim.log: \
   $(metadata)/rtl_sim.compile.stamp \
-  $(metadata)/instr_gen.compile.stamp $(TESTLIST) \
-  sim.py yaml/rtl_simulation.yaml
-	$(verb)./sim.py \
-	 --o=$(OUT-SEED) \
-	 --steps=sim \
-	 --ibex_config=$(IBEX_CONFIG) \
-	 ${TEST_OPTS} \
-	 --simulator="${SIMULATOR}" --simulator_yaml=yaml/rtl_simulation.yaml \
-	 $(cov-arg) $(wave-arg) $(lsf-arg) \
-	 --sim_opts="+signature_addr=${SIGNATURE_ADDR} ${SIM_OPTS}"
-	@touch $@
+  $(metadata)/instr_gen.compile.stamp \
+  run_rtl.py
+	@echo Running RTL simulation at $@
+	$(verb)mkdir -p $(@D)
+	$(verb)./run_rtl.py \
+	  --simulator $(SIMULATOR) \
+	  --simulator_yaml yaml/rtl_simulation.yaml \
+	  $(cov-arg) $(wave-arg) $(lsf-arg) \
+	  --start-seed $(SEED) \
+      --sim-opts="+signature_addr=${SIGNATURE_ADDR} ${SIM_OPTS}" \
+	  --test-dot-seed $(notdir $*) \
+	  --bin-dir $(OUT-SEED)/instr_gen/asm_test \
+	  --rtl-sim-dir $(OUT-SEED)/rtl_sim
 
 .PHONY: rtl_sim
-rtl_sim: $(metadata)/rtl_sim.run.stamp
+rtl_sim: $(rtl-sim-logs)
 
 ###############################################################################
 # Compare ISS and RTL sim results
-$(OUT-SEED)/regr.log: \
-  $(metadata)/instr_gen.iss.stamp \
-  $(metadata)/rtl_sim.run.stamp $(TESTLIST)
-	$(verb)rm -f $@
-	$(verb)./sim.py \
-     --o=$(OUT-SEED) \
-     --steps=compare \
-     --ibex_config=$(IBEX_CONFIG) \
-     ${TEST_OPTS} \
-     --simulator="${SIMULATOR}" \
-     --iss="${ISS}"
+#
+# For a given TEST/SEED pair, the ISS and RTL logs appear at:
+#
+#   $(OUT-SEED)/instr_gen/$(ISS)_sim/$(TEST).$(SEED).log
+#   $(OUT-SEED)/rtl_sim/$(TEST).$(SEED)/trace_core_00000000.log
+#
+# The comparison script compares these and writes to a result file at
+#
+#   $(OUT-SEED)/rtl_sim/$(TEST).$(SEED)/test-result.yml
+#
+# with PASSED or FAILED, depending.
+
+comp-results := $(addsuffix /test-result.yml,$(rtl-sim-dirs))
+
+$(comp-results): \
+  %/test-result.yml: \
+  compare.py $(metadata)/instr_gen.iss.stamp $(rtl-sim-logs)
+	@echo Comparing traces for $*
+	$(verb)./compare.py \
+      --instr-gen-bin-dir $(OUT-SEED)/instr_gen/asm_test \
+      --iss $(ISS) \
+      --iss-log-dir $(OUT-SEED)/instr_gen/$(ISS)_sim \
+      --start-seed $(SEED) \
+      --test-dot-seed "$(notdir $*)" \
+      --output $@ \
+      --rtl-log-dir $(OUT-SEED)/rtl_sim/$(notdir $*)
+
+$(OUT-SEED)/regr.log: collect_results.py $(comp-results)
+	@echo "Collecting up results (report at $@)"
+	$(verb)./collect_results.py -o $(@D) $(comp-results)
 
 .PHONY: post_compare
 post_compare: $(OUT-SEED)/regr.log
@@ -421,7 +456,7 @@ post_compare: $(OUT-SEED)/regr.log
 # Generate RISCV-DV functional coverage
 # TODO(udi) - add B extension
 .PHONY: riscv_dv_cov
-riscv_dv_fcov:
+riscv_dv_fcov: $(rtl-sim-logs)
 	$(verb)python3 ${GEN_DIR}/cov.py \
           --core ibex \
           --dir ${OUT-SEED}/rtl_sim \
@@ -435,12 +470,7 @@ riscv_dv_fcov:
 .PHONY: gen_cov
 gen_cov: riscv_dv_fcov
 	$(verb)rm -rf $(OUT-DIR)rtl_sim/test.vdb
-	$(verb)./sim.py \
-		--steps=cov \
-		${TEST_OPTS} \
-		--simulator="${SIMULATOR}" \
-		$(lsf-arg) \
-		--o="$(OUT-DIR)"
+	$(verb)./sim.py --steps=cov --simulator="${SIMULATOR}" $(lsf-arg) --o="$(OUT-DIR)"
 	@if [ -d "test.vdb" ]; then \
 		mv -f test.vdb $(OUT-DIR)rtl_sim/; \
 	fi

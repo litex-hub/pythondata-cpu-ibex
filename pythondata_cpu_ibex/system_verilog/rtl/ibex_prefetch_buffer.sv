@@ -10,39 +10,40 @@
  * paths to the instruction cache.
  */
 module ibex_prefetch_buffer #(
-  parameter bit BranchPredictor = 1'b0
+  parameter bit BranchPredictor = 1'b0,
+  parameter bit ResetAll        = 1'b0
 ) (
-    input  logic        clk_i,
-    input  logic        rst_ni,
+  input  logic        clk_i,
+  input  logic        rst_ni,
 
-    input  logic        req_i,
+  input  logic        req_i,
 
-    input  logic        branch_i,
-    input  logic        branch_spec_i,
-    input  logic        predicted_branch_i,
-    input  logic        branch_mispredict_i,
-    input  logic [31:0] addr_i,
-
-
-    input  logic        ready_i,
-    output logic        valid_o,
-    output logic [31:0] rdata_o,
-    output logic [31:0] addr_o,
-    output logic        err_o,
-    output logic        err_plus2_o,
+  input  logic        branch_i,
+  input  logic        branch_spec_i,
+  input  logic        predicted_branch_i,
+  input  logic        branch_mispredict_i,
+  input  logic [31:0] addr_i,
 
 
-    // goes to instruction memory / instruction cache
-    output logic        instr_req_o,
-    input  logic        instr_gnt_i,
-    output logic [31:0] instr_addr_o,
-    input  logic [31:0] instr_rdata_i,
-    input  logic        instr_err_i,
-    input  logic        instr_pmp_err_i,
-    input  logic        instr_rvalid_i,
+  input  logic        ready_i,
+  output logic        valid_o,
+  output logic [31:0] rdata_o,
+  output logic [31:0] addr_o,
+  output logic        err_o,
+  output logic        err_plus2_o,
 
-    // Prefetch Buffer Status
-    output logic        busy_o
+
+  // goes to instruction memory / instruction cache
+  output logic        instr_req_o,
+  input  logic        instr_gnt_i,
+  output logic [31:0] instr_addr_o,
+  input  logic [31:0] instr_rdata_i,
+  input  logic        instr_err_i,
+  input  logic        instr_pmp_err_i,
+  input  logic        instr_rvalid_i,
+
+  // Prefetch Buffer Status
+  output logic        busy_o
 );
 
   localparam int unsigned NUM_REQS  = 2;
@@ -109,7 +110,8 @@ module ibex_prefetch_buffer #(
   assign fifo_ready = ~&(fifo_busy | rdata_outstanding_rev);
 
   ibex_fetch_fifo #(
-    .NUM_REQS (NUM_REQS)
+    .NUM_REQS (NUM_REQS),
+    .ResetAll (ResetAll)
   ) fifo_i (
       .clk_i                 ( clk_i             ),
       .rst_ni                ( rst_ni            ),
@@ -181,9 +183,19 @@ module ibex_prefetch_buffer #(
   assign stored_addr_d = instr_addr;
 
   // CPU resets with a branch, so no need to reset these addresses
-  always_ff @(posedge clk_i) begin
-    if (stored_addr_en) begin
-      stored_addr_q <= stored_addr_d;
+  if (ResetAll) begin : g_stored_addr_ra
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        stored_addr_q <= '0;
+      end else if (stored_addr_en) begin
+        stored_addr_q <= stored_addr_d;
+      end
+    end
+  end else begin : g_stored_addr_nr
+    always_ff @(posedge clk_i) begin
+      if (stored_addr_en) begin
+        stored_addr_q <= stored_addr_d;
+      end
     end
   end
 
@@ -196,9 +208,19 @@ module ibex_prefetch_buffer #(
 
     assign branch_mispredict_addr_en = branch_i & predicted_branch_i;
 
-    always_ff @(posedge clk_i) begin
-      if (branch_mispredict_addr_en) begin
-        branch_mispredict_addr_q <= addr_next;
+    if (ResetAll) begin : g_branch_misp_addr_ra
+      always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+          branch_mispredict_addr_q <= '0;
+        end else if (branch_mispredict_addr_en) begin
+          branch_mispredict_addr_q <= addr_next;
+        end
+      end
+    end else begin : g_branch_misp_addr_nr
+      always_ff @(posedge clk_i) begin
+        if (branch_mispredict_addr_en) begin
+          branch_mispredict_addr_q <= addr_next;
+        end
       end
     end
 
@@ -224,9 +246,19 @@ module ibex_prefetch_buffer #(
                         // Current address + 4
                         {{29{1'b0}},(valid_new_req & ~valid_req_q),2'b00};
 
-  always_ff @(posedge clk_i) begin
-    if (fetch_addr_en) begin
-      fetch_addr_q <= fetch_addr_d;
+  if (ResetAll) begin : g_fetch_addr_ra
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        fetch_addr_q <= '0;
+      end else if (fetch_addr_en) begin
+        fetch_addr_q <= fetch_addr_d;
+      end
+    end
+  end else begin : g_fetch_addr_nr
+    always_ff @(posedge clk_i) begin
+      if (fetch_addr_en) begin
+        fetch_addr_q <= fetch_addr_d;
+      end
     end
   end
 

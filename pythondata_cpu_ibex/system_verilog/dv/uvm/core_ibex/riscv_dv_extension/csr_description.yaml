@@ -63,6 +63,58 @@
 #      msb: 25
 #      lsb: 0
 
+# CSR test generation cannot deal with read-only fields. Leaving these here
+# commented out so they can be used once the read-only issue is fixed.
+# https://github.com/lowRISC/ibex/issues/1337 tracks the required improvements
+#- csr: mvendorid
+#  description: >
+#    Machine Vendor ID Register providing JEDEC manufacturer ID
+#  address: 0xF11
+#  privilege_mode: M
+#  rv32:
+#    - field_name: Bank
+#      description: >
+#        Number of continuation codes in JEDEC ID
+#      type: R
+#      reset_val: 0
+#      msb: 31
+#      lsb: 7
+#    - field_name: Offset
+#      description: >
+#        JEDEC ID final byte
+#      type: R
+#      reset_val: 0
+#      msb: 6
+#      lsb: 0
+#
+#- csr: marchid
+#  description: >
+#    Machine Architecture ID Register
+#  address: 0xF12
+#  privilege_mode: M
+#  rv32:
+#    - field_name: Architecture ID
+#      description: >
+#        ID indicating the base microarchitecture
+#      type: R
+#      reset_val: 22
+#      msb: 31
+#      lsb: 0
+#
+#- csr: mimpid
+#  description: >
+#    Machine Implementation ID Register
+#  address: 0xF13
+#  privilege_mode: M
+#  rv32:
+#    - field_name: Implementation
+#      description: >
+#        Unique encoding of processor implementation version
+#      type: R
+#      reset_val: 0
+#      msb: 31
+#      lsb: 0
+
 # Ibex's implementation of MHARTID is read-only
 # MHARTID
 #- csr: mhartid
@@ -300,7 +352,6 @@
 
 # CPUCTRL
 #
-# TODO : change fields to WARL type once SecureIbex parameter is enabled
 - csr: cpuctrl
   description: >
     CPU control register (custom)
@@ -310,21 +361,21 @@
     - field_name: dumm_instr_mask
       description: >
         Mask to control frequency of dummy instruction insertion
-      type: R
+      type: WARL
       reset_val: 0
       msb: 5
       lsb: 3
     - field_name: dummy_instr_en
       description: >
         Enable or disable dummy instruction insertion
-      type: R
+      type: WARL
       reset_val: 0
       msb: 2
       lsb: 2
     - field_name: data_ind_timing
       description: >
         Enable or disable data-independent timing features
-      type: R
+      type: WARL
       reset_val: 0
       msb: 1
       lsb: 1

@@ -14,7 +14,7 @@ package csr_utils_pkg;
 
   // local types and variables
   uint        outstanding_accesses        = 0;
-  uint        default_timeout_ns          = 1_000_000; // 1ms
+  uint        default_timeout_ns          = 2_000_000; // 2ms
   uint        default_spinwait_timeout_ns = 10_000_000; // 10ms
   string      msg_id                      = "csr_utils";
   bit         default_csr_blocking        = 1;
@@ -58,28 +58,6 @@ package csr_utils_pkg;
 
   function automatic void reset_deasserted();
     under_reset = 0;
-  endfunction
-
-  // Get all valid csr addrs - useful to check if incoming addr falls in the csr range.
-  function automatic void get_csr_addrs(input uvm_reg_block ral, ref uvm_reg_addr_t csr_addrs[$]);
-    uvm_reg csrs[$];
-    ral.get_registers(csrs);
-    foreach (csrs[i]) begin
-      csr_addrs.push_back(csrs[i].get_address());
-    end
-  endfunction
-
-  // Get all valid mem addr ranges - useful to check if incoming addr falls in the mem range.
-  function automatic void get_mem_addr_ranges(uvm_reg_block ral, ref addr_range_t mem_ranges[$]);
-    uvm_mem mems[$];
-    ral.get_memories(mems);
-    foreach (mems[i]) begin
-      addr_range_t mem_range;
-      mem_range.start_addr = mems[i].get_address();
-      mem_range.end_addr   = mem_range.start_addr +
-                             mems[i].get_size() * mems[i].get_n_bytes() - 1;
-      mem_ranges.push_back(mem_range);
-    end
   endfunction
 
   // get mem object from address
@@ -540,7 +518,7 @@ package csr_utils_pkg;
                                           input bit             compare_vs_ral = 1,
                                           input csr_excl_type_e csr_excl_type = CsrNoExcl,
                                           input csr_test_type_e csr_test_type = CsrRwTest,
-                                          input csr_excl_item   csr_excl_item = null);
+                                          input csr_excl_item   csr_excl_item = get_excl_item(csr));
     uvm_reg_data_t compare_mask;
 
     // Check if parent block or register is excluded from read-check
@@ -730,10 +708,12 @@ package csr_utils_pkg;
   function automatic uvm_reg_data_t get_mask_excl_fields(uvm_reg csr,
                                                          csr_excl_type_e csr_excl_type,
                                                          csr_test_type_e csr_test_type,
-                                                         csr_excl_item m_csr_excl_item);
+                                                         csr_excl_item m_csr_excl_item =
+                                                                       get_excl_item(csr));
     uvm_reg_field flds[$];
     csr.get_fields(flds);
     get_mask_excl_fields = '1;
+
     if (m_csr_excl_item != null) begin
       foreach (flds[i]) begin
         if (m_csr_excl_item.is_excl(flds[i], csr_excl_type, csr_test_type)) begin
@@ -746,6 +726,20 @@ package csr_utils_pkg;
     end
   endfunction
 
+  function automatic csr_excl_item get_excl_item(uvm_object ptr);
+    csr_field_t       csr_or_fld;
+    dv_base_reg_block blk;
+
+    csr_or_fld = decode_csr_or_field(ptr);
+    `downcast(blk, csr_or_fld.csr.get_parent(), , , msg_id)
+
+    // csr_excl is at the highest level of reg block
+    while (blk.csr_excl == null) begin
+      `downcast(blk, blk.get_parent(), , , msg_id)
+      `DV_CHECK_NE_FATAL(blk, null, "", msg_id)
+    end
+    return blk.csr_excl;
+  endfunction
   // sources
   `include "csr_seq_lib.sv"
 

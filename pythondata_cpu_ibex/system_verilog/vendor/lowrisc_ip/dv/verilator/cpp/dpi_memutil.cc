@@ -328,8 +328,8 @@ void DpiMemUtil::RegisterMemoryArea(const std::string &name, uint32_t base,
 
   size_t new_idx = mem_areas_.size();
   auto pr = name_to_mem_.emplace(name, new_idx);
-  const MemArea &stored = *mem_areas_[pr.first->second];
   if (!pr.second) {
+    const MemArea &stored = *mem_areas_[pr.first->second];
     std::ostringstream oss;
     oss << "Cannot register '" << name << "' at: '" << mem_area->GetScope()
         << "' (Previously defined at: '" << stored.GetScope() << "')"
@@ -431,7 +431,7 @@ void DpiMemUtil::LoadElfToMemories(bool verbose, const std::string &filepath) {
 
     const MemArea &mem_area = *mem_areas_[mem_area_it->second];
 
-    for (const auto seg_pr : staged_mem.GetSegs()) {
+    for (const auto &seg_pr : staged_mem.GetSegs()) {
       const AddrRange<uint32_t> &seg_rng = seg_pr.first;
       const std::vector<uint8_t> &seg_data = seg_pr.second;
 
@@ -457,6 +457,9 @@ void DpiMemUtil::StageElf(bool verbose, const std::string &path) {
   staging_area_.clear();
 
   ElfFile elf(path);
+
+  // Allow subclasses to get at the loaded ELF data if they need it
+  OnElfLoaded(elf.ptr_);
 
   size_t file_size;
   const char *file_data = elf_rawfile(elf.ptr_, &file_size);

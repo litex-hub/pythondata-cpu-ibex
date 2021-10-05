@@ -15,6 +15,7 @@
 `include "dv_fcov_macros.svh"
 
 module ibex_wb_stage #(
+  parameter bit ResetAll       = 1'b0,
   parameter bit WritebackStage = 1'b0
 ) (
   input  logic                     clk_i,
@@ -33,6 +34,8 @@ module ibex_wb_stage #(
   output logic [31:0]              pc_wb_o,
   output logic                     perf_instr_ret_wb_o,
   output logic                     perf_instr_ret_compressed_wb_o,
+  output logic                     perf_instr_ret_wb_spec_o,
+  output logic                     perf_instr_ret_compressed_wb_spec_o,
 
   input  logic [4:0]               rf_waddr_id_i,
   input  logic [31:0]              rf_wdata_id_i,
@@ -60,7 +63,7 @@ module ibex_wb_stage #(
   logic [31:0] rf_wdata_wb_mux    [2];
   logic [1:0]  rf_wdata_wb_mux_we;
 
-  if(WritebackStage) begin : g_writeback_stage
+  if (WritebackStage) begin : g_writeback_stage
     logic [31:0]    rf_wdata_wb_q;
     logic           rf_we_wb_q;
     logic [4:0]     rf_waddr_wb_q;
@@ -85,22 +88,44 @@ module ibex_wb_stage #(
     assign wb_done = (wb_instr_type_q == WB_INSTR_OTHER) | lsu_resp_valid_i;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
-      if(~rst_ni) begin
+      if (!rst_ni) begin
         wb_valid_q <= 1'b0;
       end else begin
         wb_valid_q <= wb_valid_d;
       end
     end
 
-    always_ff @(posedge clk_i) begin
-      if(en_wb_i) begin
-        rf_we_wb_q      <= rf_we_id_i;
-        rf_waddr_wb_q   <= rf_waddr_id_i;
-        rf_wdata_wb_q   <= rf_wdata_id_i;
-        wb_instr_type_q <= instr_type_wb_i;
-        wb_pc_q         <= pc_id_i;
-        wb_compressed_q <= instr_is_compressed_id_i;
-        wb_count_q      <= instr_perf_count_id_i;
+    if (ResetAll) begin : g_wb_regs_ra
+      always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+          rf_we_wb_q      <= '0;
+          rf_waddr_wb_q   <= '0;
+          rf_wdata_wb_q   <= '0;
+          wb_instr_type_q <= wb_instr_type_e'(0);
+          wb_pc_q         <= '0;
+          wb_compressed_q <= '0;
+          wb_count_q      <= '0;
+        end else if (en_wb_i) begin
+          rf_we_wb_q      <= rf_we_id_i;
+          rf_waddr_wb_q   <= rf_waddr_id_i;
+          rf_wdata_wb_q   <= rf_wdata_id_i;
+          wb_instr_type_q <= instr_type_wb_i;
+          wb_pc_q         <= pc_id_i;
+          wb_compressed_q <= instr_is_compressed_id_i;
+          wb_count_q      <= instr_perf_count_id_i;
+        end
+      end
+    end else begin : g_wb_regs_nr
+      always_ff @(posedge clk_i) begin
+        if (en_wb_i) begin
+          rf_we_wb_q      <= rf_we_id_i;
+          rf_waddr_wb_q   <= rf_waddr_id_i;
+          rf_wdata_wb_q   <= rf_wdata_id_i;
+          wb_instr_type_q <= instr_type_wb_i;
+          wb_pc_q         <= pc_id_i;
+          wb_compressed_q <= instr_is_compressed_id_i;
+          wb_count_q      <= instr_perf_count_id_i;
+        end
       end
     end
 
@@ -121,10 +146,15 @@ module ibex_wb_stage #(
 
     assign instr_done_wb_o = wb_valid_q & wb_done;
 
-    // Increment instruction retire counters for valid instructions which are not lsu errors
-    assign perf_instr_ret_wb_o            = instr_done_wb_o & wb_count_q &
-                                            ~(lsu_resp_valid_i & lsu_resp_err_i);
-    assign perf_instr_ret_compressed_wb_o = perf_instr_ret_wb_o & wb_compressed_q;
+    // Increment instruction retire counters for valid instructions which are not lsu errors.
+    // Speculative versions of the signals do not factor in exceptions and whether the instruction
+    // is done yet. These are used to get correct values for instructions reading the relevant
+    // performance counters in the ID stage.
+    assign perf_instr_ret_wb_spec_o            = wb_count_q;
+    assign perf_instr_ret_compressed_wb_spec_o = perf_instr_ret_wb_spec_o & wb_compressed_q;
+    assign perf_instr_ret_wb_o                 = instr_done_wb_o & wb_count_q &
+                                                 ~(lsu_resp_valid_i & lsu_resp_err_i);
+    assign perf_instr_ret_compressed_wb_o      = perf_instr_ret_wb_o & wb_compressed_q;
 
     // Forward data that will be written to the RF back to ID to resolve data hazards. The flopped
     // rf_wdata_wb_q is used rather than rf_wdata_wb_o as the latter includes read data from memory
@@ -136,10 +166,14 @@ module ibex_wb_stage #(
     assign rf_wdata_wb_mux[0]    = rf_wdata_id_i;
     assign rf_wdata_wb_mux_we[0] = rf_we_id_i;
 
-    // Increment instruction retire counters for valid instructions which are not lsu errors
-    assign perf_instr_ret_wb_o            = instr_perf_count_id_i & en_wb_i &
-                                            ~(lsu_resp_valid_i & lsu_resp_err_i);
-    assign perf_instr_ret_compressed_wb_o = perf_instr_ret_wb_o & instr_is_compressed_id_i;
+    // Increment instruction retire counters for valid instructions which are not lsu errors.
+    // The speculative signals are always 0 when no writeback stage is present as the raw counter
+    // values will be correct.
+    assign perf_instr_ret_wb_spec_o            = 1'b0;
+    assign perf_instr_ret_compressed_wb_spec_o = 1'b0;
+    assign perf_instr_ret_wb_o                 = instr_perf_count_id_i & en_wb_i &
+                                                 ~(lsu_resp_valid_i & lsu_resp_err_i);
+    assign perf_instr_ret_compressed_wb_o      = perf_instr_ret_wb_o & instr_is_compressed_id_i;
 
     // ready needs to be constant 1 without writeback stage (otherwise ID/EX stage will stall)
     assign ready_wb_o    = 1'b1;
@@ -170,7 +204,8 @@ module ibex_wb_stage #(
 
   // RF write data can come from ID results (all RF writes that aren't because of loads will come
   // from here) or the LSU (RF writes for load data)
-  assign rf_wdata_wb_o = rf_wdata_wb_mux_we[0] ? rf_wdata_wb_mux[0] : rf_wdata_wb_mux[1];
+  assign rf_wdata_wb_o = ({32{rf_wdata_wb_mux_we[0]}} & rf_wdata_wb_mux[0]) |
+                         ({32{rf_wdata_wb_mux_we[1]}} & rf_wdata_wb_mux[1]);
   assign rf_we_wb_o    = |rf_wdata_wb_mux_we;
 
   `DV_FCOV_SIGNAL_GEN_IF(logic, wb_valid, g_writeback_stage.wb_valid_q, WritebackStage)
