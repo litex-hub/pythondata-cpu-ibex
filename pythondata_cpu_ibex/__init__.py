@@ -4,47 +4,39 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2111"
-version_tuple = (0, 0, 2111)
+version_str = "0.0.post2190"
+version_tuple = (0, 0, 2190)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2111")
+    pversion = V("0.0.post2190")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2016"
-data_version_tuple = (0, 0, 2016)
+data_version_str = "0.0.post2085"
+data_version_tuple = (0, 0, 2085)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2016")
+    pdata_version = V("0.0.post2085")
 except ImportError:
     pass
-data_git_hash = "0e7117fbec434fcfdf2bcce4ed379d34cdbe68b4"
-data_git_describe = "v0.0-2016-g0e7117fb"
+data_git_hash = "873e2281cf9332e47119f61b2c1e32aa22c6d58e"
+data_git_describe = "v0.0-2085-g873e2281"
 data_git_msg = """\
-commit 0e7117fbec434fcfdf2bcce4ed379d34cdbe68b4
-Author: Michael Schaffner <msf@google.com>
-Date:   Thu Apr 15 18:23:38 2021 -0700
+commit 873e2281cf9332e47119f61b2c1e32aa22c6d58e
+Author: zeeshanrafique23 <zeeshanrafique23@gmail.com>
+Date:   Fri Sep 24 00:14:48 2021 +0500
 
-    [lockstep] Introduce optimization barrier around lockstep Ibex
-    
-    Certain synthesis tools like DC are very smart at optimizing away redundant logic.
-    Hence, we have to insert an optimization barrier at the IOs of the lockstep Ibex.
-    This is achieved by manually buffering each bit using prim_buf.
-    Our Xilinx and DC synthesis flows make sure that these buffers cannot be optimized
-    away using keep attributes (Vivado) and size_only constraints (DC).
-    
-    Signed-off-by: Michael Schaffner <msf@google.com>
+    remove unused RD in branch insn from tracer
 
 """
 
 # Tool version info
-tool_version_str = "0.0.post95"
-tool_version_tuple = (0, 0, 95)
+tool_version_str = "0.0.post105"
+tool_version_tuple = (0, 0, 105)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post95")
+    ptool_version = V("0.0.post105")
 except ImportError:
     pass
 
