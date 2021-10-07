@@ -4,30 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2197"
-version_tuple = (0, 0, 2197)
+version_str = "0.0.post2198"
+version_tuple = (0, 0, 2198)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2197")
+    pversion = V("0.0.post2198")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2085"
-data_version_tuple = (0, 0, 2085)
+data_version_str = "0.0.post2086"
+data_version_tuple = (0, 0, 2086)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2085")
+    pdata_version = V("0.0.post2086")
 except ImportError:
     pass
-data_git_hash = "873e2281cf9332e47119f61b2c1e32aa22c6d58e"
-data_git_describe = "v0.0-2085-g873e2281"
+data_git_hash = "0aa02b0f3fd3a49a12e5ce9dcc9bcfeef1e61c9d"
+data_git_describe = "v0.0-2086-g0aa02b0f"
 data_git_msg = """\
-commit 873e2281cf9332e47119f61b2c1e32aa22c6d58e
-Author: zeeshanrafique23 <zeeshanrafique23@gmail.com>
-Date:   Fri Sep 24 00:14:48 2021 +0500
+commit 0aa02b0f3fd3a49a12e5ce9dcc9bcfeef1e61c9d
+Author: Zachary Snow <zach@zachjs.com>
+Date:   Wed Oct 6 11:43:09 2021 -0600
 
-    remove unused RD in branch insn from tracer
+    [syn] Use read_verilog -defer in yosys_run_synth.tcl
+    
+    Newer versions of sv2v carry through elaboration system tasks like
+    $fatal. ibex_top_tracing uses $fatal, but isn't actually used in the
+    syn_yosys flow. By using -defer, unused modules like ibex_top_tracing
+    are not elaborated in Yosys.
 
 """
 
