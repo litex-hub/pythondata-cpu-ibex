@@ -4,35 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2198"
-version_tuple = (0, 0, 2198)
+version_str = "0.0.post2199"
+version_tuple = (0, 0, 2199)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2198")
+    pversion = V("0.0.post2199")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2086"
-data_version_tuple = (0, 0, 2086)
+data_version_str = "0.0.post2087"
+data_version_tuple = (0, 0, 2087)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2086")
+    pdata_version = V("0.0.post2087")
 except ImportError:
     pass
-data_git_hash = "0aa02b0f3fd3a49a12e5ce9dcc9bcfeef1e61c9d"
-data_git_describe = "v0.0-2086-g0aa02b0f"
+data_git_hash = "ff6797b26f545f6f306c4511fe87d1f838d69727"
+data_git_describe = "v0.0-2087-gff6797b2"
 data_git_msg = """\
-commit 0aa02b0f3fd3a49a12e5ce9dcc9bcfeef1e61c9d
-Author: Zachary Snow <zach@zachjs.com>
-Date:   Wed Oct 6 11:43:09 2021 -0600
+commit ff6797b26f545f6f306c4511fe87d1f838d69727
+Author: Udi <udij@google.com>
+Date:   Fri Aug 14 17:27:28 2020 -0700
 
-    [syn] Use read_verilog -defer in yosys_run_synth.tcl
+    [ibex/ml] add CSR/mem_error tests to ml_testlist
     
-    Newer versions of sv2v carry through elaboration system tasks like
-    $fatal. ibex_top_tracing uses $fatal, but isn't actually used in the
-    syn_yosys flow. By using -defer, unused modules like ibex_top_tracing
-    are not elaborated in Yosys.
+    Signed-off-by: Udi <udij@google.com>
 
 """
 
