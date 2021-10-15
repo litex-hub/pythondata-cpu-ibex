@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2199"
-version_tuple = (0, 0, 2199)
+version_str = "0.0.post2203"
+version_tuple = (0, 0, 2203)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2199")
+    pversion = V("0.0.post2203")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2087"
-data_version_tuple = (0, 0, 2087)
+data_version_str = "0.0.post2091"
+data_version_tuple = (0, 0, 2091)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2087")
+    pdata_version = V("0.0.post2091")
 except ImportError:
     pass
-data_git_hash = "ff6797b26f545f6f306c4511fe87d1f838d69727"
-data_git_describe = "v0.0-2087-gff6797b2"
+data_git_hash = "416ecb10dfdb80ce88b8b41ab7c39a6bcefbba50"
+data_git_describe = "v0.0-2091-g416ecb10"
 data_git_msg = """\
-commit ff6797b26f545f6f306c4511fe87d1f838d69727
-Author: Udi <udij@google.com>
-Date:   Fri Aug 14 17:27:28 2020 -0700
+commit 416ecb10dfdb80ce88b8b41ab7c39a6bcefbba50
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Fri Sep 17 15:49:06 2021 +0100
 
-    [ibex/ml] add CSR/mem_error tests to ml_testlist
-    
-    Signed-off-by: Udi <udij@google.com>
+    [dv] Add co-simulation environment support to UVM testbench
 
 """
 
