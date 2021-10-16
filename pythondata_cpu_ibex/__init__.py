@@ -4,30 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2203"
-version_tuple = (0, 0, 2203)
+version_str = "0.0.post2204"
+version_tuple = (0, 0, 2204)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2203")
+    pversion = V("0.0.post2204")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2091"
-data_version_tuple = (0, 0, 2091)
+data_version_str = "0.0.post2092"
+data_version_tuple = (0, 0, 2092)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2091")
+    pdata_version = V("0.0.post2092")
 except ImportError:
     pass
-data_git_hash = "416ecb10dfdb80ce88b8b41ab7c39a6bcefbba50"
-data_git_describe = "v0.0-2091-g416ecb10"
+data_git_hash = "a345da3badf65788e02634ca3386b79c1c44d72c"
+data_git_describe = "v0.0-2092-ga345da3b"
 data_git_msg = """\
-commit 416ecb10dfdb80ce88b8b41ab7c39a6bcefbba50
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Sep 17 15:49:06 2021 +0100
+commit a345da3badf65788e02634ca3386b79c1c44d72c
+Author: Henner Zeller <h.zeller@acm.org>
+Date:   Fri Oct 15 13:42:47 2021 -0700
 
-    [dv] Add co-simulation environment support to UVM testbench
+    Change use of blocking assignment to non-blocking inside always_ff
+    
+    Fixes #1457
+    
+    Signed-off-by: Henner Zeller <h.zeller@acm.org>
 
 """
 
