@@ -4,34 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2204"
-version_tuple = (0, 0, 2204)
+version_str = "0.0.post2205"
+version_tuple = (0, 0, 2205)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2204")
+    pversion = V("0.0.post2205")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2092"
-data_version_tuple = (0, 0, 2092)
+data_version_str = "0.0.post2093"
+data_version_tuple = (0, 0, 2093)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2092")
+    pdata_version = V("0.0.post2093")
 except ImportError:
     pass
-data_git_hash = "a345da3badf65788e02634ca3386b79c1c44d72c"
-data_git_describe = "v0.0-2092-ga345da3b"
+data_git_hash = "cfeef7e864926cf4d30e271a3e2aa5d95e0c141f"
+data_git_describe = "v0.0-2093-gcfeef7e8"
 data_git_msg = """\
-commit a345da3badf65788e02634ca3386b79c1c44d72c
-Author: Henner Zeller <h.zeller@acm.org>
-Date:   Fri Oct 15 13:42:47 2021 -0700
+commit cfeef7e864926cf4d30e271a3e2aa5d95e0c141f
+Author: Tom Roberts <tomroberts@lowrisc.org>
+Date:   Wed Aug 25 09:19:43 2021 +0100
 
-    Change use of blocking assignment to non-blocking inside always_ff
+    [doc] Update DIT documentation for unaligned ld/st
     
-    Fixes #1457
+    Relates to #1414
     
-    Signed-off-by: Henner Zeller <h.zeller@acm.org>
+    Signed-off-by: Tom Roberts <tomroberts@lowrisc.org>
 
 """
 
