@@ -4,34 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2205"
-version_tuple = (0, 0, 2205)
+version_str = "0.0.post2206"
+version_tuple = (0, 0, 2206)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2205")
+    pversion = V("0.0.post2206")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2093"
-data_version_tuple = (0, 0, 2093)
+data_version_str = "0.0.post2094"
+data_version_tuple = (0, 0, 2094)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2093")
+    pdata_version = V("0.0.post2094")
 except ImportError:
     pass
-data_git_hash = "cfeef7e864926cf4d30e271a3e2aa5d95e0c141f"
-data_git_describe = "v0.0-2093-gcfeef7e8"
+data_git_hash = "d1aff2f1a418662d4498494ffd54f57de64e07fb"
+data_git_describe = "v0.0-2094-gd1aff2f1"
 data_git_msg = """\
-commit cfeef7e864926cf4d30e271a3e2aa5d95e0c141f
-Author: Tom Roberts <tomroberts@lowrisc.org>
-Date:   Wed Aug 25 09:19:43 2021 +0100
+commit d1aff2f1a418662d4498494ffd54f57de64e07fb
+Author: Miguel Escobar <mescoba1@github.com>
+Date:   Wed Feb 24 11:28:18 2021 -0800
 
-    [doc] Update DIT documentation for unaligned ld/st
+    [dv] get ibex dv co-sim to run w questa
     
-    Relates to #1414
-    
-    Signed-off-by: Tom Roberts <tomroberts@lowrisc.org>
+    This resolves lowRISC/Ibex#1280.
 
 """
 
