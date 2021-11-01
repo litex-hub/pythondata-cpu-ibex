@@ -4,32 +4,42 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2206"
-version_tuple = (0, 0, 2206)
+version_str = "0.0.post2207"
+version_tuple = (0, 0, 2207)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2206")
+    pversion = V("0.0.post2207")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2094"
-data_version_tuple = (0, 0, 2094)
+data_version_str = "0.0.post2095"
+data_version_tuple = (0, 0, 2095)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2094")
+    pdata_version = V("0.0.post2095")
 except ImportError:
     pass
-data_git_hash = "d1aff2f1a418662d4498494ffd54f57de64e07fb"
-data_git_describe = "v0.0-2094-gd1aff2f1"
+data_git_hash = "c35472abb9527a3c8e4d993f9d1f92447972e440"
+data_git_describe = "v0.0-2095-gc35472ab"
 data_git_msg = """\
-commit d1aff2f1a418662d4498494ffd54f57de64e07fb
-Author: Miguel Escobar <mescoba1@github.com>
-Date:   Wed Feb 24 11:28:18 2021 -0800
+commit c35472abb9527a3c8e4d993f9d1f92447972e440
+Author: Michael Munday <mike.munday@lowrisc.org>
+Date:   Wed May 12 14:12:34 2021 +0100
 
-    [dv] get ibex dv co-sim to run w questa
+    [bitmanip][zba] Add support for Zba (address calculation) extension
     
-    This resolves lowRISC/Ibex#1280.
+    Add support for the Zba extension added in v0.93 of the bit manipulation
+    specification (unchanged in v1.0.0). The new instructions added are:
+    
+      - sh1add: rd = (rs1 << 1) + rs2
+      - sh2add: rd = (rs1 << 2) + rs2
+      - sh3add: rd = (rs1 << 3) + rs2
+    
+    The instructions are single cycle and have been implemented using the
+    adder in the ALU.
+    
+    Signed-off-by: Michael Munday <mike.munday@lowrisc.org>
 
 """
 
