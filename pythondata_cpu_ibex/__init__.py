@@ -4,42 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2207"
-version_tuple = (0, 0, 2207)
+version_str = "0.0.post2214"
+version_tuple = (0, 0, 2214)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2207")
+    pversion = V("0.0.post2214")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2095"
-data_version_tuple = (0, 0, 2095)
+data_version_str = "0.0.post2102"
+data_version_tuple = (0, 0, 2102)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2095")
+    pdata_version = V("0.0.post2102")
 except ImportError:
     pass
-data_git_hash = "c35472abb9527a3c8e4d993f9d1f92447972e440"
-data_git_describe = "v0.0-2095-gc35472ab"
+data_git_hash = "e70add7228dc9b82c724078475e44e467808175d"
+data_git_describe = "v0.0-2102-ge70add72"
 data_git_msg = """\
-commit c35472abb9527a3c8e4d993f9d1f92447972e440
-Author: Michael Munday <mike.munday@lowrisc.org>
-Date:   Wed May 12 14:12:34 2021 +0100
+commit e70add7228dc9b82c724078475e44e467808175d
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Thu Oct 21 16:37:43 2021 +0100
 
-    [bitmanip][zba] Add support for Zba (address calculation) extension
-    
-    Add support for the Zba extension added in v0.93 of the bit manipulation
-    specification (unchanged in v1.0.0). The new instructions added are:
-    
-      - sh1add: rd = (rs1 << 1) + rs2
-      - sh2add: rd = (rs1 << 2) + rs2
-      - sh3add: rd = (rs1 << 3) + rs2
-    
-    The instructions are single cycle and have been implemented using the
-    adder in the ALU.
-    
-    Signed-off-by: Michael Munday <mike.munday@lowrisc.org>
+    [ci] Add co-simulation testing of CoreMark
 
 """
 
