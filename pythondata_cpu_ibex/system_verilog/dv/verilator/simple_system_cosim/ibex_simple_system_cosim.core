@@ -2,15 +2,19 @@ CAPI=2:
 # Copyright lowRISC contributors.
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
-name: "lowrisc:ibex:ibex_simple_system"
+name: "lowrisc:ibex:ibex_simple_system_cosim"
 description: "Generic simple system for running binaries on ibex using verilator"
 filesets:
-  files_simple_system:
+  files_cosim:
     depend:
+      - lowrisc:dv:cosim_dpi
       - lowrisc:ibex:ibex_simple_system_core
+      - lowrisc:tool:ibex_cosim_setup_check
     files:
-      - ibex_simple_system_main.cc
-    file_type: cppSource
+      - simple_system_cosim.cc: { file_type: cppSource }
+      - ibex_simple_system_cosim_checker.sv
+      - ibex_simple_system_cosim_checker_bind.sv
+    file_type: systemVerilogSource
 
 parameters:
   RV32E:
@@ -99,7 +103,7 @@ parameters:
 targets:
   default: &default_target
     filesets:
-      - files_simple_system
+      - files_cosim
     toplevel: ibex_simple_system
     parameters:
       - RV32E
@@ -147,8 +151,8 @@ targets:
           - '--trace-structs'
           - '--trace-params'
           - '--trace-max-array 1024'
-          - '-CFLAGS "-std=c++11 -Wall -DVM_TRACE_FMT_FST -DTOPLEVEL_NAME=ibex_simple_system -g"'
-          - '-LDFLAGS "-pthread -lutil -lelf"'
+          - '-CFLAGS "-std=c++11 -Wall -DVL_USER_STOP -DVM_TRACE_FMT_FST -DTOPLEVEL_NAME=ibex_simple_system -g -I${IBEX_COSIM_ISS_ROOT}/include -I${IBEX_COSIM_ISS_ROOT}/include/softfloat"'
+          - '-LDFLAGS "-pthread -lutil -lelf -L${IBEX_COSIM_ISS_ROOT}/lib/ -g -lriscv -lsoftfloat -lfdt -ldisasm -ldl"'
           - "-Wall"
           - "-Wwarn-IMPERFECTSCH"
           # RAM primitives wider than 64bit (required for ECC) fail to build in
