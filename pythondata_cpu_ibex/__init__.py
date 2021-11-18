@@ -4,30 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2216"
-version_tuple = (0, 0, 2216)
+version_str = "0.0.post2217"
+version_tuple = (0, 0, 2217)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2216")
+    pversion = V("0.0.post2217")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2104"
-data_version_tuple = (0, 0, 2104)
+data_version_str = "0.0.post2105"
+data_version_tuple = (0, 0, 2105)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2104")
+    pdata_version = V("0.0.post2105")
 except ImportError:
     pass
-data_git_hash = "ab4041c43977539323514b35bea1a10546d69b57"
-data_git_describe = "v0.0-2104-gab4041c4"
+data_git_hash = "1bbe27effeda63f34c4f5c06cc88da58f9c5a404"
+data_git_describe = "v0.0-2105-g1bbe27ef"
 data_git_msg = """\
-commit ab4041c43977539323514b35bea1a10546d69b57
-Author: Sam Shahrestani <sam.shahrestani@morsemicro.com>
-Date:   Sat Nov 13 08:36:42 2021 +1100
+commit 1bbe27effeda63f34c4f5c06cc88da58f9c5a404
+Author: Tom Roberts <tomroberts@lowrisc.org>
+Date:   Thu Nov 18 15:16:08 2021 +0000
 
-    Move NT branch addr calculation to ID stage
+    [dv/icache] Add missing window reset call
+    
+    The cache hit-rate tracking logic needs to be reset on every
+    invalidation.
+    
+    Signed-off-by: Tom Roberts <tomroberts@lowrisc.org>
 
 """
 
