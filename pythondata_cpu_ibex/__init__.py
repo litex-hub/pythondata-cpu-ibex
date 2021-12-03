@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2220"
-version_tuple = (0, 0, 2220)
+version_str = "0.0.post2226"
+version_tuple = (0, 0, 2226)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2220")
+    pversion = V("0.0.post2226")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2108"
-data_version_tuple = (0, 0, 2108)
+data_version_str = "0.0.post2114"
+data_version_tuple = (0, 0, 2114)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2108")
+    pdata_version = V("0.0.post2114")
 except ImportError:
     pass
-data_git_hash = "169785d0711335c94561a93146e069766eec138c"
-data_git_describe = "v0.0-2108-g169785d0"
+data_git_hash = "40dab87448db052b40758075289382fda7b41fc1"
+data_git_describe = "v0.0-2114-g40dab874"
 data_git_msg = """\
-commit 169785d0711335c94561a93146e069766eec138c
-Author: Michael Schaffner <msf@google.com>
-Date:   Wed Dec 1 18:19:15 2021 -0800
+commit 40dab87448db052b40758075289382fda7b41fc1
+Author: Pirmin Vogel <vogelpi@lowrisc.org>
+Date:   Fri Nov 26 16:40:33 2021 +0100
 
-    [secded] Switch to inverted ECC codes
+    [rtl, bitmanip] Clarify situation around zext.[bh] pseudo-instructions
     
-    Signed-off-by: Michael Schaffner <msf@google.com>
+    This is related to lowRISC/Ibex#1228.
+    
+    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
 
 """
 
