@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2249"
-version_tuple = (0, 0, 2249)
+version_str = "0.0.post2250"
+version_tuple = (0, 0, 2250)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2249")
+    pversion = V("0.0.post2250")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2132"
-data_version_tuple = (0, 0, 2132)
+data_version_str = "0.0.post2133"
+data_version_tuple = (0, 0, 2133)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2132")
+    pdata_version = V("0.0.post2133")
 except ImportError:
     pass
-data_git_hash = "410ffd349da1d4c13f77b208bb3b93adb154fac0"
-data_git_describe = "v0.0-2132-g410ffd34"
+data_git_hash = "a5c55f132e7fa13c37bcaf26934117f928d52822"
+data_git_describe = "v0.0-2133-ga5c55f13"
 data_git_msg = """\
-commit 410ffd349da1d4c13f77b208bb3b93adb154fac0
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Fri Dec 10 22:16:07 2021 +0100
+commit a5c55f132e7fa13c37bcaf26934117f928d52822
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Tue May 18 17:28:33 2021 +0100
 
-    [bitmanip, doc] Update info on bitmanip support and area numbers
-    
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    [dv] Add initial coverage plan
 
 """
 
