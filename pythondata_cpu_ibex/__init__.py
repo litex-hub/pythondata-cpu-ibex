@@ -4,30 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2254"
-version_tuple = (0, 0, 2254)
+version_str = "0.0.post2255"
+version_tuple = (0, 0, 2255)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2254")
+    pversion = V("0.0.post2255")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2136"
-data_version_tuple = (0, 0, 2136)
+data_version_str = "0.0.post2137"
+data_version_tuple = (0, 0, 2137)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2136")
+    pdata_version = V("0.0.post2137")
 except ImportError:
     pass
-data_git_hash = "756610800bfeee6c211c9b428539d694ea7e39b3"
-data_git_describe = "v0.0-2136-g75661080"
+data_git_hash = "448191dda28321c22bcca0e889d8f755924d5b7c"
+data_git_describe = "v0.0-2137-g448191dd"
 data_git_msg = """\
-commit 756610800bfeee6c211c9b428539d694ea7e39b3
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Mon Jan 10 17:30:13 2022 +0000
+commit 448191dda28321c22bcca0e889d8f755924d5b7c
+Author: Pirmin Vogel <vogelpi@lowrisc.org>
+Date:   Tue Jan 11 10:06:21 2022 +0100
 
-    [doc] Fix config and expand max-width of docs
+    [rtl] Use prim_flop/clock_mux2 primitives for lockstep reset generation
+    
+    These primitives can serve as anchor points for constraining backend
+    tools.
+    
+    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
 
 """
 
