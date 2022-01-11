@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2252"
-version_tuple = (0, 0, 2252)
+version_str = "0.0.post2254"
+version_tuple = (0, 0, 2254)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2252")
+    pversion = V("0.0.post2254")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2134"
-data_version_tuple = (0, 0, 2134)
+data_version_str = "0.0.post2136"
+data_version_tuple = (0, 0, 2136)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2134")
+    pdata_version = V("0.0.post2136")
 except ImportError:
     pass
-data_git_hash = "8c01488624b42066fcb268dcecf20b008146dbbd"
-data_git_describe = "v0.0-2134-g8c014886"
+data_git_hash = "756610800bfeee6c211c9b428539d694ea7e39b3"
+data_git_describe = "v0.0-2136-g75661080"
 data_git_msg = """\
-commit 8c01488624b42066fcb268dcecf20b008146dbbd
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Fri Jan 7 14:15:41 2022 +0100
+commit 756610800bfeee6c211c9b428539d694ea7e39b3
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Mon Jan 10 17:30:13 2022 +0000
 
-    [rtl] Document lockstep reset generation mechanism
-    
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    [doc] Fix config and expand max-width of docs
 
 """
 
