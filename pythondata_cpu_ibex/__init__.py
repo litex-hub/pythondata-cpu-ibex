@@ -4,11 +4,11 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2258"
-version_tuple = (0, 0, 2258)
+version_str = "0.0.post2259"
+version_tuple = (0, 0, 2259)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2258")
+    pversion = V("0.0.post2259")
 except ImportError:
     pass
 
@@ -37,11 +37,11 @@ Date:   Tue Jan 11 10:06:21 2022 +0100
 """
 
 # Tool version info
-tool_version_str = "0.0.post121"
-tool_version_tuple = (0, 0, 121)
+tool_version_str = "0.0.post122"
+tool_version_tuple = (0, 0, 122)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post121")
+    ptool_version = V("0.0.post122")
 except ImportError:
     pass
 
