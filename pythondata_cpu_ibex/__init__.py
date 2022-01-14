@@ -4,35 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2259"
-version_tuple = (0, 0, 2259)
+version_str = "0.0.post2262"
+version_tuple = (0, 0, 2262)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2259")
+    pversion = V("0.0.post2262")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2137"
-data_version_tuple = (0, 0, 2137)
+data_version_str = "0.0.post2140"
+data_version_tuple = (0, 0, 2140)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2137")
+    pdata_version = V("0.0.post2140")
 except ImportError:
     pass
-data_git_hash = "448191dda28321c22bcca0e889d8f755924d5b7c"
-data_git_describe = "v0.0-2137-g448191dd"
+data_git_hash = "e53b033962d39a09da574216a8c1813afccdd212"
+data_git_describe = "v0.0-2140-ge53b0339"
 data_git_msg = """\
-commit 448191dda28321c22bcca0e889d8f755924d5b7c
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Tue Jan 11 10:06:21 2022 +0100
+commit e53b033962d39a09da574216a8c1813afccdd212
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Thu Jan 13 18:17:30 2022 +0000
 
-    [rtl] Use prim_flop/clock_mux2 primitives for lockstep reset generation
+    [examples/fpga] Fix memory interface
     
-    These primitives can serve as anchor points for constraining backend
-    tools.
+    Logic driving instr_gnt/data_gnt violated Ibex memory protocol. It just
+    happened to work until a recent change.
     
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    Fixes #1500
 
 """
 
