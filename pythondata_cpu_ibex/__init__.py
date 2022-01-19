@@ -4,35 +4,41 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2262"
-version_tuple = (0, 0, 2262)
+version_str = "0.0.post2263"
+version_tuple = (0, 0, 2263)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2262")
+    pversion = V("0.0.post2263")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2140"
-data_version_tuple = (0, 0, 2140)
+data_version_str = "0.0.post2141"
+data_version_tuple = (0, 0, 2141)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2140")
+    pdata_version = V("0.0.post2141")
 except ImportError:
     pass
-data_git_hash = "e53b033962d39a09da574216a8c1813afccdd212"
-data_git_describe = "v0.0-2140-ge53b0339"
+data_git_hash = "187944c417f04c144b9730445052aec0fc93620a"
+data_git_describe = "v0.0-2141-g187944c4"
 data_git_msg = """\
-commit e53b033962d39a09da574216a8c1813afccdd212
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Jan 13 18:17:30 2022 +0000
+commit 187944c417f04c144b9730445052aec0fc93620a
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Thu Oct 7 18:04:56 2021 +0100
 
-    [examples/fpga] Fix memory interface
+    [icache] Add RAM Primitives for scrambling
     
-    Logic driving instr_gnt/data_gnt violated Ibex memory protocol. It just
-    happened to work until a recent change.
+    This commit includes switching to a scrambling RAM primitive for
+    ICache data and tag RAMs. Also introduces minor changes to ICache
+    to handle scrambling key valid signal.
     
-    Fixes #1500
+    It also includes a minor bug fix regarding not initializing
+    `fill_way_q` signal without ResetAll parameter. When the parameter
+    is not set and we have our first hit right after ICache enables,
+    the signal hangs.
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
