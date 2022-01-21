@@ -4,41 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2263"
-version_tuple = (0, 0, 2263)
+version_str = "0.0.post2264"
+version_tuple = (0, 0, 2264)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2263")
+    pversion = V("0.0.post2264")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2141"
-data_version_tuple = (0, 0, 2141)
+data_version_str = "0.0.post2142"
+data_version_tuple = (0, 0, 2142)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2141")
+    pdata_version = V("0.0.post2142")
 except ImportError:
     pass
-data_git_hash = "187944c417f04c144b9730445052aec0fc93620a"
-data_git_describe = "v0.0-2141-g187944c4"
+data_git_hash = "7c7e0e6d700cde858e740537fccbe9bc3d1144ee"
+data_git_describe = "v0.0-2142-g7c7e0e6d"
 data_git_msg = """\
-commit 187944c417f04c144b9730445052aec0fc93620a
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Thu Oct 7 18:04:56 2021 +0100
+commit 7c7e0e6d700cde858e740537fccbe9bc3d1144ee
+Author: Srikrishna Iyer <sriyer@google.com>
+Date:   Wed Jan 19 09:26:28 2022 -0800
 
-    [icache] Add RAM Primitives for scrambling
+    [ibex_tracer] Void cast function calls
     
-    This commit includes switching to a scrambling RAM primitive for
-    ICache data and tag RAMs. Also introduces minor changes to ICache
-    to handle scrambling key valid signal.
+    ...whose return value is ignored. This cleans up a compile time warning.
     
-    It also includes a minor bug fix regarding not initializing
-    `fill_way_q` signal without ResetAll parameter. When the parameter
-    is not set and we have our first hit right after ICache enables,
-    the signal hangs.
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Signed-off-by: Srikrishna Iyer <sriyer@google.com>
 
 """
 
