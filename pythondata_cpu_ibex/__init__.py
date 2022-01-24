@@ -4,34 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2264"
-version_tuple = (0, 0, 2264)
+version_str = "0.0.post2265"
+version_tuple = (0, 0, 2265)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2264")
+    pversion = V("0.0.post2265")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2142"
-data_version_tuple = (0, 0, 2142)
+data_version_str = "0.0.post2143"
+data_version_tuple = (0, 0, 2143)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2142")
+    pdata_version = V("0.0.post2143")
 except ImportError:
     pass
-data_git_hash = "7c7e0e6d700cde858e740537fccbe9bc3d1144ee"
-data_git_describe = "v0.0-2142-g7c7e0e6d"
+data_git_hash = "97fa5cf28024b882ffa1acbe81f6b6c865715840"
+data_git_describe = "v0.0-2143-g97fa5cf2"
 data_git_msg = """\
-commit 7c7e0e6d700cde858e740537fccbe9bc3d1144ee
-Author: Srikrishna Iyer <sriyer@google.com>
-Date:   Wed Jan 19 09:26:28 2022 -0800
+commit 97fa5cf28024b882ffa1acbe81f6b6c865715840
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Fri Jan 21 17:10:10 2022 +0000
 
-    [ibex_tracer] Void cast function calls
+    [rtl,doc] Add customisable PMP reset values
     
-    ...whose return value is ignored. This cleans up a compile time warning.
-    
-    Signed-off-by: Srikrishna Iyer <sriyer@google.com>
+    Fixes #1423
 
 """
 
