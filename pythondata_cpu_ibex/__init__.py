@@ -4,32 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2266"
-version_tuple = (0, 0, 2266)
+version_str = "0.0.post2267"
+version_tuple = (0, 0, 2267)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2266")
+    pversion = V("0.0.post2267")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2144"
-data_version_tuple = (0, 0, 2144)
+data_version_str = "0.0.post2145"
+data_version_tuple = (0, 0, 2145)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2144")
+    pdata_version = V("0.0.post2145")
 except ImportError:
     pass
-data_git_hash = "c0f67946f21838de36088b6a25573051b925207e"
-data_git_describe = "v0.0-2144-gc0f67946"
+data_git_hash = "69dfa6f8daf294c766a042c640a5830169e5b914"
+data_git_describe = "v0.0-2145-g69dfa6f8"
 data_git_msg = """\
-commit c0f67946f21838de36088b6a25573051b925207e
+commit 69dfa6f8daf294c766a042c640a5830169e5b914
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Mon Jan 24 18:46:46 2022 +0000
+Date:   Wed Jan 26 15:09:07 2022 +0000
 
-    [rtl,doc] Add double fault detection.
+    [ci] Add missing python3-dev dependency
     
-    Fixes #1117
+    Private CI is broken without this. The public CI runs on azure agents
+    which already have this installed.
 
 """
 
