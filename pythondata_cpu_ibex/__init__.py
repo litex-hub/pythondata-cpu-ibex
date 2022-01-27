@@ -4,33 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2267"
-version_tuple = (0, 0, 2267)
+version_str = "0.0.post2268"
+version_tuple = (0, 0, 2268)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2267")
+    pversion = V("0.0.post2268")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2145"
-data_version_tuple = (0, 0, 2145)
+data_version_str = "0.0.post2146"
+data_version_tuple = (0, 0, 2146)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2145")
+    pdata_version = V("0.0.post2146")
 except ImportError:
     pass
-data_git_hash = "69dfa6f8daf294c766a042c640a5830169e5b914"
-data_git_describe = "v0.0-2145-g69dfa6f8"
+data_git_hash = "46b7e07098f5900b45a37bc45fb8e7b779776b9d"
+data_git_describe = "v0.0-2146-g46b7e070"
 data_git_msg = """\
-commit 69dfa6f8daf294c766a042c640a5830169e5b914
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Jan 26 15:09:07 2022 +0000
+commit 46b7e07098f5900b45a37bc45fb8e7b779776b9d
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Thu Jan 27 09:21:51 2022 +0000
 
-    [ci] Add missing python3-dev dependency
-    
-    Private CI is broken without this. The public CI runs on azure agents
-    which already have this installed.
+    [doc] Fix RV32B enum description
 
 """
 
