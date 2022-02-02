@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2270"
-version_tuple = (0, 0, 2270)
+version_str = "0.0.post2272"
+version_tuple = (0, 0, 2272)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2270")
+    pversion = V("0.0.post2272")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2146"
-data_version_tuple = (0, 0, 2146)
+data_version_str = "0.0.post2148"
+data_version_tuple = (0, 0, 2148)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2146")
+    pdata_version = V("0.0.post2148")
 except ImportError:
     pass
-data_git_hash = "46b7e07098f5900b45a37bc45fb8e7b779776b9d"
-data_git_describe = "v0.0-2146-g46b7e070"
+data_git_hash = "4482af17898046d7249d63fd18b92614b7598552"
+data_git_describe = "v0.0-2148-g4482af17"
 data_git_msg = """\
-commit 46b7e07098f5900b45a37bc45fb8e7b779776b9d
+commit 4482af17898046d7249d63fd18b92614b7598552
 Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Thu Jan 27 09:21:51 2022 +0000
+Date:   Wed Feb 2 09:50:31 2022 +0000
 
-    [doc] Fix RV32B enum description
+    [doc] Fix inline literal syntax in icache.rst
 
 """
 
