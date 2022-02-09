@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2272"
-version_tuple = (0, 0, 2272)
+version_str = "0.0.post2273"
+version_tuple = (0, 0, 2273)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2272")
+    pversion = V("0.0.post2273")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2148"
-data_version_tuple = (0, 0, 2148)
+data_version_str = "0.0.post2149"
+data_version_tuple = (0, 0, 2149)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2148")
+    pdata_version = V("0.0.post2149")
 except ImportError:
     pass
-data_git_hash = "4482af17898046d7249d63fd18b92614b7598552"
-data_git_describe = "v0.0-2148-g4482af17"
+data_git_hash = "bbc48a0c34342935b5bd326bb8351168d6258ec7"
+data_git_describe = "v0.0-2149-gbbc48a0c"
 data_git_msg = """\
-commit 4482af17898046d7249d63fd18b92614b7598552
-Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Wed Feb 2 09:50:31 2022 +0000
+commit bbc48a0c34342935b5bd326bb8351168d6258ec7
+Author: fabian <36959980+ftorres16@users.noreply.github.com>
+Date:   Tue Feb 8 18:53:26 2022 -0500
 
-    [doc] Fix inline literal syntax in icache.rst
+    Add srecord as simple_system prerequisite
 
 """
 
