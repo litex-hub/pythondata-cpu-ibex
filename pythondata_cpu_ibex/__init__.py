@@ -4,30 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2275"
-version_tuple = (0, 0, 2275)
+version_str = "0.0.post2276"
+version_tuple = (0, 0, 2276)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2275")
+    pversion = V("0.0.post2276")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2149"
-data_version_tuple = (0, 0, 2149)
+data_version_str = "0.0.post2150"
+data_version_tuple = (0, 0, 2150)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2149")
+    pdata_version = V("0.0.post2150")
 except ImportError:
     pass
-data_git_hash = "bbc48a0c34342935b5bd326bb8351168d6258ec7"
-data_git_describe = "v0.0-2149-gbbc48a0c"
+data_git_hash = "5691ef1a45d035105dd4179023ac3befde2e74b3"
+data_git_describe = "v0.0-2150-g5691ef1a"
 data_git_msg = """\
-commit bbc48a0c34342935b5bd326bb8351168d6258ec7
-Author: fabian <36959980+ftorres16@users.noreply.github.com>
-Date:   Tue Feb 8 18:53:26 2022 -0500
+commit 5691ef1a45d035105dd4179023ac3befde2e74b3
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Tue Feb 15 13:22:10 2022 +0000
 
-    Add srecord as simple_system prerequisite
+    [ci] Bump RISC-V toolchain version to get bitmanip support
+    
+    This version should have support for bitmanip 1.00+0.93, the version
+    that we target in the RTL.
 
 """
 
