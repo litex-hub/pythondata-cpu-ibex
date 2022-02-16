@@ -4,36 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2277"
-version_tuple = (0, 0, 2277)
+version_str = "0.0.post2279"
+version_tuple = (0, 0, 2279)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2277")
+    pversion = V("0.0.post2279")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2151"
-data_version_tuple = (0, 0, 2151)
+data_version_str = "0.0.post2153"
+data_version_tuple = (0, 0, 2153)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2151")
+    pdata_version = V("0.0.post2153")
 except ImportError:
     pass
-data_git_hash = "6f6cafaa4d09d0c227966645b00ce0d34fd03175"
-data_git_describe = "v0.0-2151-g6f6cafaa"
+data_git_hash = "336173b4d953560e9d0c9e6cb9ffefbc02d336b4"
+data_git_describe = "v0.0-2153-g336173b4"
 data_git_msg = """\
-commit 6f6cafaa4d09d0c227966645b00ce0d34fd03175
+commit 336173b4d953560e9d0c9e6cb9ffefbc02d336b4
 Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Tue Feb 15 15:50:46 2022 +0000
+Date:   Tue Feb 15 17:50:34 2022 +0000
 
-    [ci] Bump Spike version to get cosim implementation
-    
-    This will only have an effect on our private CI, which picks up this
-    spike build from the toolnas. The build is the ibex_cosim branch,
-    which contains the stuff we need for the recent cosim support. It's
-    also new enough to support the v1.0+0.93 bitmanip flavour that we
-    support in the RTL.
+    Re-enable bitmanip tests
 
 """
 
