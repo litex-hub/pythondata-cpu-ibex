@@ -4,30 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2285"
-version_tuple = (0, 0, 2285)
+version_str = "0.0.post2286"
+version_tuple = (0, 0, 2286)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2285")
+    pversion = V("0.0.post2286")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2159"
-data_version_tuple = (0, 0, 2159)
+data_version_str = "0.0.post2160"
+data_version_tuple = (0, 0, 2160)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2159")
+    pdata_version = V("0.0.post2160")
 except ImportError:
     pass
-data_git_hash = "302bb6516166b81de80858c5b045680483797328"
-data_git_describe = "v0.0-2159-g302bb651"
+data_git_hash = "3475b9106c21c99d0289034bc1e0736c6833ef59"
+data_git_describe = "v0.0-2160-g3475b910"
 data_git_msg = """\
-commit 302bb6516166b81de80858c5b045680483797328
+commit 3475b9106c21c99d0289034bc1e0736c6833ef59
 Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Thu Feb 17 14:58:39 2022 +0000
+Date:   Fri Feb 18 12:48:50 2022 +0000
 
-    [doc] Update bitmanip list in integration.rst
+    Refer to a specific tag for the ibex-cosim version of Spike
+    
+    We're going to want to make a couple more releases of Spike, cleaving
+    a bit closer to the upstream repository. Let's be explicit about which
+    version people should get.
 
 """
 
