@@ -4,34 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2286"
-version_tuple = (0, 0, 2286)
+version_str = "0.0.post2287"
+version_tuple = (0, 0, 2287)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2286")
+    pversion = V("0.0.post2287")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2160"
-data_version_tuple = (0, 0, 2160)
+data_version_str = "0.0.post2161"
+data_version_tuple = (0, 0, 2161)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2160")
+    pdata_version = V("0.0.post2161")
 except ImportError:
     pass
-data_git_hash = "3475b9106c21c99d0289034bc1e0736c6833ef59"
-data_git_describe = "v0.0-2160-g3475b910"
+data_git_hash = "b18eceba81c1427778aa6047e8a5b0c9225f8277"
+data_git_describe = "v0.0-2161-gb18eceba"
 data_git_msg = """\
-commit 3475b9106c21c99d0289034bc1e0736c6833ef59
-Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Fri Feb 18 12:48:50 2022 +0000
+commit b18eceba81c1427778aa6047e8a5b0c9225f8277
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Thu Feb 17 18:39:07 2022 +0000
 
-    Refer to a specific tag for the ibex-cosim version of Spike
+    [rtl] Switch to multi-bit fetch enable
     
-    We're going to want to make a couple more releases of Spike, cleaving
-    a bit closer to the upstream repository. Let's be explicit about which
-    version people should get.
+    The multi-bit enable aids security hardening. For non secure Ibex all
+    but the bottom bit is ignored so it is effectively a single bit enable.
 
 """
 
