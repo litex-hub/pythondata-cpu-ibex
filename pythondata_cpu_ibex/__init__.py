@@ -4,33 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2287"
-version_tuple = (0, 0, 2287)
+version_str = "0.0.post2288"
+version_tuple = (0, 0, 2288)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2287")
+    pversion = V("0.0.post2288")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2161"
-data_version_tuple = (0, 0, 2161)
+data_version_str = "0.0.post2162"
+data_version_tuple = (0, 0, 2162)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2161")
+    pdata_version = V("0.0.post2162")
 except ImportError:
     pass
-data_git_hash = "b18eceba81c1427778aa6047e8a5b0c9225f8277"
-data_git_describe = "v0.0-2161-gb18eceba"
+data_git_hash = "d3bd063662ed278cacdb9680baacddf5688955aa"
+data_git_describe = "v0.0-2162-gd3bd0636"
 data_git_msg = """\
-commit b18eceba81c1427778aa6047e8a5b0c9225f8277
+commit d3bd063662ed278cacdb9680baacddf5688955aa
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Feb 17 18:39:07 2022 +0000
+Date:   Mon Feb 21 17:54:19 2022 +0000
 
-    [rtl] Switch to multi-bit fetch enable
+    [rtl] Add prim_buf for security critical signals
     
-    The multi-bit enable aids security hardening. For non secure Ibex all
-    but the bottom bit is ignored so it is effectively a single bit enable.
+    A sufficiently agressive optimiser may optimise these away as under
+    normal functioning they effectively don't do anything. They are purely
+    to detect the presence of induced faults.
 
 """
 
