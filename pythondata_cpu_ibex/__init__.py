@@ -4,34 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2288"
-version_tuple = (0, 0, 2288)
+version_str = "0.0.post2289"
+version_tuple = (0, 0, 2289)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2288")
+    pversion = V("0.0.post2289")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2162"
-data_version_tuple = (0, 0, 2162)
+data_version_str = "0.0.post2163"
+data_version_tuple = (0, 0, 2163)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2162")
+    pdata_version = V("0.0.post2163")
 except ImportError:
     pass
-data_git_hash = "d3bd063662ed278cacdb9680baacddf5688955aa"
-data_git_describe = "v0.0-2162-gd3bd0636"
+data_git_hash = "58bc6f27ab28ce52e4ae35fd455efb15e1adc645"
+data_git_describe = "v0.0-2163-g58bc6f27"
 data_git_msg = """\
-commit d3bd063662ed278cacdb9680baacddf5688955aa
+commit 58bc6f27ab28ce52e4ae35fd455efb15e1adc645
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Mon Feb 21 17:54:19 2022 +0000
+Date:   Tue Feb 22 16:55:29 2022 +0000
 
-    [rtl] Add prim_buf for security critical signals
+    [doc] Add details about icache latency to DIT docs
     
-    A sufficiently agressive optimiser may optimise these away as under
-    normal functioning they effectively don't do anything. They are purely
-    to detect the presence of induced faults.
+    When the icache is enabled and data independent timing is required
+    variable fetch latency due to cache hit or miss may introduce
+    undesirable timing behaviour. This adds explicit mention of this to the
+    documentation.
 
 """
 
