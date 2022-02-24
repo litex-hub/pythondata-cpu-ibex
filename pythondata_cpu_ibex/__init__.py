@@ -4,35 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2289"
-version_tuple = (0, 0, 2289)
+version_str = "0.0.post2290"
+version_tuple = (0, 0, 2290)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2289")
+    pversion = V("0.0.post2290")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2163"
-data_version_tuple = (0, 0, 2163)
+data_version_str = "0.0.post2164"
+data_version_tuple = (0, 0, 2164)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2163")
+    pdata_version = V("0.0.post2164")
 except ImportError:
     pass
-data_git_hash = "58bc6f27ab28ce52e4ae35fd455efb15e1adc645"
-data_git_describe = "v0.0-2163-g58bc6f27"
+data_git_hash = "0f69d4972c5184e8c8de41c4002fb914ef3ce10f"
+data_git_describe = "v0.0-2164-g0f69d497"
 data_git_msg = """\
-commit 58bc6f27ab28ce52e4ae35fd455efb15e1adc645
+commit 0f69d4972c5184e8c8de41c4002fb914ef3ce10f
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Tue Feb 22 16:55:29 2022 +0000
+Date:   Thu Feb 24 12:59:21 2022 +0000
 
-    [doc] Add details about icache latency to DIT docs
+    [dv] Add X assertions for top-level IO
     
-    When the icache is enabled and data independent timing is required
-    variable fetch latency due to cache hit or miss may introduce
-    undesirable timing behaviour. This adds explicit mention of this to the
-    documentation.
+    Ensure all top-level inputs and outputs are known when they are
+    expected to be known.
 
 """
 
