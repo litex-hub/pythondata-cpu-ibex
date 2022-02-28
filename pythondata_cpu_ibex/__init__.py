@@ -4,33 +4,39 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2290"
-version_tuple = (0, 0, 2290)
+version_str = "0.0.post2291"
+version_tuple = (0, 0, 2291)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2290")
+    pversion = V("0.0.post2291")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2164"
-data_version_tuple = (0, 0, 2164)
+data_version_str = "0.0.post2165"
+data_version_tuple = (0, 0, 2165)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2164")
+    pdata_version = V("0.0.post2165")
 except ImportError:
     pass
-data_git_hash = "0f69d4972c5184e8c8de41c4002fb914ef3ce10f"
-data_git_describe = "v0.0-2164-g0f69d497"
+data_git_hash = "bdf2f2b44076c8e9a00fa6dcbee0a409026e5c3a"
+data_git_describe = "v0.0-2165-gbdf2f2b4"
 data_git_msg = """\
-commit 0f69d4972c5184e8c8de41c4002fb914ef3ce10f
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Feb 24 12:59:21 2022 +0000
+commit bdf2f2b44076c8e9a00fa6dcbee0a409026e5c3a
+Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
+Date:   Wed Feb 23 16:09:57 2022 +0000
 
-    [dv] Add X assertions for top-level IO
+    [ibex, dv] Added agent configuration for ibex_mem_intf_response_agent
     
-    Ensure all top-level inputs and outputs are known when they are
-    expected to be known.
+    Defining agent configuration for any agent is a standard UVM flow and is
+    a cleaner flow for defining delay between driving sequence items,
+    passing virtual interface etc.
+    
+    Agent configuration has been added to the existing agent to make delay
+    configuration more flexible in the future.
+    
+    Signed-off-by: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
 
 """
 
