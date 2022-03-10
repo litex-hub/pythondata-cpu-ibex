@@ -4,37 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2298"
-version_tuple = (0, 0, 2298)
+version_str = "0.0.post2300"
+version_tuple = (0, 0, 2300)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2298")
+    pversion = V("0.0.post2300")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2172"
-data_version_tuple = (0, 0, 2172)
+data_version_str = "0.0.post2174"
+data_version_tuple = (0, 0, 2174)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2172")
+    pdata_version = V("0.0.post2174")
 except ImportError:
     pass
-data_git_hash = "e6eb4fb11d8e1626e01ca76052352696f476586e"
-data_git_describe = "v0.0-2172-ge6eb4fb1"
+data_git_hash = "0a8b4a4f61caface4a64f059a669e9478555a424"
+data_git_describe = "v0.0-2174-g0a8b4a4f"
 data_git_msg = """\
-commit e6eb4fb11d8e1626e01ca76052352696f476586e
+commit 0a8b4a4f61caface4a64f059a669e9478555a424
 Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Tue Mar 1 10:15:17 2022 +0000
+Date:   Tue Mar 8 16:20:28 2022 +0000
 
-    [ibex, dv] Added a sequence to toggle fetch_enable_i pin
-    
-    Ibex has a top-level `fetch_enable_i` input. When set to on (noting it's a multi-bit signal for
-    security hardening though only the bottom bit is looked at for non secure ibex) Ibex executes
-    normally. When set to off Ibex will stop executing. Randomly toggling it should have no functional
-    effect on Ibex's behaviour.
-    The fetch enable sequence will randomly toggle the value of `fetch_enable_i` with a configurable
-    bias between the 'On' value and all other values.
+    [icache, dv] Made changes required to make TB compatible with Xcelium
 
 """
 
