@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2300"
-version_tuple = (0, 0, 2300)
+version_str = "0.0.post2301"
+version_tuple = (0, 0, 2301)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2300")
+    pversion = V("0.0.post2301")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2174"
-data_version_tuple = (0, 0, 2174)
+data_version_str = "0.0.post2175"
+data_version_tuple = (0, 0, 2175)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2174")
+    pdata_version = V("0.0.post2175")
 except ImportError:
     pass
-data_git_hash = "0a8b4a4f61caface4a64f059a669e9478555a424"
-data_git_describe = "v0.0-2174-g0a8b4a4f"
+data_git_hash = "094451a9489d631895101a5de19a26cd4cf4fd7d"
+data_git_describe = "v0.0-2175-g094451a9"
 data_git_msg = """\
-commit 0a8b4a4f61caface4a64f059a669e9478555a424
-Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Tue Mar 8 16:20:28 2022 +0000
+commit 094451a9489d631895101a5de19a26cd4cf4fd7d
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Thu Mar 10 17:59:51 2022 +0000
 
-    [icache, dv] Made changes required to make TB compatible with Xcelium
+    [doc] Add examples info to README
 
 """
 
