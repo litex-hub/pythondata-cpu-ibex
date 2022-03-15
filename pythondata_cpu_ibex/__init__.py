@@ -4,30 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2301"
-version_tuple = (0, 0, 2301)
+version_str = "0.0.post2302"
+version_tuple = (0, 0, 2302)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2301")
+    pversion = V("0.0.post2302")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2175"
-data_version_tuple = (0, 0, 2175)
+data_version_str = "0.0.post2176"
+data_version_tuple = (0, 0, 2176)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2175")
+    pdata_version = V("0.0.post2176")
 except ImportError:
     pass
-data_git_hash = "094451a9489d631895101a5de19a26cd4cf4fd7d"
-data_git_describe = "v0.0-2175-g094451a9"
+data_git_hash = "2f1e188346decdef988ee7cfafc7d44e8d256e7c"
+data_git_describe = "v0.0-2176-g2f1e1883"
 data_git_msg = """\
-commit 094451a9489d631895101a5de19a26cd4cf4fd7d
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Mar 10 17:59:51 2022 +0000
+commit 2f1e188346decdef988ee7cfafc7d44e8d256e7c
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Thu Mar 10 12:45:53 2022 +0000
 
-    [doc] Add examples info to README
+    Fix port list in top_artya7 example
+    
+    The "alert_major" port was split into "internal" and "bus" parts back
+    in commit 9943f9a. Update the example to match.
 
 """
 
