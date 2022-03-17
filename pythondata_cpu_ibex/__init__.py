@@ -4,38 +4,36 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2304"
-version_tuple = (0, 0, 2304)
+version_str = "0.0.post2306"
+version_tuple = (0, 0, 2306)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2304")
+    pversion = V("0.0.post2306")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2178"
-data_version_tuple = (0, 0, 2178)
+data_version_str = "0.0.post2180"
+data_version_tuple = (0, 0, 2180)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2178")
+    pdata_version = V("0.0.post2180")
 except ImportError:
     pass
-data_git_hash = "be5fffa656a3a153ae5bb8786f43540179632d77"
-data_git_describe = "v0.0-2178-gbe5fffa6"
+data_git_hash = "9ef123f2b1c673f61d3aa4b8f22d6760f3b079f7"
+data_git_describe = "v0.0-2180-g9ef123f2"
 data_git_msg = """\
-commit be5fffa656a3a153ae5bb8786f43540179632d77
+commit 9ef123f2b1c673f61d3aa4b8f22d6760f3b079f7
 Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Wed Mar 16 12:26:16 2022 +0000
+Date:   Tue Mar 15 12:01:04 2022 +0000
 
-    [icache, dv] Fixed regression failure in ibex_icache_back_line
+    [icache, dv] Removed support for single clock cycle PMP error response
     
-    There was issue with rtespect to calculating number of instructions per
-    word and this commit fixes that issue.
-    
-    Number of instructions per word = 1/4*1 + 3/4(1/4*3/2 + 3/4*2) = 53/32.
-    Earlier th5s was calculated as 7/4.
-    Ideal window length needed to calculate fetch ratio percentage is
-    calculated as 53/32*C*2 = 848. Earlier it was calculated to be 300.
+    Earlier the design supported single clock cycle error responses from PMP
+    block whenever a read was done from blocked memory. Now there is at
+    least one clock cycle delay after the request has been granted for the
+    error to be asserted. Therefore, this commit removes the support for
+    single clock cycle PMP error response.
 
 """
 
