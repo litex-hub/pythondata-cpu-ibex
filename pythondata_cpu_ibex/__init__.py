@@ -4,41 +4,38 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2303"
-version_tuple = (0, 0, 2303)
+version_str = "0.0.post2304"
+version_tuple = (0, 0, 2304)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2303")
+    pversion = V("0.0.post2304")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2177"
-data_version_tuple = (0, 0, 2177)
+data_version_str = "0.0.post2178"
+data_version_tuple = (0, 0, 2178)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2177")
+    pdata_version = V("0.0.post2178")
 except ImportError:
     pass
-data_git_hash = "f7724adcc76bea0bd909c2ac28cf11226d5cbefe"
-data_git_describe = "v0.0-2177-gf7724adc"
+data_git_hash = "be5fffa656a3a153ae5bb8786f43540179632d77"
+data_git_describe = "v0.0-2178-gbe5fffa6"
 data_git_msg = """\
-commit f7724adcc76bea0bd909c2ac28cf11226d5cbefe
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Mar 11 17:10:02 2022 +0000
+commit be5fffa656a3a153ae5bb8786f43540179632d77
+Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
+Date:   Wed Mar 16 12:26:16 2022 +0000
 
-    [rtl] Move memory ECC checks and generation into core
+    [icache, dv] Fixed regression failure in ibex_icache_back_line
     
-    Previously integrity checks for incoming memory reads and integrity
-    generation for outgoing memory writes were handled within ibex_lockstep
-    and weren't duplicated.
+    There was issue with rtespect to calculating number of instructions per
+    word and this commit fixes that issue.
     
-    This moves the integrity checks and generation into the core so they are
-    replicated and checked as part of the lockstep mechanism.
-    
-    Additionally it generates a bus error on any memory integrity check
-    failure. This will result in Ibex taking an exception if any data read
-    or instruction fetch has bad integrity.
+    Number of instructions per word = 1/4*1 + 3/4(1/4*3/2 + 3/4*2) = 53/32.
+    Earlier th5s was calculated as 7/4.
+    Ideal window length needed to calculate fetch ratio percentage is
+    calculated as 53/32*C*2 = 848. Earlier it was calculated to be 300.
 
 """
 
