@@ -4,36 +4,41 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2306"
-version_tuple = (0, 0, 2306)
+version_str = "0.0.post2307"
+version_tuple = (0, 0, 2307)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2306")
+    pversion = V("0.0.post2307")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2180"
-data_version_tuple = (0, 0, 2180)
+data_version_str = "0.0.post2181"
+data_version_tuple = (0, 0, 2181)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2180")
+    pdata_version = V("0.0.post2181")
 except ImportError:
     pass
-data_git_hash = "9ef123f2b1c673f61d3aa4b8f22d6760f3b079f7"
-data_git_describe = "v0.0-2180-g9ef123f2"
+data_git_hash = "6bb67e20f8a7c670e4baf5fe8f130a5ef360f411"
+data_git_describe = "v0.0-2181-g6bb67e20"
 data_git_msg = """\
-commit 9ef123f2b1c673f61d3aa4b8f22d6760f3b079f7
+commit 6bb67e20f8a7c670e4baf5fe8f130a5ef360f411
 Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Tue Mar 15 12:01:04 2022 +0000
+Date:   Mon Mar 14 16:55:58 2022 +0000
 
-    [icache, dv] Removed support for single clock cycle PMP error response
+    [icache, dv] Added scrambling agent to verify scrambling in RAMs
     
-    Earlier the design supported single clock cycle error responses from PMP
-    block whenever a read was done from blocked memory. Now there is at
-    least one clock cycle delay after the request has been granted for the
-    error to be asserted. Therefore, this commit removes the support for
-    single clock cycle PMP error response.
+    This commit adds a new scrambling agent to drive scrambling key and
+    valid to the data and tag memory interfaces.
+    
+    Update lowrisc_ip to lowRISC/opentitan@7c4f8b3fd
+    
+    Update code from upstream repository
+    https://github.com/lowRISC/opentitan to revision
+    7c4f8b3fde4bb625ac3330ff52d3f66507190fe5
+    
+    Signed-off-by: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
 
 """
 
