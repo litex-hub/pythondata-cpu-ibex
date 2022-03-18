@@ -4,41 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2307"
-version_tuple = (0, 0, 2307)
+version_str = "0.0.post2309"
+version_tuple = (0, 0, 2309)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2307")
+    pversion = V("0.0.post2309")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2181"
-data_version_tuple = (0, 0, 2181)
+data_version_str = "0.0.post2183"
+data_version_tuple = (0, 0, 2183)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2181")
+    pdata_version = V("0.0.post2183")
 except ImportError:
     pass
-data_git_hash = "6bb67e20f8a7c670e4baf5fe8f130a5ef360f411"
-data_git_describe = "v0.0-2181-g6bb67e20"
+data_git_hash = "96d8aa6c1522eae45b4ec0d03424c9c753544fe7"
+data_git_describe = "v0.0-2183-g96d8aa6c"
 data_git_msg = """\
-commit 6bb67e20f8a7c670e4baf5fe8f130a5ef360f411
-Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Mon Mar 14 16:55:58 2022 +0000
+commit 96d8aa6c1522eae45b4ec0d03424c9c753544fe7
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Thu Mar 17 22:10:06 2022 +0000
 
-    [icache, dv] Added scrambling agent to verify scrambling in RAMs
+    Update spike_cosim.cc to be able to build against newer Spikes
     
-    This commit adds a new scrambling agent to drive scrambling key and
-    valid to the data and tag memory interfaces.
-    
-    Update lowrisc_ip to lowRISC/opentitan@7c4f8b3fd
-    
-    Update code from upstream repository
-    https://github.com/lowRISC/opentitan to revision
-    7c4f8b3fde4bb625ac3330ff52d3f66507190fe5
-    
-    Signed-off-by: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
+    This should work with versions ibex-cosim-v0.1 and ibex-cosim-v0.2.
 
 """
 
