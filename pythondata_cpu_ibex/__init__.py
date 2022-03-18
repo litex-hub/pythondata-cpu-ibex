@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2309"
-version_tuple = (0, 0, 2309)
+version_str = "0.0.post2310"
+version_tuple = (0, 0, 2310)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2309")
+    pversion = V("0.0.post2310")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2183"
-data_version_tuple = (0, 0, 2183)
+data_version_str = "0.0.post2184"
+data_version_tuple = (0, 0, 2184)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2183")
+    pdata_version = V("0.0.post2184")
 except ImportError:
     pass
-data_git_hash = "96d8aa6c1522eae45b4ec0d03424c9c753544fe7"
-data_git_describe = "v0.0-2183-g96d8aa6c"
+data_git_hash = "07a49045fb303cf44f902485acc07f8172ff615a"
+data_git_describe = "v0.0-2184-g07a49045"
 data_git_msg = """\
-commit 96d8aa6c1522eae45b4ec0d03424c9c753544fe7
-Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Thu Mar 17 22:10:06 2022 +0000
+commit 07a49045fb303cf44f902485acc07f8172ff615a
+Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
+Date:   Mon Mar 14 18:09:21 2022 +0000
 
-    Update spike_cosim.cc to be able to build against newer Spikes
+    [ibex, dv] Removed extra hierarchy of ic_top inside icache TB
     
-    This should work with versions ibex-cosim-v0.1 and ibex-cosim-v0.2.
+    This commit removes extra hierarchy of ic_top inside icache TB and moves
+    the scrambling request generation logic and instantiation of data and
+    tag RAMs to tb.
 
 """
 
