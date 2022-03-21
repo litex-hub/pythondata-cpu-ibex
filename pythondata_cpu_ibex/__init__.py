@@ -4,34 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2310"
-version_tuple = (0, 0, 2310)
+version_str = "0.0.post2311"
+version_tuple = (0, 0, 2311)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2310")
+    pversion = V("0.0.post2311")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2184"
-data_version_tuple = (0, 0, 2184)
+data_version_str = "0.0.post2185"
+data_version_tuple = (0, 0, 2185)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2184")
+    pdata_version = V("0.0.post2185")
 except ImportError:
     pass
-data_git_hash = "07a49045fb303cf44f902485acc07f8172ff615a"
-data_git_describe = "v0.0-2184-g07a49045"
+data_git_hash = "f44ae900401224c88ed671a5aad738379e3dd11a"
+data_git_describe = "v0.0-2185-gf44ae900"
 data_git_msg = """\
-commit 07a49045fb303cf44f902485acc07f8172ff615a
-Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Mon Mar 14 18:09:21 2022 +0000
+commit f44ae900401224c88ed671a5aad738379e3dd11a
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Fri Mar 18 13:03:18 2022 +0000
 
-    [ibex, dv] Removed extra hierarchy of ic_top inside icache TB
-    
-    This commit removes extra hierarchy of ic_top inside icache TB and moves
-    the scrambling request generation logic and instantiation of data and
-    tag RAMs to tb.
+    [doc] Update coverage plan
 
 """
 
