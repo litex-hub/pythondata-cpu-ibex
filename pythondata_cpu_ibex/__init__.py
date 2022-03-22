@@ -4,30 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2311"
-version_tuple = (0, 0, 2311)
+version_str = "0.0.post2315"
+version_tuple = (0, 0, 2315)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2311")
+    pversion = V("0.0.post2315")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2185"
-data_version_tuple = (0, 0, 2185)
+data_version_str = "0.0.post2189"
+data_version_tuple = (0, 0, 2189)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2185")
+    pdata_version = V("0.0.post2189")
 except ImportError:
     pass
-data_git_hash = "f44ae900401224c88ed671a5aad738379e3dd11a"
-data_git_describe = "v0.0-2185-gf44ae900"
+data_git_hash = "36d77ab0c5ba7d268bd7b7638c0dd68e1f2c0124"
+data_git_describe = "v0.0-2189-g36d77ab0"
 data_git_msg = """\
-commit f44ae900401224c88ed671a5aad738379e3dd11a
+commit 36d77ab0c5ba7d268bd7b7638c0dd68e1f2c0124
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Mar 18 13:03:18 2022 +0000
+Date:   Fri Mar 18 19:27:57 2022 +0000
 
-    [doc] Update coverage plan
+    [ci] Fix coremark cosim job
+    
+    Actually fail the job if there's an error
 
 """
 
