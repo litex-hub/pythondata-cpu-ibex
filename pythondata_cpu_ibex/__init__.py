@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2315"
-version_tuple = (0, 0, 2315)
+version_str = "0.0.post2320"
+version_tuple = (0, 0, 2320)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2315")
+    pversion = V("0.0.post2320")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2189"
-data_version_tuple = (0, 0, 2189)
+data_version_str = "0.0.post2194"
+data_version_tuple = (0, 0, 2194)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2189")
+    pdata_version = V("0.0.post2194")
 except ImportError:
     pass
-data_git_hash = "36d77ab0c5ba7d268bd7b7638c0dd68e1f2c0124"
-data_git_describe = "v0.0-2189-g36d77ab0"
+data_git_hash = "72acfe2fcae98dd4af0deccdfd2c41e04b06d58d"
+data_git_describe = "v0.0-2194-g72acfe2f"
 data_git_msg = """\
-commit 36d77ab0c5ba7d268bd7b7638c0dd68e1f2c0124
+commit 72acfe2fcae98dd4af0deccdfd2c41e04b06d58d
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Mar 18 19:27:57 2022 +0000
+Date:   Fri Mar 25 09:02:58 2022 +0000
 
-    [ci] Fix coremark cosim job
+    [fcov, doc] Update coverage plan
     
-    Actually fail the job if there's an error
+    Added coverpoint and cross names to relevant plan entries so plan is up
+    to date with implemented coverage. Also some minor changes to remove
+    plan entries that are no longer required.
 
 """
 
