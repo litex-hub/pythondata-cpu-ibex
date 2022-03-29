@@ -4,37 +4,40 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2321"
-version_tuple = (0, 0, 2321)
+version_str = "0.0.post2323"
+version_tuple = (0, 0, 2323)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2321")
+    pversion = V("0.0.post2323")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2195"
-data_version_tuple = (0, 0, 2195)
+data_version_str = "0.0.post2197"
+data_version_tuple = (0, 0, 2197)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2195")
+    pdata_version = V("0.0.post2197")
 except ImportError:
     pass
-data_git_hash = "98931c7dff32c3177c8b3ad45e558d4f04320ef2"
-data_git_describe = "v0.0-2195-g98931c7d"
+data_git_hash = "2317bb7fc0e331e5c3939c148ed0ada109211330"
+data_git_describe = "v0.0-2197-g2317bb7f"
 data_git_msg = """\
-commit 98931c7dff32c3177c8b3ad45e558d4f04320ef2
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Mon Mar 28 14:52:44 2022 +0100
+commit 2317bb7fc0e331e5c3939c148ed0ada109211330
+Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
+Date:   Fri Mar 18 14:56:07 2022 +0000
 
-    Remove logfile param in Ibex RTL Sim for Xcelium
+    [icache, dv] Added ram interface and enables ecc error injection.
     
-    Fixes a bug where both Xcelium and Python open the same sim.log file and race to
-    write the simulation results into it. This change makes Python the sole writer of this
-    file using the captured stdout/stderr from the subprocess.run call in
-    run_rtl.py.
+    This commit adds ibex_icache_ram_if to connect between DUT and tag /
+    data RAMs.
     
-    This bug was also previously present for VCS but was fixed in 90ff7ca6c.
+    This interface injects 1 or 2 bit error on rdata if enable_ecc_errors
+    bit is set. It also checks that ecc_err_o pin is asserted by DUT
+    whenever an ecc error is injected.
+    
+    ibex_icache_ecc_vseq and ibex_icache_base_vseq have been modified to
+    inject ecc errors through the ram interface.
 
 """
 
