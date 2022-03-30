@@ -4,40 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2323"
-version_tuple = (0, 0, 2323)
+version_str = "0.0.post2324"
+version_tuple = (0, 0, 2324)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2323")
+    pversion = V("0.0.post2324")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2197"
-data_version_tuple = (0, 0, 2197)
+data_version_str = "0.0.post2198"
+data_version_tuple = (0, 0, 2198)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2197")
+    pdata_version = V("0.0.post2198")
 except ImportError:
     pass
-data_git_hash = "2317bb7fc0e331e5c3939c148ed0ada109211330"
-data_git_describe = "v0.0-2197-g2317bb7f"
+data_git_hash = "6884f6b990fd9f127af0cc6e289ad8bc57f7b909"
+data_git_describe = "v0.0-2198-g6884f6b9"
 data_git_msg = """\
-commit 2317bb7fc0e331e5c3939c148ed0ada109211330
-Author: Prajwala Puttappa <prajwalaputtappa@lowrisc.org>
-Date:   Fri Mar 18 14:56:07 2022 +0000
+commit 6884f6b990fd9f127af0cc6e289ad8bc57f7b909
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Tue Mar 29 10:31:22 2022 +0100
 
-    [icache, dv] Added ram interface and enables ecc error injection.
+    Coverage support with Cadence Tools
     
-    This commit adds ibex_icache_ram_if to connect between DUT and tag /
-    data RAMs.
+    Enables coverage collection while running the ibex-dv with xcelium.
     
-    This interface injects 1 or 2 bit error on rdata if enable_ecc_errors
-    bit is set. It also checks that ecc_err_o pin is asserted by DUT
-    whenever an ecc error is injected.
-    
-    ibex_icache_ecc_vseq and ibex_icache_base_vseq have been modified to
-    inject ecc errors through the ram interface.
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
