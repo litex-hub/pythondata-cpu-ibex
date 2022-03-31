@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2324"
-version_tuple = (0, 0, 2324)
+version_str = "0.0.post2326"
+version_tuple = (0, 0, 2326)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2324")
+    pversion = V("0.0.post2326")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2198"
-data_version_tuple = (0, 0, 2198)
+data_version_str = "0.0.post2200"
+data_version_tuple = (0, 0, 2200)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2198")
+    pdata_version = V("0.0.post2200")
 except ImportError:
     pass
-data_git_hash = "6884f6b990fd9f127af0cc6e289ad8bc57f7b909"
-data_git_describe = "v0.0-2198-g6884f6b9"
+data_git_hash = "68b56ef0f5c0ba8058e8cb512fe724263ed874f2"
+data_git_describe = "v0.0-2200-g68b56ef0"
 data_git_msg = """\
-commit 6884f6b990fd9f127af0cc6e289ad8bc57f7b909
+commit 68b56ef0f5c0ba8058e8cb512fe724263ed874f2
 Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Tue Mar 29 10:31:22 2022 +0100
+Date:   Thu Mar 31 13:43:23 2022 +0100
 
-    Coverage support with Cadence Tools
+    Include the main C++ file only with Verilator
     
-    Enables coverage collection while running the ibex-dv with xcelium.
+    This is necessary for having VCS support with simple system example.
+    Because in the ibex_simple_system_main.cc we are including some
+    Verilator exclusive header files.
     
     Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
