@@ -4,33 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2331"
-version_tuple = (0, 0, 2331)
+version_str = "0.0.post2332"
+version_tuple = (0, 0, 2332)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2331")
+    pversion = V("0.0.post2332")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2205"
-data_version_tuple = (0, 0, 2205)
+data_version_str = "0.0.post2206"
+data_version_tuple = (0, 0, 2206)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2205")
+    pdata_version = V("0.0.post2206")
 except ImportError:
     pass
-data_git_hash = "4a2427cd32de1c1ab39b23c4c62270ddb5209a41"
-data_git_describe = "v0.0-2205-g4a2427cd"
+data_git_hash = "ead2174c1a319a21fd35d81bad4af81187b509fb"
+data_git_describe = "v0.0-2206-gead2174c"
 data_git_msg = """\
-commit 4a2427cd32de1c1ab39b23c4c62270ddb5209a41
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Fri Apr 1 14:20:16 2022 +0100
+commit ead2174c1a319a21fd35d81bad4af81187b509fb
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Mar 23 16:49:47 2022 +0000
 
-    Fix cov_report directory in sim.py
+    Introduce internal interrupt concept
     
-    Enables us to save coverage groups text file which helps easily see the overall
-    coverage in a regression.
+    An internal interrupt triggers an NMI. A single one is implemented, one
+    on integrity errors being seen in load data. This replaces a synchronous
+    exception on an integrity error which caused timing issues.
 
 """
 
