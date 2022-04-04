@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2337"
-version_tuple = (0, 0, 2337)
+version_str = "0.0.post2340"
+version_tuple = (0, 0, 2340)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2337")
+    pversion = V("0.0.post2340")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2211"
-data_version_tuple = (0, 0, 2211)
+data_version_str = "0.0.post2214"
+data_version_tuple = (0, 0, 2214)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2211")
+    pdata_version = V("0.0.post2214")
 except ImportError:
     pass
-data_git_hash = "a3e5eebffa9eb1aed3d04f229299aa7da8e7195e"
-data_git_describe = "v0.0-2211-ga3e5eebf"
+data_git_hash = "0a9f5ed1daa4a7fcf46f2e21cbb02d87e569ea1a"
+data_git_describe = "v0.0-2214-g0a9f5ed1"
 data_git_msg = """\
-commit a3e5eebffa9eb1aed3d04f229299aa7da8e7195e
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon Apr 4 10:22:46 2022 +0100
+commit 0a9f5ed1daa4a7fcf46f2e21cbb02d87e569ea1a
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Mon Mar 21 16:15:08 2022 +0000
 
-    [dv,fcov] Timeout fix + removing .ccf from yaml
+    [rtl] Remove "mispredict" ports from icache
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    These are no longer needed: a previous commit has moved the logic that
+    handles misprediction into the IF stage and branch_mispredict_i was
+    dead zero.
 
 """
 
