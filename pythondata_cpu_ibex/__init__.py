@@ -4,34 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2332"
-version_tuple = (0, 0, 2332)
+version_str = "0.0.post2334"
+version_tuple = (0, 0, 2334)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2332")
+    pversion = V("0.0.post2334")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2206"
-data_version_tuple = (0, 0, 2206)
+data_version_str = "0.0.post2208"
+data_version_tuple = (0, 0, 2208)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2206")
+    pdata_version = V("0.0.post2208")
 except ImportError:
     pass
-data_git_hash = "ead2174c1a319a21fd35d81bad4af81187b509fb"
-data_git_describe = "v0.0-2206-gead2174c"
+data_git_hash = "a3b50fb69420f3534a6cd81ba196d4252100a542"
+data_git_describe = "v0.0-2208-ga3b50fb6"
 data_git_msg = """\
-commit ead2174c1a319a21fd35d81bad4af81187b509fb
+commit a3b50fb69420f3534a6cd81ba196d4252100a542
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Mar 23 16:49:47 2022 +0000
+Date:   Fri Apr 1 17:38:48 2022 +0100
 
-    Introduce internal interrupt concept
-    
-    An internal interrupt triggers an NMI. A single one is implemented, one
-    on integrity errors being seen in load data. This replaces a synchronous
-    exception on an integrity error which caused timing issues.
+    [doc, fcov] Remove coverpoint names from unimplemented coverage
 
 """
 
