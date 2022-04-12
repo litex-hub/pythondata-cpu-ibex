@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2342"
-version_tuple = (0, 0, 2342)
+version_str = "0.0.post2344"
+version_tuple = (0, 0, 2344)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2342")
+    pversion = V("0.0.post2344")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2216"
-data_version_tuple = (0, 0, 2216)
+data_version_str = "0.0.post2218"
+data_version_tuple = (0, 0, 2218)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2216")
+    pdata_version = V("0.0.post2218")
 except ImportError:
     pass
-data_git_hash = "1f6bcb9ab5029225b606bf42ff3b61b2fddeed2b"
-data_git_describe = "v0.0-2216-g1f6bcb9a"
+data_git_hash = "2ae62c145ca2d798d29faaf16f7b171c776430dd"
+data_git_describe = "v0.0-2218-g2ae62c14"
 data_git_msg = """\
-commit 1f6bcb9ab5029225b606bf42ff3b61b2fddeed2b
-Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Thu Mar 24 16:16:56 2022 +0000
+commit 2ae62c145ca2d798d29faaf16f7b171c776430dd
+Author: mbaykenar <aykenar.burak@gmail.com>
+Date:   Tue Apr 12 16:37:08 2022 +0300
 
-    [dv] Remove support for building against ibex-cosim-v0.1
+    assign irq_nm_int_cause to all zeros
 
 """
 
