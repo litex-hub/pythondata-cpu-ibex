@@ -357,7 +357,7 @@ module ibex_controller #(
 
     // No integrity checking on incoming load data so no internal interrupts
     assign irq_nm_int       = 1'b0;
-    assign irq_nm_int_cause = '0;
+    assign irq_nm_int_cause = nmi_int_cause_e'(0);
     assign irq_nm_int_mtval = '0;
   end
 
