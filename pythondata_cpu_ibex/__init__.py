@@ -4,34 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2348"
-version_tuple = (0, 0, 2348)
+version_str = "0.0.post2350"
+version_tuple = (0, 0, 2350)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2348")
+    pversion = V("0.0.post2350")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2222"
-data_version_tuple = (0, 0, 2222)
+data_version_str = "0.0.post2224"
+data_version_tuple = (0, 0, 2224)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2222")
+    pdata_version = V("0.0.post2224")
 except ImportError:
     pass
-data_git_hash = "9b52fc132adfabf533e01dea86d045354498f49b"
-data_git_describe = "v0.0-2222-g9b52fc13"
+data_git_hash = "f49f452f2a4d7c7120726af901ece08be1e63e3d"
+data_git_describe = "v0.0-2224-gf49f452f"
 data_git_msg = """\
-commit 9b52fc132adfabf533e01dea86d045354498f49b
+commit f49f452f2a4d7c7120726af901ece08be1e63e3d
 Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Thu Apr 7 12:22:33 2022 +0100
+Date:   Fri Apr 8 18:03:41 2022 +0100
 
-    Handle stdstreams from submakefile commands cleanly
-    
-    Some commands utilise a logfile argument, while others capture the stdstreams
-    into a file. Discard the stdout/stderr when a logfile argument is used.
-    This keeps the logs readable.
+    Improve docs explaining Makefile variable dependencies
 
 """
 
