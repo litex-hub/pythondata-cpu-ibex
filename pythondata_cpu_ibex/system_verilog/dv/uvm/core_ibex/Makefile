@@ -111,7 +111,7 @@ all: sim
 
 instr: iss_sim
 
-sim: post_compare $(if $(filter 1,$(COV)),gen_cov,)
+sim: post_compare $(if $(filter 1,$(COV)),merge_cov,)
 
 .PHONY: clean
 clean:
@@ -247,40 +247,45 @@ REGEX_EMPTY_LINES := '/^$$/d'
 # Build the Random Instruction Generator
 #
 # This depends on the vendored in code in $(GEN_DIR). It also depends on the
-# values of some variables (we want to regenerate things if, for example, the
-# simulator changes). Since we're writing out to $(OUT-SEED), we don't have to
-# depend on the value of SEED. However, we do have to make sure that the
-# variables whose names are listed in $(instr-gen-build-var-deps) haven't changed.
-#
-# To do this variable tracking, we dump each of the variables to a Makefile
-# fragment and try to load it up the next time around.
+# values of the following Makefile variables (we want to regenerate things if,
+# for example, the simulator changes).
 instr-gen-build-var-deps := GEN_OPTS SIMULATOR RISCV_DV_OPTS ISA CSR_OPTS \
                             SIGNATURE_ADDR PMP_REGIONS PMP_GRANULARITY TEST_OPTS
-
-# Load up the generation stage's saved variable values. If this fails, that's
-# no problem: we'll assume that the previous run either doesn't exist or
-# something went wrong.
+# Since we're writing out to $(OUT-SEED), we don't have to depend on the value
+# of SEED. However, we do have to make sure that the variables listed have not
+# changed.
+# To achieve this variable tracking, we dump each of the variables to a Makefile
+# fragment and try to load it up the next time around. This done with the
+# utility function "dump-vars" at the end of the recipe.
+#
+# To create the dependency, we must do the following two things before each target...
+#
+# First, load up the saved variable values from the last time around. If this
+# fails, it's no problem: we'll assume that the previous run either doesn't exist
+# or something went wrong.
 -include $(metadata)/.instr_gen.build.vars.mk
 
-# instr-gen-build-vars-prereq is empty if every variable in
-# instr-gen-build-var-deps matches the last run, otherwise it is set to FORCE
-# (which will force a recompile). Note that we define it with '=', not ':=',
-# so we don't evaluate it if we're not trying to run the gen target.
+# Next, compare the current variables to those we just loaded.
+# This uses the utility function "vars-prereq". It creates a variable which
+# evaluates to the (phony) FORCE if the two sets of variables do not match.
 instr-gen-build-vars-prereq = \
-  $(call vars-prereq,gen,building instruction generator,$(instr-gen-build-var-deps))
+  $(call vars-prereq, \
+     gen, \
+     building instruction generator, \
+     $(instr-gen-build-var-deps))
+# Note that we define it with '=', not ':=', so we don't evaluate if we're not
+# trying to run the instr_gen_build target.
 
+# Finally, $(instr-gen-build-vars-prereq) becomes a dependency of our target.
+
+risc-dv-files := $(shell find $(GEN_DIR) -type f)
 # A variable containing a file list for the riscv-dv vendored-in module.
 # Depending on these files gives a safe over-approximation that will ensure we
 # rebuild things if that module changes.
-#
 # Note that this is defined with ":=". As a result, we'll always run the find
 # command exactly once. Wasteful if we're trying to make clean, but much better
 # than running it for every target otherwise.
-risc-dv-files := $(shell find $(GEN_DIR) -type f)
 
-# Note that the rule depends on the (phony) FORCE target if any variables have
-# changed. If the rule actually runs, it starts by deleting any existing
-# contents of $(OUT-SEED)/instr_gen.
 $(metadata)/.instr_gen.build.stamp: \
   $(instr-gen-build-vars-prereq) $(risc-dv-files) | $(metadata)
 	$(verb)rm -rf $(OUT-SEED)/instr_gen
@@ -522,8 +527,7 @@ post_compare: $(OUT-SEED)/regr.log
 ###############################################################################
 # Generate RISCV-DV functional coverage
 # TODO(udi) - add B extension
-.PHONY: riscv_dv_cov
-riscv_dv_fcov: $(rtl-sim-logs)
+$(metadata)/.cov.gen_fcov.stamp: $(rtl-sim-logs)
 	$(verb)python3 ${GEN_DIR}/cov.py \
 	       --core ibex \
 	       --dir ${OUT-SEED}/rtl_sim \
@@ -532,14 +536,25 @@ riscv_dv_fcov: $(rtl-sim-logs)
 	       --opts "--gen_timeout 1000" \
 	       --isa rv32imcb \
 	       --custom_target riscv_dv_extension
+	@ # Bookkeeping
+	@touch $@
 
+.PHONY: riscv_dv_fcov
+riscv_dv_fcov: $(metadata)/.cov.gen_fcov.stamp
+
+###############################################################################
 # Merge all output coverage directories into the <out>/rtl_sim directory
 #
 # Any coverage databases generated from the riscv_dv_fcov target will be merged as well.
-.PHONY: gen_cov
-gen_cov: riscv_dv_fcov
+$(metadata)/.cov.merge.stamp: \
+	$(metadata)/.cov.gen_fcov.stamp
 	$(verb)rm -rf $(OUT-DIR)rtl_sim/test.vdb
 	$(verb)./sim.py --steps=cov --simulator="${SIMULATOR}" $(lsf-arg) --o="$(OUT-DIR)"
 	@if [ -d "test.vdb" ]; then \
 	     mv -f test.vdb $(OUT-DIR)rtl_sim/; \
 	fi
+	@ # Bookkeeping
+	@touch $@
+
+.PHONY: merge_cov
+merge_cov: $(metadata)/.cov.merge.stamp
