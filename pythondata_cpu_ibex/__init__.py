@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2345"
-version_tuple = (0, 0, 2345)
+version_str = "0.0.post2348"
+version_tuple = (0, 0, 2348)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2345")
+    pversion = V("0.0.post2348")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2219"
-data_version_tuple = (0, 0, 2219)
+data_version_str = "0.0.post2222"
+data_version_tuple = (0, 0, 2222)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2219")
+    pdata_version = V("0.0.post2222")
 except ImportError:
     pass
-data_git_hash = "6caf82c2b402c4b0895a514ca30bc15f4705e17f"
-data_git_describe = "v0.0-2219-g6caf82c2"
+data_git_hash = "9b52fc132adfabf533e01dea86d045354498f49b"
+data_git_describe = "v0.0-2222-g9b52fc13"
 data_git_msg = """\
-commit 6caf82c2b402c4b0895a514ca30bc15f4705e17f
-Author: Michael Schaffner <msf@google.com>
-Date:   Mon Apr 11 18:59:38 2022 -0700
+commit 9b52fc132adfabf533e01dea86d045354498f49b
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Thu Apr 7 12:22:33 2022 +0100
 
-    [lint] Minor fixes
+    Handle stdstreams from submakefile commands cleanly
     
-    Signed-off-by: Michael Schaffner <msf@google.com>
+    Some commands utilise a logfile argument, while others capture the stdstreams
+    into a file. Discard the stdout/stderr when a logfile argument is used.
+    This keeps the logs readable.
 
 """
 
