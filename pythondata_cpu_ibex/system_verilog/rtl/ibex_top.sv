@@ -137,6 +137,7 @@ module ibex_top import ibex_pkg::*; #(
   localparam bit          ResetAll          = Lockstep;
   localparam bit          DummyInstructions = SecureIbex;
   localparam bit          RegFileECC        = SecureIbex;
+  localparam bit          RegFileWrenCheck  = SecureIbex;
   localparam int unsigned RegFileDataWidth  = RegFileECC ? 32 + 7 : 32;
   localparam bit          MemECC            = SecureIbex;
   localparam int unsigned MemDataWidth      = MemECC ? 32 + 7 : 32;
@@ -377,11 +378,14 @@ module ibex_top import ibex_pkg::*; #(
   // Register file Instantiation //
   /////////////////////////////////
 
+  logic rf_alert_major_internal;
   if (RegFile == RegFileFF) begin : gen_regfile_ff
     ibex_register_file_ff #(
       .RV32E            (RV32E),
       .DataWidth        (RegFileDataWidth),
       .DummyInstructions(DummyInstructions),
+      // SEC_CM: DATA_REG_SW.GLITCH_DETECT
+      .WrenCheck        (RegFileWrenCheck),
       .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
     ) register_file_i (
       .clk_i (clk),
@@ -396,13 +400,16 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb)
+      .we_a_i   (rf_we_wb),
+      .err_o    (rf_alert_major_internal)
     );
   end else if (RegFile == RegFileFPGA) begin : gen_regfile_fpga
     ibex_register_file_fpga #(
       .RV32E            (RV32E),
       .DataWidth        (RegFileDataWidth),
       .DummyInstructions(DummyInstructions),
+      // SEC_CM: DATA_REG_SW.GLITCH_DETECT
+      .WrenCheck        (RegFileWrenCheck),
       .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
     ) register_file_i (
       .clk_i (clk),
@@ -417,13 +424,16 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb)
+      .we_a_i   (rf_we_wb),
+      .err_o    (rf_alert_major_internal)
     );
   end else if (RegFile == RegFileLatch) begin : gen_regfile_latch
     ibex_register_file_latch #(
       .RV32E            (RV32E),
       .DataWidth        (RegFileDataWidth),
       .DummyInstructions(DummyInstructions),
+      // SEC_CM: DATA_REG_SW.GLITCH_DETECT
+      .WrenCheck        (RegFileWrenCheck),
       .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
     ) register_file_i (
       .clk_i (clk),
@@ -438,7 +448,8 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb)
+      .we_a_i   (rf_we_wb),
+      .err_o    (rf_alert_major_internal)
     );
   end
 
@@ -503,73 +514,117 @@ module ibex_top import ibex_pkg::*; #(
 
     for (genvar way = 0; way < IC_NUM_WAYS; way++) begin : gen_rams_inner
 
-      // SEC_CM: ICACHE.MEM.SCRAMBLE
-      // Tag RAM instantiation
-      prim_ram_1p_scr #(
-        .Width            (TagSizeECC),
-        .Depth            (IC_NUM_LINES),
-        .DataBitsPerMask  (TagSizeECC),
-        .EnableParity     (0),
-        .DiffWidth        (TagSizeECC),
-        .NumAddrScrRounds (NumAddrScrRounds),
-        .NumDiffRounds    (NumDiffRounds)
-      ) tag_bank (
-        .clk_i,
-        .rst_ni,
+      if (ICacheScramble) begin : gen_scramble_rams
 
-        .key_valid_i (scramble_key_valid_q),
-        .key_i       (scramble_key_q),
-        .nonce_i     (scramble_nonce_q),
+        // SEC_CM: ICACHE.MEM.SCRAMBLE
+        // Tag RAM instantiation
+        prim_ram_1p_scr #(
+          .Width            (TagSizeECC),
+          .Depth            (IC_NUM_LINES),
+          .DataBitsPerMask  (TagSizeECC),
+          .EnableParity     (0),
+          .DiffWidth        (TagSizeECC),
+          .NumAddrScrRounds (NumAddrScrRounds),
+          .NumDiffRounds    (NumDiffRounds)
+        ) tag_bank (
+          .clk_i,
+          .rst_ni,
 
-        .req_i       (ic_tag_req[way]),
+          .key_valid_i (scramble_key_valid_q),
+          .key_i       (scramble_key_q),
+          .nonce_i     (scramble_nonce_q),
 
-        .gnt_o       (),
-        .write_i     (ic_tag_write),
-        .addr_i      (ic_tag_addr),
-        .wdata_i     (ic_tag_wdata),
-        .wmask_i     ({TagSizeECC{1'b1}}),
-        .intg_error_i(1'b0),
+          .req_i       (ic_tag_req[way]),
 
-        .rdata_o     (ic_tag_rdata[way]),
-        .rvalid_o    (),
-        .raddr_o     (),
-        .rerror_o    (),
-        .cfg_i       (ram_cfg_i)
-      );
+          .gnt_o       (),
+          .write_i     (ic_tag_write),
+          .addr_i      (ic_tag_addr),
+          .wdata_i     (ic_tag_wdata),
+          .wmask_i     ({TagSizeECC{1'b1}}),
+          .intg_error_i(1'b0),
 
-      // Data RAM instantiation
-      prim_ram_1p_scr #(
-        .Width              (LineSizeECC),
-        .Depth              (IC_NUM_LINES),
-        .DataBitsPerMask    (LineSizeECC),
-        .ReplicateKeyStream (1),
-        .EnableParity       (0),
-        .DiffWidth          (LineSizeECC),
-        .NumAddrScrRounds   (NumAddrScrRounds),
-        .NumDiffRounds      (NumDiffRounds)
-      ) data_bank (
-        .clk_i,
-        .rst_ni,
+          .rdata_o     (ic_tag_rdata[way]),
+          .rvalid_o    (),
+          .raddr_o     (),
+          .rerror_o    (),
+          .cfg_i       (ram_cfg_i)
+        );
 
-        .key_valid_i (scramble_key_valid_q),
-        .key_i       (scramble_key_q),
-        .nonce_i     (scramble_nonce_q),
+        // Data RAM instantiation
+        prim_ram_1p_scr #(
+          .Width              (LineSizeECC),
+          .Depth              (IC_NUM_LINES),
+          .DataBitsPerMask    (LineSizeECC),
+          .ReplicateKeyStream (1),
+          .EnableParity       (0),
+          .DiffWidth          (LineSizeECC),
+          .NumAddrScrRounds   (NumAddrScrRounds),
+          .NumDiffRounds      (NumDiffRounds)
+        ) data_bank (
+          .clk_i,
+          .rst_ni,
 
-        .req_i       (ic_data_req[way]),
+          .key_valid_i (scramble_key_valid_q),
+          .key_i       (scramble_key_q),
+          .nonce_i     (scramble_nonce_q),
 
-        .gnt_o       (),
-        .write_i     (ic_data_write),
-        .addr_i      (ic_data_addr),
-        .wdata_i     (ic_data_wdata),
-        .wmask_i     ({LineSizeECC{1'b1}}),
-        .intg_error_i(1'b0),
+          .req_i       (ic_data_req[way]),
 
-        .rdata_o     (ic_data_rdata[way]),
-        .rvalid_o    (),
-        .raddr_o     (),
-        .rerror_o    (),
-        .cfg_i       (ram_cfg_i)
-      );
+          .gnt_o       (),
+          .write_i     (ic_data_write),
+          .addr_i      (ic_data_addr),
+          .wdata_i     (ic_data_wdata),
+          .wmask_i     ({LineSizeECC{1'b1}}),
+          .intg_error_i(1'b0),
+
+          .rdata_o     (ic_data_rdata[way]),
+          .rvalid_o    (),
+          .raddr_o     (),
+          .rerror_o    (),
+          .cfg_i       (ram_cfg_i)
+        );
+
+      end else begin : gen_noscramble_rams
+
+        // Tag RAM instantiation
+        prim_ram_1p #(
+          .Width            (TagSizeECC),
+          .Depth            (IC_NUM_LINES),
+          .DataBitsPerMask  (TagSizeECC)
+        ) tag_bank (
+          .clk_i,
+
+          .req_i       (ic_tag_req[way]),
+
+          .write_i     (ic_tag_write),
+          .addr_i      (ic_tag_addr),
+          .wdata_i     (ic_tag_wdata),
+          .wmask_i     ({TagSizeECC{1'b1}}),
+
+          .rdata_o     (ic_tag_rdata[way]),
+          .cfg_i       (ram_cfg_i)
+        );
+
+        // Data RAM instantiation
+        prim_ram_1p #(
+          .Width              (LineSizeECC),
+          .Depth              (IC_NUM_LINES),
+          .DataBitsPerMask    (LineSizeECC)
+        ) data_bank (
+          .clk_i,
+
+          .req_i       (ic_data_req[way]),
+
+          .write_i     (ic_data_write),
+          .addr_i      (ic_data_addr),
+          .wdata_i     (ic_data_wdata),
+          .wmask_i     ({LineSizeECC{1'b1}}),
+
+          .rdata_o     (ic_data_rdata[way]),
+          .cfg_i       (ram_cfg_i)
+        );
+
+      end
     end
 
   end else begin : gen_norams
@@ -952,7 +1007,9 @@ module ibex_top import ibex_pkg::*; #(
     assign unused_scan = scan_rst_ni;
   end
 
-  assign alert_major_internal_o = core_alert_major_internal | lockstep_alert_major_internal;
+  assign alert_major_internal_o = core_alert_major_internal |
+                                  lockstep_alert_major_internal |
+                                  rf_alert_major_internal;
   assign alert_major_bus_o      = core_alert_major_bus | lockstep_alert_major_bus;
   assign alert_minor_o          = core_alert_minor | lockstep_alert_minor;
 
