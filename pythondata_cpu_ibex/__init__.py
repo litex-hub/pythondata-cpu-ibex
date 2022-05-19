@@ -4,33 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2426"
-version_tuple = (0, 0, 2426)
+version_str = "0.0.post2427"
+version_tuple = (0, 0, 2427)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2426")
+    pversion = V("0.0.post2427")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2298"
-data_version_tuple = (0, 0, 2298)
+data_version_str = "0.0.post2299"
+data_version_tuple = (0, 0, 2299)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2298")
+    pdata_version = V("0.0.post2299")
 except ImportError:
     pass
-data_git_hash = "efd289dc17f8f9574030d9aeccd7c93592c421e5"
-data_git_describe = "v0.0-2298-gefd289dc"
+data_git_hash = "6efb4b15973011b4cd5d09ca0f3bf7c07730b5d5"
+data_git_describe = "v0.0-2299-g6efb4b15"
 data_git_msg = """\
-commit efd289dc17f8f9574030d9aeccd7c93592c421e5
+commit 6efb4b15973011b4cd5d09ca0f3bf7c07730b5d5
 Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Mon May 16 16:55:29 2022 +0100
+Date:   Mon May 16 15:42:31 2022 +0100
 
-    [core_ibex] Disable waves by default
+    Dump riscv-dv generation messages to a log file
     
-    This seems like something you'd want to enable explicitly, to avoid
-    filling up a disk on a big run.
+    I was previously just dumping them to /dev/null because the
+    code always worked but... predictably I was wrong! Write them
+    somewhere more useful for debug.
 
 """
 
