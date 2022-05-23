@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2428"
-version_tuple = (0, 0, 2428)
+version_str = "0.0.post2429"
+version_tuple = (0, 0, 2429)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2428")
+    pversion = V("0.0.post2429")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2300"
-data_version_tuple = (0, 0, 2300)
+data_version_str = "0.0.post2301"
+data_version_tuple = (0, 0, 2301)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2300")
+    pdata_version = V("0.0.post2301")
 except ImportError:
     pass
-data_git_hash = "fe157648a6e51fe06a6f67f2050ef1236a75c13c"
-data_git_describe = "v0.0-2300-gfe157648"
+data_git_hash = "c5567e8f66b68b2603023f85cbe724f598134ca2"
+data_git_describe = "v0.0-2301-gc5567e8f"
 data_git_msg = """\
-commit fe157648a6e51fe06a6f67f2050ef1236a75c13c
-Author: nedguthrie <101828291+nedguthrie@users.noreply.github.com>
-Date:   Fri May 20 13:12:59 2022 -0400
+commit c5567e8f66b68b2603023f85cbe724f598134ca2
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Thu May 19 12:03:12 2022 +0100
 
-    Fix formatting if IcacheScramble Description
+    Change makefile default simulator for core_ibex dv to xcelium
 
 """
 
