@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2451"
-version_tuple = (0, 0, 2451)
+version_str = "0.0.post2452"
+version_tuple = (0, 0, 2452)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2451")
+    pversion = V("0.0.post2452")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2311"
-data_version_tuple = (0, 0, 2311)
+data_version_str = "0.0.post2312"
+data_version_tuple = (0, 0, 2312)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2311")
+    pdata_version = V("0.0.post2312")
 except ImportError:
     pass
-data_git_hash = "97a949df0283fbae223372f592287f275ae869f7"
-data_git_describe = "v0.0-2311-g97a949df"
+data_git_hash = "57d810e7fe93d196d12044ace7b7eec5494c60c5"
+data_git_describe = "v0.0-2312-g57d810e7"
 data_git_msg = """\
-commit 97a949df0283fbae223372f592287f275ae869f7
+commit 57d810e7fe93d196d12044ace7b7eec5494c60c5
 Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Tue May 17 16:46:58 2022 +0100
+Date:   Mon May 23 12:05:12 2022 +0100
 
-    [doc] Update coverage plan to point crosses/cp's
+    [fcov] Implementing interrupts section of covplan
     
     Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
