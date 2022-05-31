@@ -4,32 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2454"
-version_tuple = (0, 0, 2454)
+version_str = "0.0.post2455"
+version_tuple = (0, 0, 2455)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2454")
+    pversion = V("0.0.post2455")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2312"
-data_version_tuple = (0, 0, 2312)
+data_version_str = "0.0.post2313"
+data_version_tuple = (0, 0, 2313)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2312")
+    pdata_version = V("0.0.post2313")
 except ImportError:
     pass
-data_git_hash = "57d810e7fe93d196d12044ace7b7eec5494c60c5"
-data_git_describe = "v0.0-2312-g57d810e7"
+data_git_hash = "e1f614887eef3ae089292d2ce8470c6eb80a1ae9"
+data_git_describe = "v0.0-2313-ge1f61488"
 data_git_msg = """\
-commit 57d810e7fe93d196d12044ace7b7eec5494c60c5
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon May 23 12:05:12 2022 +0100
+commit e1f614887eef3ae089292d2ce8470c6eb80a1ae9
+Author: Pirmin Vogel <vogelpi@lowrisc.org>
+Date:   Mon May 16 13:57:06 2022 +0200
 
-    [fcov] Implementing interrupts section of covplan
+    Update spike_cosim.cc to be able to build against newer Spike versions
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    This works with versions ibex-cosim-v0.2 and ibex-cosim-v0.3. The latter
+    version is required to support the mseccfg CSR added with ePMP.
+    
+    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
 
 """
 
