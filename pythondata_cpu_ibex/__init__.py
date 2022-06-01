@@ -4,35 +4,38 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2455"
-version_tuple = (0, 0, 2455)
+version_str = "0.0.post2456"
+version_tuple = (0, 0, 2456)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2455")
+    pversion = V("0.0.post2456")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2313"
-data_version_tuple = (0, 0, 2313)
+data_version_str = "0.0.post2314"
+data_version_tuple = (0, 0, 2314)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2313")
+    pdata_version = V("0.0.post2314")
 except ImportError:
     pass
-data_git_hash = "e1f614887eef3ae089292d2ce8470c6eb80a1ae9"
-data_git_describe = "v0.0-2313-ge1f61488"
+data_git_hash = "ea4e9383dbc6614e811ebe0b55cdb14779aee7ca"
+data_git_describe = "v0.0-2314-gea4e9383"
 data_git_msg = """\
-commit e1f614887eef3ae089292d2ce8470c6eb80a1ae9
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Mon May 16 13:57:06 2022 +0200
+commit ea4e9383dbc6614e811ebe0b55cdb14779aee7ca
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Tue May 31 16:32:18 2022 +0100
 
-    Update spike_cosim.cc to be able to build against newer Spike versions
+    [syn] Use sv2v for prim_generic_buf
     
-    This works with versions ibex-cosim-v0.2 and ibex-cosim-v0.3. The latter
-    version is required to support the mseccfg CSR added with ePMP.
+    Convert `prim_generic_buf` to Verilog as well.
+    Also, replace 'prim_buf' with 'prim_generic_buf' whenever we see a
+    `prim_buf` in a generated Verilog file.
     
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    Fixes #1557
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
