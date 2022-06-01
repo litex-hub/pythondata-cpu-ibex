@@ -4,38 +4,38 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2456"
-version_tuple = (0, 0, 2456)
+version_str = "0.0.post2458"
+version_tuple = (0, 0, 2458)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2456")
+    pversion = V("0.0.post2458")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2314"
-data_version_tuple = (0, 0, 2314)
+data_version_str = "0.0.post2316"
+data_version_tuple = (0, 0, 2316)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2314")
+    pdata_version = V("0.0.post2316")
 except ImportError:
     pass
-data_git_hash = "ea4e9383dbc6614e811ebe0b55cdb14779aee7ca"
-data_git_describe = "v0.0-2314-gea4e9383"
+data_git_hash = "9b68b5ef14aff5f49b6dd32878884158e6e2a5f8"
+data_git_describe = "v0.0-2316-g9b68b5ef"
 data_git_msg = """\
-commit ea4e9383dbc6614e811ebe0b55cdb14779aee7ca
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Tue May 31 16:32:18 2022 +0100
+commit 9b68b5ef14aff5f49b6dd32878884158e6e2a5f8
+Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
+Date:   Tue May 17 17:43:55 2022 +0100
 
-    [syn] Use sv2v for prim_generic_buf
+    [dv,core_ibex] Allow instructions near the top of initialised IMEM
     
-    Convert `prim_generic_buf` to Verilog as well.
-    Also, replace 'prim_buf' with 'prim_generic_buf' whenever we see a
-    `prim_buf` in a generated Verilog file.
+    If you call the read() function on the memory model with an
+    uninitialised word, it generates a UVM error.
     
-    Fixes #1557
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    This is reasonable for data memory (where we never want to read
+    something without an architectural value) but is not reasonable for
+    IMEM, where Ibex runs ahead. Squash the error in this case, but force
+    bad integrity for the fetch to make sure we see something explode.
 
 """
 
