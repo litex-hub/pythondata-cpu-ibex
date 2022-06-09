@@ -4,38 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2458"
-version_tuple = (0, 0, 2458)
+version_str = "0.0.post2459"
+version_tuple = (0, 0, 2459)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2458")
+    pversion = V("0.0.post2459")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2316"
-data_version_tuple = (0, 0, 2316)
+data_version_str = "0.0.post2317"
+data_version_tuple = (0, 0, 2317)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2316")
+    pdata_version = V("0.0.post2317")
 except ImportError:
     pass
-data_git_hash = "9b68b5ef14aff5f49b6dd32878884158e6e2a5f8"
-data_git_describe = "v0.0-2316-g9b68b5ef"
+data_git_hash = "f71b23ddf8b93c63f0c42eb3cecf77aff177530d"
+data_git_describe = "v0.0-2317-gf71b23dd"
 data_git_msg = """\
-commit 9b68b5ef14aff5f49b6dd32878884158e6e2a5f8
-Author: Rupert Swarbrick <rswarbrick@lowrisc.org>
-Date:   Tue May 17 17:43:55 2022 +0100
+commit f71b23ddf8b93c63f0c42eb3cecf77aff177530d
+Author: Pirmin Vogel <vogelpi@lowrisc.org>
+Date:   Fri Jun 3 09:22:04 2022 +0200
 
-    [dv,core_ibex] Allow instructions near the top of initialised IMEM
+    Update google_riscv-dv to google/riscv-dv@0b2b3d6
     
-    If you call the read() function on the memory model with an
-    uninitialised word, it generates a UVM error.
+    Update code from upstream repository https://github.com/google/riscv-
+    dv to revision 0b2b3d65ce8fdff4de8974d1f328a90d6c1db5dd
     
-    This is reasonable for data memory (where we never want to read
-    something without an architectural value) but is not reasonable for
-    IMEM, where Ibex runs ahead. Squash the error in this case, but force
-    bad integrity for the fetch to make sure we see something explode.
+    * [epmp] Add support for mseccfg CSR (Pirmin Vogel)
+    
+    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
 
 """
 
