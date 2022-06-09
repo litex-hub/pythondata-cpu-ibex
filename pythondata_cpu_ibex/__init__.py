@@ -4,37 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2459"
-version_tuple = (0, 0, 2459)
+version_str = "0.0.post2461"
+version_tuple = (0, 0, 2461)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2459")
+    pversion = V("0.0.post2461")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2317"
-data_version_tuple = (0, 0, 2317)
+data_version_str = "0.0.post2319"
+data_version_tuple = (0, 0, 2319)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2317")
+    pdata_version = V("0.0.post2319")
 except ImportError:
     pass
-data_git_hash = "f71b23ddf8b93c63f0c42eb3cecf77aff177530d"
-data_git_describe = "v0.0-2317-gf71b23dd"
+data_git_hash = "81590d86c2d5d136a36c673511e0bb29973a5d13"
+data_git_describe = "v0.0-2319-g81590d86"
 data_git_msg = """\
-commit f71b23ddf8b93c63f0c42eb3cecf77aff177530d
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Fri Jun 3 09:22:04 2022 +0200
+commit 81590d86c2d5d136a36c673511e0bb29973a5d13
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Tue Jun 7 11:53:56 2022 +0100
 
-    Update google_riscv-dv to google/riscv-dv@0b2b3d6
+    Fix multi-line string formatting in $sformatf for uvm_fatal macro
     
-    Update code from upstream repository https://github.com/google/riscv-
-    dv to revision 0b2b3d65ce8fdff4de8974d1f328a90d6c1db5dd
-    
-    * [epmp] Add support for mseccfg CSR (Pirmin Vogel)
-    
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    Before the change the indentation of the second line would be printed as spaces
+    in the fatal message.
 
 """
 
