@@ -4,33 +4,36 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2461"
-version_tuple = (0, 0, 2461)
+version_str = "0.0.post2462"
+version_tuple = (0, 0, 2462)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2461")
+    pversion = V("0.0.post2462")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2319"
-data_version_tuple = (0, 0, 2319)
+data_version_str = "0.0.post2320"
+data_version_tuple = (0, 0, 2320)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2319")
+    pdata_version = V("0.0.post2320")
 except ImportError:
     pass
-data_git_hash = "81590d86c2d5d136a36c673511e0bb29973a5d13"
-data_git_describe = "v0.0-2319-g81590d86"
+data_git_hash = "31531f73255a75ca5d500dff5c08ec7ecab582c7"
+data_git_describe = "v0.0-2320-g31531f73"
 data_git_msg = """\
-commit 81590d86c2d5d136a36c673511e0bb29973a5d13
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Tue Jun 7 11:53:56 2022 +0100
+commit 31531f73255a75ca5d500dff5c08ec7ecab582c7
+Author: Timothy Chen <timothytim@google.com>
+Date:   Wed Jun 15 17:45:40 2022 -0700
 
-    Fix multi-line string formatting in $sformatf for uvm_fatal macro
+    Update crash dump to contain mtval
     
-    Before the change the indentation of the second line would be printed as spaces
-    in the fatal message.
+    - mtval is a bit more useful for double fault situations
+      as on the second exception we can still "remember" the
+      data address and PC of the first exception.
+    
+    Signed-off-by: Timothy Chen <timothytim@google.com>
 
 """
 
