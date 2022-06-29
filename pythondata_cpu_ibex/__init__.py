@@ -4,36 +4,41 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2462"
-version_tuple = (0, 0, 2462)
+version_str = "0.0.post2463"
+version_tuple = (0, 0, 2463)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2462")
+    pversion = V("0.0.post2463")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2320"
-data_version_tuple = (0, 0, 2320)
+data_version_str = "0.0.post2321"
+data_version_tuple = (0, 0, 2321)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2320")
+    pdata_version = V("0.0.post2321")
 except ImportError:
     pass
-data_git_hash = "31531f73255a75ca5d500dff5c08ec7ecab582c7"
-data_git_describe = "v0.0-2320-g31531f73"
+data_git_hash = "5c49fad9a236351a884f55d44248e4f9a0f7c7e5"
+data_git_describe = "v0.0-2321-g5c49fad9"
 data_git_msg = """\
-commit 31531f73255a75ca5d500dff5c08ec7ecab582c7
-Author: Timothy Chen <timothytim@google.com>
-Date:   Wed Jun 15 17:45:40 2022 -0700
+commit 5c49fad9a236351a884f55d44248e4f9a0f7c7e5
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Mon May 30 14:52:34 2022 +0100
 
-    Update crash dump to contain mtval
+    [fcov] Adding debug related functional coverage
     
-    - mtval is a bit more useful for double fault situations
-      as on the second exception we can still "remember" the
-      data address and PC of the first exception.
+    Includes coverpoints for:
     
-    Signed-off-by: Timothy Chen <timothytim@google.com>
+    - Hardware trigger point matches
+    - Debug simple step entrance in controller
+    - Seeing different insns while single stepping
+    
+    Also updates on coverage plan to fill up missing mentions of
+    coverpoints/crosses
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
