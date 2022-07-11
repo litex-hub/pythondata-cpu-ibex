@@ -4,41 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2463"
-version_tuple = (0, 0, 2463)
+version_str = "0.0.post2464"
+version_tuple = (0, 0, 2464)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2463")
+    pversion = V("0.0.post2464")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2321"
-data_version_tuple = (0, 0, 2321)
+data_version_str = "0.0.post2322"
+data_version_tuple = (0, 0, 2322)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2321")
+    pdata_version = V("0.0.post2322")
 except ImportError:
     pass
-data_git_hash = "5c49fad9a236351a884f55d44248e4f9a0f7c7e5"
-data_git_describe = "v0.0-2321-g5c49fad9"
+data_git_hash = "ab510f8acf2804efbe0a8d4cf93452b02acc05fe"
+data_git_describe = "v0.0-2322-gab510f8a"
 data_git_msg = """\
-commit 5c49fad9a236351a884f55d44248e4f9a0f7c7e5
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon May 30 14:52:34 2022 +0100
+commit ab510f8acf2804efbe0a8d4cf93452b02acc05fe
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Jun 29 17:59:05 2022 +0100
 
-    [fcov] Adding debug related functional coverage
+    [dv/doc] Tweaks/fixes to functional coverage
     
-    Includes coverpoints for:
-    
-    - Hardware trigger point matches
-    - Debug simple step entrance in controller
-    - Seeing different insns while single stepping
-    
-    Also updates on coverage plan to fill up missing mentions of
-    coverpoints/crosses
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    This fixes up some minor issues in the functional coverage plan and
+    implemented cover points
 
 """
 
