@@ -4,34 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2465"
-version_tuple = (0, 0, 2465)
+version_str = "0.0.post2466"
+version_tuple = (0, 0, 2466)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2465")
+    pversion = V("0.0.post2466")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2323"
-data_version_tuple = (0, 0, 2323)
+data_version_str = "0.0.post2324"
+data_version_tuple = (0, 0, 2324)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2323")
+    pdata_version = V("0.0.post2324")
 except ImportError:
     pass
-data_git_hash = "7ba6667f3237c9a6fd48c21bfff4b2f4fb5ff491"
-data_git_describe = "v0.0-2323-g7ba6667f"
+data_git_hash = "3459d7f8dfd1a4d49a0a70659b22c77fdd7bc5c9"
+data_git_describe = "v0.0-2324-g3459d7f8"
 data_git_msg = """\
-commit 7ba6667f3237c9a6fd48c21bfff4b2f4fb5ff491
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon Jul 11 11:24:35 2022 +0100
+commit 3459d7f8dfd1a4d49a0a70659b22c77fdd7bc5c9
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Mon Jul 11 14:46:23 2022 +0100
 
-    [dv] Check privilege after DRET
+    [lint] Remove whitespace from non-vendored source files
     
-    Timing fix for dret_test and modelling controller behaviour for FLUSH transition.
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
 
 """
 
