@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2466"
-version_tuple = (0, 0, 2466)
+version_str = "0.0.post2468"
+version_tuple = (0, 0, 2468)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2466")
+    pversion = V("0.0.post2468")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2324"
-data_version_tuple = (0, 0, 2324)
+data_version_str = "0.0.post2326"
+data_version_tuple = (0, 0, 2326)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2324")
+    pdata_version = V("0.0.post2326")
 except ImportError:
     pass
-data_git_hash = "3459d7f8dfd1a4d49a0a70659b22c77fdd7bc5c9"
-data_git_describe = "v0.0-2324-g3459d7f8"
+data_git_hash = "5bba52713fc482309d2ca68420e5f405134dd56b"
+data_git_describe = "v0.0-2326-g5bba5271"
 data_git_msg = """\
-commit 3459d7f8dfd1a4d49a0a70659b22c77fdd7bc5c9
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Mon Jul 11 14:46:23 2022 +0100
+commit 5bba52713fc482309d2ca68420e5f405134dd56b
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Thu Jul 14 16:44:25 2022 +0100
 
-    [lint] Remove whitespace from non-vendored source files
-    
-    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
+    Fix randomize bug, add assertion for cnt != 0
 
 """
 
