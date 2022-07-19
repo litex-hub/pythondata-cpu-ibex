@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2470"
-version_tuple = (0, 0, 2470)
+version_str = "0.0.post2471"
+version_tuple = (0, 0, 2471)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2470")
+    pversion = V("0.0.post2471")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2328"
-data_version_tuple = (0, 0, 2328)
+data_version_str = "0.0.post2329"
+data_version_tuple = (0, 0, 2329)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2328")
+    pdata_version = V("0.0.post2329")
 except ImportError:
     pass
-data_git_hash = "51f114133514bb6205411ff1f9eed5791c73879e"
-data_git_describe = "v0.0-2328-g51f11413"
+data_git_hash = "1ea89a423b314f53840510edadb4ef3487281f2d"
+data_git_describe = "v0.0-2329-g1ea89a42"
 data_git_msg = """\
-commit 51f114133514bb6205411ff1f9eed5791c73879e
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Fri Jul 15 11:33:47 2022 +0100
+commit 1ea89a423b314f53840510edadb4ef3487281f2d
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Tue Jul 19 16:06:21 2022 +0100
 
-    [lint] Point to correct Verible rules for lint workflow
+    [dv] Fix traps in simple system cosim
     
-    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
+    Previously any traps seen on RVFI were skipped over. This was old
+    behaviour. With the latest cosim setup traps must be passed to the
+    `step` function.
 
 """
 
