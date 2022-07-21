@@ -4,36 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2472"
-version_tuple = (0, 0, 2472)
+version_str = "0.0.post2475"
+version_tuple = (0, 0, 2475)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2472")
+    pversion = V("0.0.post2475")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2330"
-data_version_tuple = (0, 0, 2330)
+data_version_str = "0.0.post2333"
+data_version_tuple = (0, 0, 2333)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2330")
+    pdata_version = V("0.0.post2333")
 except ImportError:
     pass
-data_git_hash = "dfca76f3865d9fc8ab7f093ff563f91add6648ca"
-data_git_describe = "v0.0-2330-gdfca76f3"
+data_git_hash = "50d183fc1b5080dc0aecb14f54b008e9c65c2d0f"
+data_git_describe = "v0.0-2333-g50d183fc"
 data_git_msg = """\
-commit dfca76f3865d9fc8ab7f093ff563f91add6648ca
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Tue Jul 12 23:44:19 2022 +0100
+commit 50d183fc1b5080dc0aecb14f54b008e9c65c2d0f
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Tue Jul 19 18:35:10 2022 +0100
 
-    [dv,fcov] Implement Misaligned Mem Error coverage
-    
-    Adds some signal to the load store unit to catch when we have the
-    fetch error signals from both first and second part of the misaligned
-    load/store access cases.
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    [ci] Add pmp_smoke_test cosim run to CI
 
 """
 
