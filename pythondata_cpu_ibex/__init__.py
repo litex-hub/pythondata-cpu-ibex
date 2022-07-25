@@ -4,35 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2479"
-version_tuple = (0, 0, 2479)
+version_str = "0.0.post2481"
+version_tuple = (0, 0, 2481)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2479")
+    pversion = V("0.0.post2481")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2337"
-data_version_tuple = (0, 0, 2337)
+data_version_str = "0.0.post2339"
+data_version_tuple = (0, 0, 2339)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2337")
+    pdata_version = V("0.0.post2339")
 except ImportError:
     pass
-data_git_hash = "1e613cc7f439415ae4f4c86f4452f11a829d7e5e"
-data_git_describe = "v0.0-2337-g1e613cc7"
+data_git_hash = "83ac7a94d25f002c99a1d494f1dc32c81b7588ef"
+data_git_describe = "v0.0-2339-g83ac7a94"
 data_git_msg = """\
-commit 1e613cc7f439415ae4f4c86f4452f11a829d7e5e
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Thu Jul 14 21:32:46 2022 +0100
+commit 83ac7a94d25f002c99a1d494f1dc32c81b7588ef
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Sat Jul 23 19:23:41 2022 +0100
 
-    [cosim,dv] Add support to set mcount registers
+    Don't check MCAUSE[31] in debug_mode to identify sync/async trap
     
-    Extends RVFI connections further to include 30 mhpmcounterX registers.
-    Sets them up before every cosim step to let Spike know their real values.
-    
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Interrupts are disabled in Debug Mode (Sdext 4.1.2), and simultaneously
+    registers, including MCAUSE, are not updated by exceptions (Sdext 4.1.3),
+    so reading MCAUSE[31] after an exception (eg. invalid instruction) in
+    debug_mode may still report the previous cause (which could be an interrupt).
 
 """
 
