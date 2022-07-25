@@ -4,34 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2478"
-version_tuple = (0, 0, 2478)
+version_str = "0.0.post2479"
+version_tuple = (0, 0, 2479)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2478")
+    pversion = V("0.0.post2479")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2336"
-data_version_tuple = (0, 0, 2336)
+data_version_str = "0.0.post2337"
+data_version_tuple = (0, 0, 2337)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2336")
+    pdata_version = V("0.0.post2337")
 except ImportError:
     pass
-data_git_hash = "a6c182e7be504c20ccd38b5fe5f3a345574aa390"
-data_git_describe = "v0.0-2336-ga6c182e7"
+data_git_hash = "1e613cc7f439415ae4f4c86f4452f11a829d7e5e"
+data_git_describe = "v0.0-2337-g1e613cc7"
 data_git_msg = """\
-commit a6c182e7be504c20ccd38b5fe5f3a345574aa390
+commit 1e613cc7f439415ae4f4c86f4452f11a829d7e5e
 Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Fri Jul 22 14:39:14 2022 +0100
+Date:   Thu Jul 14 21:32:46 2022 +0100
 
-    [dv,test] Fix race condition to catch ecall
+    [cosim,dv] Add support to set mcount registers
     
-    We already have a clocking block inside dut_if. This commit uses it
-    to avoid a race condition that happens when `instr_valid_i` goes high
-    while `ecall_insn_i` goes low.
+    Extends RVFI connections further to include 30 mhpmcounterX registers.
+    Sets them up before every cosim step to let Spike know their real values.
     
     Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
