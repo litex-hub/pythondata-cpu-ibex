@@ -4,35 +4,36 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2485"
-version_tuple = (0, 0, 2485)
+version_str = "0.0.post2486"
+version_tuple = (0, 0, 2486)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2485")
+    pversion = V("0.0.post2486")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2343"
-data_version_tuple = (0, 0, 2343)
+data_version_str = "0.0.post2344"
+data_version_tuple = (0, 0, 2344)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2343")
+    pdata_version = V("0.0.post2344")
 except ImportError:
     pass
-data_git_hash = "7bae3b7ba34d9611bc263d84bd358ec5021f82d3"
-data_git_describe = "v0.0-2343-g7bae3b7b"
+data_git_hash = "6dc0683773635bfde3949c6fa7d9c3e7282ab916"
+data_git_describe = "v0.0-2344-g6dc06837"
 data_git_msg = """\
-commit 7bae3b7ba34d9611bc263d84bd358ec5021f82d3
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon Jul 25 09:41:33 2022 +0100
+commit 6dc0683773635bfde3949c6fa7d9c3e7282ab916
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Tue Jul 26 13:28:44 2022 +0100
 
-    [dv,fcov] Fix `cp_mem_raw_hz` implementation
+    [dv] Fix IbexDataRPayloadX assertion
     
-    This commit fixes how we catch an instruction at WB stage. Before this fix
-    we were effectively checking opcode of decoded instruction instead.
+    Some aspects of the memory response are only relevant to reads. This
+    introduces outstanding request tracking so we know which outstanding
+    requests are reads and applies X checks appropriately.
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Fixes #1645
 
 """
 
