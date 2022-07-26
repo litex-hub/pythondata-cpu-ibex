@@ -4,35 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2481"
-version_tuple = (0, 0, 2481)
+version_str = "0.0.post2485"
+version_tuple = (0, 0, 2485)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2481")
+    pversion = V("0.0.post2485")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2339"
-data_version_tuple = (0, 0, 2339)
+data_version_str = "0.0.post2343"
+data_version_tuple = (0, 0, 2343)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2339")
+    pdata_version = V("0.0.post2343")
 except ImportError:
     pass
-data_git_hash = "83ac7a94d25f002c99a1d494f1dc32c81b7588ef"
-data_git_describe = "v0.0-2339-g83ac7a94"
+data_git_hash = "7bae3b7ba34d9611bc263d84bd358ec5021f82d3"
+data_git_describe = "v0.0-2343-g7bae3b7b"
 data_git_msg = """\
-commit 83ac7a94d25f002c99a1d494f1dc32c81b7588ef
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Sat Jul 23 19:23:41 2022 +0100
+commit 7bae3b7ba34d9611bc263d84bd358ec5021f82d3
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Mon Jul 25 09:41:33 2022 +0100
 
-    Don't check MCAUSE[31] in debug_mode to identify sync/async trap
+    [dv,fcov] Fix `cp_mem_raw_hz` implementation
     
-    Interrupts are disabled in Debug Mode (Sdext 4.1.2), and simultaneously
-    registers, including MCAUSE, are not updated by exceptions (Sdext 4.1.3),
-    so reading MCAUSE[31] after an exception (eg. invalid instruction) in
-    debug_mode may still report the previous cause (which could be an interrupt).
+    This commit fixes how we catch an instruction at WB stage. Before this fix
+    we were effectively checking opcode of decoded instruction instead.
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
