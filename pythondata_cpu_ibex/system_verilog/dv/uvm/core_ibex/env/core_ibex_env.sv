@@ -10,11 +10,10 @@ class core_ibex_env extends uvm_env;
   ibex_mem_intf_response_agent   data_if_response_agent;
   ibex_mem_intf_response_agent   instr_if_response_agent;
   irq_request_agent              irq_agent;
-`ifdef INC_IBEX_COSIM
   ibex_cosim_agent               cosim_agent;
-`endif
   core_ibex_vseqr                vseqr;
   core_ibex_env_cfg              cfg;
+  scrambling_key_agent           scrambling_key_agent_h;
 
   `uvm_component_utils(core_ibex_env)
   `uvm_component_new
@@ -29,15 +28,13 @@ class core_ibex_env extends uvm_env;
     instr_if_response_agent = ibex_mem_intf_response_agent::type_id::
                            create("instr_if_response_agent", this);
     irq_agent = irq_request_agent::type_id::create("irq_agent", this);
+    cosim_agent = ibex_cosim_agent::type_id::create("cosim_agent", this);
 
-`ifdef INC_IBEX_COSIM
-    if (!cfg.disable_cosim) begin
-      cosim_agent = ibex_cosim_agent::type_id::create("cosim_agent", this);
-    end else begin
-      `uvm_info(get_full_name(), "Cosim disabled by plusarg +disable_cosim=1", UVM_LOW)
-      cosim_agent = null;
-    end
-`endif
+    scrambling_key_agent_h = scrambling_key_agent::type_id::create("scrambling_key_agent_h", this);
+    uvm_config_db#(scrambling_key_agent_cfg)::set(this, "scrambling_key_agent_h", "cfg",
+                                                  cfg.scrambling_key_cfg);
+    cfg.scrambling_key_cfg.agent_type = push_pull_agent_pkg::PullAgent;
+    cfg.scrambling_key_cfg.if_mode = dv_utils_pkg::Device;
     // Create virtual sequencer
     vseqr = core_ibex_vseqr::type_id::create("vseqr", this);
   endfunction : build_phase
@@ -47,15 +44,10 @@ class core_ibex_env extends uvm_env;
     vseqr.data_if_seqr = data_if_response_agent.sequencer;
     vseqr.instr_if_seqr = instr_if_response_agent.sequencer;
     vseqr.irq_seqr = irq_agent.sequencer;
-
-`ifdef INC_IBEX_COSIM
-    if (cosim_agent != null) begin
-      data_if_response_agent.monitor.item_collected_port.connect(
-        cosim_agent.dmem_port);
-      instr_if_response_agent.monitor.item_collected_port.connect(
-        cosim_agent.imem_port);
-    end
-`endif
+    data_if_response_agent.monitor.item_collected_port.connect(
+      cosim_agent.dmem_port);
+    instr_if_response_agent.monitor.item_collected_port.connect(
+      cosim_agent.imem_port);
   endfunction : connect_phase
 
   function void reset();

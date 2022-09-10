@@ -39,6 +39,10 @@ class riscv_pmp_cfg extends uvm_object;
   // allowing all access restrictions to be enforced.
   bit enable_pmp_exception_handler = 1'b1;
 
+  // Don't generate the usual PMP setup section, instead generate a setup that provides a single
+  // region allowing full access to all of memory from both U mode and M mode.
+  bit suppress_pmp_setup = 0;
+
   // Setting this bit to 1'b1 enables generation of the directed stream of instructions to test
   // write accesses to all supported pmpaddr[i] CSRs.
   bit enable_write_pmp_csr;
@@ -49,6 +53,10 @@ class riscv_pmp_cfg extends uvm_object;
   // pmp CSR configurations
   rand pmp_cfg_reg_t pmp_cfg[];
 
+  // Hints used during PMP generation
+  bit pmp_cfg_addr_valid[];
+  bit pmp_cfg_already_configured[];
+
   // This value is the address offset between the minimum and maximum pmpaddr
   // CSR values.
   // As pmpaddr0 will be set to the address of the <main> label, the address stored
@@ -56,6 +64,11 @@ class riscv_pmp_cfg extends uvm_object;
   // address range covered by the PMP address range.
   // Can be manually configured from the command line.
   bit [XLEN - 1 : 0] pmp_max_offset = {XLEN{1'b1}};
+
+  // Value to hold the end signature address to that signals the end to the test environment.
+  // Currently the design assumes that the end signature is address is equal to the signature
+  // address minus 4 Bytes.
+  bit [XLEN - 1 : 0] end_signature_addr;
 
   // used to parse addr_mode configuration from cmdline
   typedef uvm_enum_wrapper#(pmp_addr_mode_t) addr_mode_wrapper;
@@ -82,21 +95,19 @@ class riscv_pmp_cfg extends uvm_object;
 
   constraint xwr_c {
     foreach (pmp_cfg[i]) {
-      !(pmp_cfg[i].w && !pmp_cfg[i].r);
+      !(!mseccfg.mml && pmp_cfg[i].w && !pmp_cfg[i].r);
     }
   }
 
   constraint grain_addr_mode_c {
     foreach (pmp_cfg[i]) {
-      (pmp_granularity == 0) -> (pmp_cfg[i].a != NAPOT);
       (pmp_granularity >= 1) -> (pmp_cfg[i].a != NA4);
     }
   }
 
   constraint addr_range_c {
     foreach (pmp_cfg[i]) {
-      // Offset of pmp_cfg[0] does not matter, since it will be set to <main>,
-      // so we do not constrain it here, as it will be overridden during generation
+      // Offset of pmp_cfg[0] is always set to 0 from main.
       if (i != 0) {
         pmp_cfg[i].offset inside {[1 : pmp_max_offset]};
       } else {
@@ -134,13 +145,17 @@ class riscv_pmp_cfg extends uvm_object;
     get_int_arg_value("+pmp_granularity=", pmp_granularity);
     get_bool_arg_value("+pmp_randomize=", pmp_randomize);
     get_bool_arg_value("+pmp_allow_addr_overlap=", pmp_allow_addr_overlap);
+    get_bool_arg_value("+suppress_pmp_setup=", suppress_pmp_setup);
     get_bool_arg_value("+enable_write_pmp_csr=", enable_write_pmp_csr);
     get_hex_arg_value("+pmp_max_offset=", pmp_max_offset);
     `uvm_info(`gfn, $sformatf("pmp max offset: 0x%0x", pmp_max_offset), UVM_LOW)
     pmp_cfg = new[pmp_num_regions];
+    pmp_cfg_addr_valid = new[pmp_num_regions];
+    pmp_cfg_already_configured = new[pmp_num_regions];
   endfunction
 
-  function void initialize(bit require_signature_addr);
+  function void initialize(bit [XLEN - 1 : 0] signature_addr);
+    end_signature_addr = signature_addr - 'h4;
     if (!pmp_randomize) begin
       set_defaults();
       setup_pmp();
@@ -162,12 +177,14 @@ class riscv_pmp_cfg extends uvm_object;
     mseccfg.mmwp = 1'b0;
     mseccfg.rlb  = 1'b1;
     foreach(pmp_cfg[i]) begin
-      pmp_cfg[i].l      = 1'b0;
-      pmp_cfg[i].a      = TOR;
-      pmp_cfg[i].x      = 1'b1;
-      pmp_cfg[i].w      = 1'b1;
-      pmp_cfg[i].r      = 1'b1;
-      pmp_cfg[i].offset = assign_default_addr_offset(pmp_num_regions, i);
+      pmp_cfg[i].l                  = 1'b0;
+      pmp_cfg[i].a                  = TOR;
+      pmp_cfg[i].x                  = 1'b1;
+      pmp_cfg[i].w                  = 1'b1;
+      pmp_cfg[i].r                  = 1'b1;
+      pmp_cfg[i].offset             = assign_default_addr_offset(pmp_num_regions, i);
+      pmp_cfg_addr_valid[i]         = 1'b0;
+      pmp_cfg_already_configured[i] = 1'b0;
     end
   endfunction
 
@@ -178,16 +195,21 @@ class riscv_pmp_cfg extends uvm_object;
     return offset;
   endfunction
 
+  typedef struct { pmp_cfg_reg_t pmp_cfg_reg; bit addr_valid; } parse_pmp_config_t;
+
   function void setup_pmp();
     string arg_name;
     string arg_value;
+    parse_pmp_config_t tmp_value;
     if (inst.get_arg_value("+mseccfg=", arg_value)) begin
       mseccfg = parse_mseccfg(arg_value, mseccfg);
     end
     foreach (pmp_cfg[i]) begin
       arg_name = $sformatf("+pmp_region_%0d=", i);
       if (inst.get_arg_value(arg_name, arg_value)) begin
-        pmp_cfg[i] = parse_pmp_config(arg_value, pmp_cfg[i]);
+        tmp_value = parse_pmp_config(arg_value, pmp_cfg[i]);
+        pmp_cfg[i] = tmp_value.pmp_cfg_reg;
+        pmp_cfg_addr_valid[i] = tmp_value.addr_valid;
         `uvm_info(`gfn, $sformatf("Configured pmp_cfg[%0d] from command line: %p",
                                   i, pmp_cfg[i]), UVM_LOW)
       end
@@ -223,12 +245,14 @@ class riscv_pmp_cfg extends uvm_object;
     return mseccfg_reg;
   endfunction
 
-  function pmp_cfg_reg_t parse_pmp_config(string pmp_region, pmp_cfg_reg_t ref_pmp_cfg);
+  function parse_pmp_config_t parse_pmp_config(string pmp_region, pmp_cfg_reg_t ref_pmp_cfg);
     string fields[$];
     string field_vals[$];
     string field_type;
     string field_val;
-    pmp_cfg_reg_t pmp_cfg_reg = ref_pmp_cfg;
+    parse_pmp_config_t return_value;
+    return_value.pmp_cfg_reg = ref_pmp_cfg;
+    return_value.addr_valid = 1'b0;
     uvm_split_string(pmp_region, ",", fields);
     foreach (fields[i]) begin
       uvm_split_string(fields[i], ":", field_vals);
@@ -236,32 +260,33 @@ class riscv_pmp_cfg extends uvm_object;
       field_val = field_vals.pop_front();
       case (field_type)
         "L": begin
-          pmp_cfg_reg.l = field_val.atobin();
+          return_value.pmp_cfg_reg.l = field_val.atobin();
         end
         "A": begin
           `DV_CHECK(addr_mode_wrapper::from_name(field_val, addr_mode))
-          pmp_cfg_reg.a = addr_mode;
+          return_value.pmp_cfg_reg.a = addr_mode;
         end
         "X": begin
-          pmp_cfg_reg.x = field_val.atobin();
+          return_value.pmp_cfg_reg.x = field_val.atobin();
         end
         "W": begin
-          pmp_cfg_reg.w = field_val.atobin();
+          return_value.pmp_cfg_reg.w = field_val.atobin();
         end
         "R": begin
-          pmp_cfg_reg.r = field_val.atobin();
+          return_value.pmp_cfg_reg.r = field_val.atobin();
         end
         "ADDR": begin
           // Don't have to convert address to "PMP format" here,
           // since it must be masked off in hardware
-          pmp_cfg_reg.addr = format_addr(field_val.atohex());
+          return_value.addr_valid = 1'b1;
+          return_value.pmp_cfg_reg.addr = format_addr(field_val.atohex());
         end
         default: begin
           `uvm_fatal(`gfn, $sformatf("%s, Invalid PMP configuration field name!", field_val))
         end
       endcase
     end
-    return pmp_cfg_reg;
+    return return_value;
   endfunction
 
   function bit [XLEN - 1 : 0] format_addr(bit [XLEN - 1 : 0] addr);
@@ -287,89 +312,266 @@ class riscv_pmp_cfg extends uvm_object;
     `uvm_info(`gfn, "Placeholder function, need to implement", UVM_LOW)
   endfunction
 
+  // Generates code to setup a single PMP region allowing full access to all memory
+  function void gen_pmp_enable_all(riscv_reg_t scratch_reg, ref string instr[$]);
+    // Setup region 0 to NAPOT covering the whole 32-bit address space, with RWX permissions and no
+    // lock.
+    instr.push_back($sformatf("li x%0d, 0x1fffffff", scratch_reg));
+    instr.push_back($sformatf("csrw 0x%0x, x%0d", PMPADDR0, scratch_reg));
+    instr.push_back($sformatf("csrw 0x%0x, 0x1f", PMPCFG0));
+  endfunction
+
   // This function parses the pmp_cfg[] array to generate the actual instructions to set up
   // the PMP CSR registers.
   // Since either 4 (in rv32) or 8 (in rv64) PMP configuration registers fit into one physical
   // CSR, this function waits until it has reached this maximum to write to the physical CSR to
   // save some extraneous instructions from being performed.
+  //
+  // The general flow of this function:
+  // - If randomization, generate code region, otherwise select region 0.
+  // - Set address of code region before setting MSECCFG.
+  // - If  MML, initially set MSECCFG to MML=0, MMWP=0, RLB=1.
+  // - If  MML, set the config of code region to LXWR=1100 and TOR.
+  // - If MMWP, set the config of code region to LXWR=0100 and TOR.
+  // - If MML or MMWP, set requested MSECCFG with RLB hardcoded to 1.
+  // - Don't override code region config if corresponding `+pmp_region_` is passed.
+  // - If MML, set default code region config to shared execute.
+  // - If MML or MMWP, set stack and signature regions to shared read/write.
+  // - Set requested MSECCFG (including RLB).
+  // - Set all other addresses and configs.
   function void gen_pmp_instr(riscv_reg_t scratch_reg[2], ref string instr[$]);
     bit [XLEN - 1 : 0] pmp_word;
     bit [XLEN - 1 : 0] cfg_bitmask;
     bit [7 : 0] cfg_byte;
     int pmp_id;
+    string arg_value;
+    int code_entry;
+    pmp_cfg_reg_t tmp_pmp_cfg;
+
     if (riscv_instr_pkg::support_epmp) begin
-      `uvm_info(`gfn, $sformatf("MSECCFG: MML %0x, MMWP %0x, RLB %0x", mseccfg.mml,
-          mseccfg.mmwp, mseccfg.rlb), UVM_LOW)
-      cfg_byte = {mseccfg.rlb, mseccfg.mmwp, mseccfg.mml};
+      // In case of MML or MMWP we need to set code region to executable before setting MSECCFG.
+      if (mseccfg.mml || mseccfg.mmwp) begin
+        // Writing MSECCFG with RLB set to 1 to stop the config with L enabled from locking
+        // everything before configuration is done.
+        `uvm_info(`gfn, $sformatf("MSECCFG: MML 0, MMWP 0, RLB 1"), UVM_LOW)
+        cfg_byte = {1'b1, 1'b0, 1'b0};
+        instr.push_back($sformatf("csrwi 0x%0x, %0d", MSECCFG, cfg_byte));
+
+        if (pmp_randomize) begin
+          // Randomly select a PMP region to contain the code for permitting execution and two
+          // extra regions to contain the stack and the signature address.
+          code_entry = $urandom_range(pmp_num_regions - 3);
+          // In case of full randomization we actually want the code region to cover main as well.
+          pmp_cfg[code_entry].offset = pmp_max_offset;
+        end else begin
+          code_entry = 0;
+          // This is the default offset.
+          pmp_cfg[code_entry].offset = assign_default_addr_offset(pmp_num_regions, 0);
+        end
+
+        if (code_entry > 0) begin
+          // Load _start into PMP address of previous entry to complete TOR region.
+          instr.push_back($sformatf("la x%0d, _start", scratch_reg[0]));
+          instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
+          instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + code_entry - 1,
+                                    scratch_reg[0]));
+          `uvm_info(`gfn, $sformatf("Address of pmp_addr_%d is _start", code_entry - 1), UVM_LOW)
+          pmp_cfg_already_configured[code_entry - 1] = 1'b1;
+        end
+        // Load the address of the <main> + offset into PMP code entry.
+        instr.push_back($sformatf("la x%0d, main", scratch_reg[0]));
+        instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[1], pmp_cfg[code_entry].offset));
+        instr.push_back($sformatf("add x%0d, x%0d, x%0d", scratch_reg[0], scratch_reg[0],
+                                  scratch_reg[1]));
+        instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + code_entry, scratch_reg[0]));
+        `uvm_info(`gfn, $sformatf("Offset of pmp_addr_%d from main: 0x%0x", code_entry,
+                                  pmp_cfg[code_entry].offset), UVM_LOW)
+        pmp_cfg_already_configured[code_entry] = 1'b1;
+
+        if (mseccfg.mml) begin
+          // This value is different from below (M-mode execute only) because we need code region
+          // to be executable in both M-mode and U-mode, since RISCV-DV switches priviledge before
+          // <main> but after <pmp_setup>. We choose not to use the shared code region that also
+          // allows read in M-mode because that is inconsistent with the execute-only in other
+          // modes.
+          tmp_pmp_cfg.l = 1'b1;
+          tmp_pmp_cfg.a = TOR;
+          tmp_pmp_cfg.x = 1'b0;
+          tmp_pmp_cfg.w = 1'b1;
+          tmp_pmp_cfg.r = 1'b0;
+          // This configuration needs to be executable in M-mode both before and after writing to
+          // MSECCFG. It will deny execution for U-Mode, but this is necessary because RWX=111 in
+          // MML means read only, and RW=01 is not allowed before MML is enabled.
+          cfg_byte = {tmp_pmp_cfg.l, tmp_pmp_cfg.zero, tmp_pmp_cfg.a, 1'b1,
+                      1'b0, tmp_pmp_cfg.r};
+        end else begin
+          // We must set pmp code region to executable before enabling MMWP. RW=00 to be consistent
+          // with MML configuration as much as possible.
+          tmp_pmp_cfg.l = 1'b0;
+          tmp_pmp_cfg.a = TOR;
+          tmp_pmp_cfg.x = 1'b1;
+          tmp_pmp_cfg.w = 1'b0;
+          tmp_pmp_cfg.r = 1'b0;
+          cfg_byte      = {tmp_pmp_cfg.l, tmp_pmp_cfg.zero, tmp_pmp_cfg.a,
+                           tmp_pmp_cfg.x, tmp_pmp_cfg.w,    tmp_pmp_cfg.r};
+        end
+        // In case the randomly selected code entry is not also configured in the arguments,
+        // overwrite it in pmp_cfg.
+        // The pmp_config has value LXWR = 1010, which means it is executable in both M and U mode.
+        if (!inst.get_arg_value($sformatf("+pmp_region_%d=", code_entry), arg_value)) begin
+          pmp_cfg[code_entry].l      = tmp_pmp_cfg.l;
+          pmp_cfg[code_entry].a      = tmp_pmp_cfg.a;
+          pmp_cfg[code_entry].x      = tmp_pmp_cfg.x;
+          pmp_cfg[code_entry].w      = tmp_pmp_cfg.w;
+          pmp_cfg[code_entry].r      = tmp_pmp_cfg.r;
+        end
+
+        if (code_entry > 0) begin
+          // Disable all configs before the code entry because PMP regions can be initialized with
+          // any value and we need to make sure that the code entry is the first valid entry during
+          // PMP setup.
+          cfg_bitmask = 0;
+          instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], cfg_bitmask));
+          for (int i = 0; i < (code_entry / cfg_per_csr); i++) begin
+            instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmpcfg_addr + i, scratch_reg[0]));
+          end
+        end
+        // Enable the selected config on region code_entry.
+        cfg_bitmask = cfg_byte << ((code_entry % cfg_per_csr) * 8);
+        `uvm_info(`gfn, $sformatf("temporary code config: 0x%0x", cfg_bitmask), UVM_DEBUG)
+        instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], cfg_bitmask));
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmpcfg_addr + (code_entry/cfg_per_csr),
+                                  scratch_reg[0]));
+
+        // Load the address of the kernel_stack_end into PMP stack entry.
+        instr.push_back($sformatf("la x%0d, kernel_stack_end", scratch_reg[0]));
+        instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + code_entry + 1,
+                                  scratch_reg[0]));
+        `uvm_info(`gfn, $sformatf("Address of pmp_addr_%d is kernel_stack_end", code_entry + 1),
+                  UVM_LOW)
+        pmp_cfg_already_configured[code_entry + 1] = 1'b1;
+        // In case the randomly selected code_entry + 1 is not also specified in the arguments,
+        // overwrite it in pmp_cfg. We use this for the stack entry.
+        if (!inst.get_arg_value($sformatf("+pmp_region_%d=", code_entry + 1), arg_value)) begin
+          if (mseccfg.mml) begin
+            // Marking the pmp stack region as shared write/read region before starting main.
+            pmp_cfg[code_entry + 1].l = 1'b0;
+            pmp_cfg[code_entry + 1].a = TOR;
+            pmp_cfg[code_entry + 1].x = 1'b1;
+            pmp_cfg[code_entry + 1].w = 1'b1;
+            pmp_cfg[code_entry + 1].r = 1'b0;
+          end else begin
+            // We must set PMP stack region to write/read before starting main. X=0 to be consistent
+            // with MML mode.
+            pmp_cfg[code_entry + 1].l = 1'b0;
+            pmp_cfg[code_entry + 1].a = TOR;
+            pmp_cfg[code_entry + 1].x = 1'b0;
+            pmp_cfg[code_entry + 1].w = 1'b1;
+            pmp_cfg[code_entry + 1].r = 1'b1;
+          end
+        end
+        // Load the signature address into PMP signature entry. This assumes the
+        // end_signature_addr = signature_addr - 4. And that both are 4 Bytes.
+        instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], end_signature_addr));
+        instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + code_entry + 2,
+                                  scratch_reg[0]));
+        `uvm_info(`gfn, $sformatf("Address of pmp_addr_%d is signature_addr", code_entry + 2),
+                  UVM_LOW)
+        pmp_cfg_already_configured[code_entry + 2] = 1'b1;
+        // In case the randomly selected code_entry + 2 is not also specified in the arguments,
+        // overwrite it in pmp_cfg. This is used for the signature address.
+        if (!inst.get_arg_value($sformatf("+pmp_region_%d=", code_entry + 2), arg_value)) begin
+          if (mseccfg.mml) begin
+            // Marking the PMP signature region as shared write/read region before starting main.
+            pmp_cfg[code_entry + 2].l = 1'b0;
+            pmp_cfg[code_entry + 2].a = NAPOT;
+            pmp_cfg[code_entry + 2].x = 1'b1;
+            pmp_cfg[code_entry + 2].w = 1'b1;
+            pmp_cfg[code_entry + 2].r = 1'b0;
+          end else begin
+            // We must set PMP signature region to write/read before starting main. X=0 to be
+            // consistent with MML mode.
+            pmp_cfg[code_entry + 2].l = 1'b0;
+            pmp_cfg[code_entry + 2].a = NAPOT;
+            pmp_cfg[code_entry + 2].x = 1'b0;
+            pmp_cfg[code_entry + 2].w = 1'b1;
+            pmp_cfg[code_entry + 2].r = 1'b1;
+          end
+        end
+      end
+
+      // Writing MSECCFG with RLB still set to 1 otherwise we cannot complete configuration.
+      `uvm_info(`gfn, $sformatf("MSECCFG: MML %0x, MMWP %0x, RLB 1", mseccfg.mml, mseccfg.mmwp),
+                UVM_LOW)
+      cfg_byte = {1'b1, mseccfg.mmwp, mseccfg.mml};
       instr.push_back($sformatf("csrwi 0x%0x, %0d", MSECCFG, cfg_byte));
     end
+
     foreach (pmp_cfg[i]) begin
-      // TODO(udinator) condense this calculations if possible
       pmp_id = i / cfg_per_csr;
-      if (i == 0) begin
-        cfg_byte = {1'b0, pmp_cfg[i].zero, TOR, 1'b1, 1'b1, 1'b1};
-      end else begin
-        cfg_byte = {pmp_cfg[i].l, pmp_cfg[i].zero, pmp_cfg[i].a,
-                    pmp_cfg[i].x, pmp_cfg[i].w, pmp_cfg[i].r};
-      end
-      `uvm_info(`gfn, $sformatf("cfg_byte: 0x%0x", cfg_byte), UVM_DEBUG)
-      // First write to the appropriate pmpaddr CSR
+      cfg_byte = {pmp_cfg[i].l, pmp_cfg[i].zero, pmp_cfg[i].a,
+                  pmp_cfg[i].x, pmp_cfg[i].w,    pmp_cfg[i].r};
+      `uvm_info(`gfn, $sformatf("cfg_byte: 0x%0x", cfg_byte), UVM_LOW)
+      // First write to the appropriate pmpaddr CSR.
       cfg_bitmask = cfg_byte << ((i % cfg_per_csr) * 8);
       `uvm_info(`gfn, $sformatf("cfg_bitmask: 0x%0x", cfg_bitmask), UVM_DEBUG)
       pmp_word = pmp_word | cfg_bitmask;
       `uvm_info(`gfn, $sformatf("pmp_word: 0x%0x", pmp_word), UVM_DEBUG)
       cfg_bitmask = 0;
-      if (i == 0) begin
-        // load the address of the <main> section into pmpaddr0
-        instr.push_back($sformatf("la x%0d, main", scratch_reg[0]));
-        instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
-        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + i, scratch_reg[0]));
-        `uvm_info(`gfn, "Loaded the address of <main> section into pmpaddr0", UVM_LOW)
-      end else begin
-        // If an actual address has been set from the command line, use this address,
-        // otherwise use the default offset+<main> address
-        //
-        // TODO(udinator) - The practice of passing in a max offset from the command line
-        //  is somewhat unintuitive, and is just an initial step. Eventually a max address
-        //  should be passed in from the command line and this routine do all of the
-        //  calculations to split the address range formed by [<main> : pmp_max_addr].
-        //  This will likely require a complex assembly routine - the code below is a very simple
-        //  first step towards this goal, allowing users to specify a PMP memory address
-        //  from the command line instead of having to calculate an offset themselves.
-        if (pmp_cfg[i].addr != 0) begin
+      // If an actual address has been set from the command line, use this address,
+      // otherwise use the default <main> + offset.
+      //
+      // TODO(udinator) - The practice of passing in a max offset from the command line
+      //  is somewhat unintuitive, and is just an initial step. Eventually a max address
+      //  should be passed in from the command line and this routine do all of the
+      //  calculations to split the address range formed by [<main> : pmp_max_addr].
+      //  This will likely require a complex assembly routine - the code below is a very simple
+      //  first step towards this goal, allowing users to specify a PMP memory address
+      //  from the command line instead of having to calculate an offset themselves.
+      //
+      // Only set the address if it has not already been configured in the above routine.
+      if (pmp_cfg_already_configured[i] == 1'b0) begin
+        if (pmp_cfg_addr_valid[i] || pmp_randomize) begin
+          // In case an address was supplied by the test or full randomize is enabled.
           instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], pmp_cfg[i].addr));
           instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + i, scratch_reg[0]));
-          `uvm_info(`gfn,
-                    $sformatf("Address 0x%0x loaded into pmpaddr[%d] CSR", base_pmp_addr + i, i),
+          `uvm_info(`gfn, $sformatf("Address 0x%0x loaded into pmpaddr[%d] CSR", pmp_cfg[i].addr, i),
                     UVM_LOW);
         end else begin
-          // Add the offset to the base address to get the other pmpaddr values
+          // Add the offset to the base address to get the other pmpaddr values.
           instr.push_back($sformatf("la x%0d, main", scratch_reg[0]));
           instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[1], pmp_cfg[i].offset));
           instr.push_back($sformatf("add x%0d, x%0d, x%0d",
                                     scratch_reg[0], scratch_reg[0], scratch_reg[1]));
           instr.push_back($sformatf("srli x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]));
           instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmp_addr + i, scratch_reg[0]));
-          `uvm_info(`gfn, $sformatf("Offset of pmp_addr_%d from pmpaddr0: 0x%0x",
-                                    i, pmp_cfg[i].offset), UVM_LOW)
+          `uvm_info(`gfn, $sformatf("Offset of pmp_addr_%d from main: 0x%0x", i,
+                                    pmp_cfg[i].offset), UVM_LOW)
         end
       end
       // Now, check if we have to write to the appropriate pmpcfg CSR.
-        // Short circuit if we reach the end of the list
+      // Short circuit if we reach the end of the list.
       if (i == pmp_cfg.size() - 1) begin
         instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], pmp_word));
-        instr.push_back($sformatf("csrw 0x%0x, x%0d",
-                                  base_pmpcfg_addr + pmp_id,
-                                  scratch_reg[0]));
-        return;
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmpcfg_addr + pmp_id, scratch_reg[0]));
+        break;
       end else if ((i + 1) % cfg_per_csr == 0) begin
-        // if we've filled up pmp_word, write to the corresponding CSR
+        // If we've filled up pmp_word, write to the corresponding CSR.
         instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], pmp_word));
-        instr.push_back($sformatf("csrw 0x%0x, x%0d",
-                                  base_pmpcfg_addr + pmp_id,
-                                  scratch_reg[0]));
+        instr.push_back($sformatf("csrw 0x%0x, x%0d", base_pmpcfg_addr + pmp_id, scratch_reg[0]));
         pmp_word = 0;
       end
+    end
+
+    // Unsetting RLB if that was requested.
+    if (riscv_instr_pkg::support_epmp && !mseccfg.rlb) begin
+      `uvm_info(`gfn, $sformatf("MSECCFG: MML %0x, MMWP %0x, RLB %0x", mseccfg.mml, mseccfg.mmwp,
+                mseccfg.rlb), UVM_LOW)
+      cfg_byte = {mseccfg.rlb, mseccfg.mmwp, mseccfg.mml};
+      instr.push_back($sformatf("csrwi 0x%0x, %0d", MSECCFG, cfg_byte));
     end
   endfunction
 
@@ -700,7 +902,12 @@ class riscv_pmp_cfg extends uvm_object;
       // If we're writing to the pmpcfg CSR that contains region0 config information,
       // ensure that the "safe" region remains fully accessible.
       if (pmpcfg_addr == base_pmpcfg_addr) begin
-        pmp_val[7:0] = 'h0f;
+        if (mseccfg.mml) begin
+          // In case of MML make this a shared code region with LXWR='b1010.
+          pmp_val[7:0] = 'h8a;
+        end else begin
+          pmp_val[7:0] = 'h0f;
+        end
       end
       instr.push_back($sformatf("li x%0d, 0x%0x", scratch_reg[0], pmp_val));
       // Write the randomized address to pmpcfg[i].

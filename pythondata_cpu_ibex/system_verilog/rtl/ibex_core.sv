@@ -92,6 +92,7 @@ module ibex_core import ibex_pkg::*; #(
   output logic [LineSizeECC-1:0]       ic_data_wdata_o,
   input  logic [LineSizeECC-1:0]       ic_data_rdata_i [IC_NUM_WAYS],
   input  logic                         ic_scr_key_valid_i,
+  output logic                         ic_scr_key_req_o,
 
   // Interrupt inputs
   input  logic                         irq_software_i,
@@ -149,7 +150,6 @@ module ibex_core import ibex_pkg::*; #(
   output logic                         alert_minor_o,
   output logic                         alert_major_internal_o,
   output logic                         alert_major_bus_o,
-  output logic                         icache_inval_o,
   output logic                         core_busy_o
 );
 
@@ -413,6 +413,7 @@ module ibex_core import ibex_pkg::*; #(
     .ic_data_wdata_o   (ic_data_wdata_o),
     .ic_data_rdata_i   (ic_data_rdata_i),
     .ic_scr_key_valid_i(ic_scr_key_valid_i),
+    .ic_scr_key_req_o  (ic_scr_key_req_o),
 
     // outputs to ID stage
     .instr_valid_id_o        (instr_valid_id),
@@ -649,7 +650,6 @@ module ibex_core import ibex_pkg::*; #(
     .instr_id_done_o  (instr_id_done)
   );
 
-  assign icache_inval_o = icache_inval;
   // for RVFI only
   assign unused_illegal_insn_id = illegal_insn_id;
 
@@ -1048,14 +1048,16 @@ module ibex_core import ibex_pkg::*; #(
   `ASSERT_KNOWN_IF(IbexCsrWdataIntKnown, cs_registers_i.csr_wdata_int, csr_op_en)
 
   if (PMPEnable) begin : g_pmp
+    logic [31:0] pc_if_inc;
     logic [33:0] pmp_req_addr [PMPNumChan];
     pmp_req_e    pmp_req_type [PMPNumChan];
     priv_lvl_e   pmp_priv_lvl [PMPNumChan];
 
+    assign pc_if_inc            = pc_if + 32'd2;
     assign pmp_req_addr[PMP_I]  = {2'b00, pc_if};
     assign pmp_req_type[PMP_I]  = PMP_ACC_EXEC;
     assign pmp_priv_lvl[PMP_I]  = priv_mode_id;
-    assign pmp_req_addr[PMP_I2] = {2'b00, (pc_if + 32'd2)};
+    assign pmp_req_addr[PMP_I2] = {2'b00, pc_if_inc};
     assign pmp_req_type[PMP_I2] = PMP_ACC_EXEC;
     assign pmp_priv_lvl[PMP_I2] = priv_mode_id;
     assign pmp_req_addr[PMP_D]  = {2'b00, data_addr_o[31:0]};
@@ -1418,8 +1420,8 @@ module ibex_core import ibex_pkg::*; #(
             rvfi_ext_stage_nmi[i+1]       <= rvfi_ext_stage_nmi[i];
             rvfi_ext_stage_debug_req[i+1] <= rvfi_ext_stage_debug_req[i];
             rvfi_ext_stage_mcycle[i]      <= cs_registers_i.mcycle_counter_i.counter_val_o;
-            // This is done this way because SystemVerilog does not support looping through gen_cntrs[k]
-            // within a for loop.
+            // This is done this way because SystemVerilog does not support looping through
+            // gen_cntrs[k] within a for loop.
             for (int k=0; k < 10; k++) begin
               rvfi_ext_stage_mhpmcounters[i][k]  <= cs_registers_i.mhpmcounter[k+3][31:0];
               rvfi_ext_stage_mhpmcountersh[i][k] <= cs_registers_i.mhpmcounter[k+3][63:32];

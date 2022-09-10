@@ -33,7 +33,8 @@
 
 SpikeCosim::SpikeCosim(const std::string &isa_string, uint32_t start_pc,
                        uint32_t start_mtvec, const std::string &trace_log_path,
-                       bool secure_ibex, bool icache_en)
+                       bool secure_ibex, bool icache_en,
+                       uint32_t pmp_num_regions, uint32_t pmp_granularity)
     : nmi_mode(false), pending_iside_error(false) {
   FILE *log_file = nullptr;
   if (trace_log_path.length() != 0) {
@@ -52,11 +53,11 @@ SpikeCosim::SpikeCosim(const std::string &isa_string, uint32_t start_pc,
       isa_parser.get(), DEFAULT_VARCH, this, 0, false, log_file, std::cerr);
 #endif
 
+  processor->set_pmp_num(pmp_num_regions);
+  processor->set_pmp_granularity(1 << (pmp_granularity + 2));
   processor->set_ibex_flags(secure_ibex, icache_en);
 
-  processor->set_mmu_capability(IMPL_MMU_SBARE);
-  processor->get_state()->pc = start_pc;
-  processor->get_state()->mtvec->write(start_mtvec);
+  initial_proc_setup(start_pc, start_mtvec);
 
   if (log) {
     processor->set_debug(true);
@@ -437,6 +438,21 @@ void SpikeCosim::leave_nmi_mode() {
 #endif
 }
 
+void SpikeCosim::initial_proc_setup(uint32_t start_pc, uint32_t start_mtvec) {
+  processor->get_state()->pc = start_pc;
+  processor->get_state()->mtvec->write(start_mtvec);
+
+  processor->get_state()->csrmap[CSR_MARCHID] =
+      std::make_shared<const_csr_t>(processor.get(), CSR_MARCHID, IBEX_MARCHID);
+
+  processor->set_mmu_capability(IMPL_MMU_SBARE);
+
+  for (int i = 0; i < processor->TM.count(); ++i) {
+    processor->TM.tdata2_write(processor.get(), i, 0);
+    processor->TM.tdata1_write(processor.get(), i, 0x28001048);
+  }
+}
+
 void SpikeCosim::set_mip(uint32_t mip) {
   processor->get_state()->mip->write_with_mask(0xffffffff, mip);
 }
@@ -461,11 +477,29 @@ void SpikeCosim::set_debug_req(bool debug_req) {
 }
 
 void SpikeCosim::set_mcycle(uint64_t mcycle) {
-  // TODO: Spike decrements mcycle on write to hack around an issue it has with
-  // correctly writing minstret. Preferably this write would use a backdoor
-  // access and avoid that decrement but backdoor access isn't part of the
-  // public CSR interface.
-  processor->get_state()->mcycle->write(mcycle + 1);
+  uint32_t upper_mcycle = mcycle >> 32;
+  uint32_t lower_mcycle = mcycle & 0xffffffff;
+
+  // Spike decrements the MCYCLE CSR when you write to it to hack around an
+  // issue it has with incorrectly setting minstret/mcycle when there's an
+  // explicit write to them. There's no backdoor write available via the public
+  // interface to skip this. To complicate matters we can only write 32 bits at
+  // a time and get a decrement each time.
+
+  // Write the lower half first, incremented twice due to the double decrement
+  processor->get_state()->csrmap[CSR_MCYCLE]->write(lower_mcycle + 2);
+
+  if ((processor->get_state()->csrmap[CSR_MCYCLE]->read() & 0xffffffff) == 0) {
+    // If the lower half is 0 at this point then the upper half will get
+    // decremented, so increment it first.
+    upper_mcycle++;
+  }
+
+  // Set the upper half
+  processor->get_state()->csrmap[CSR_MCYCLEH]->write(upper_mcycle);
+
+  // TODO: Do a neater job of this, a more recent spike release should allow us
+  // to write all 64 bits at once at least.
 }
 
 void SpikeCosim::set_csr(const int csr_num, const uint32_t new_val) {
@@ -500,7 +534,7 @@ void SpikeCosim::clear_errors() { errors.clear(); }
 
 void SpikeCosim::fixup_csr(int csr_num, uint32_t csr_val) {
   switch (csr_num) {
-    case CSR_MSTATUS:
+    case CSR_MSTATUS: {
       reg_t mask =
           MSTATUS_MIE | MSTATUS_MPIE | MSTATUS_MPRV | MSTATUS_MPP | MSTATUS_TW;
 
@@ -511,6 +545,24 @@ void SpikeCosim::fixup_csr(int csr_num, uint32_t csr_val) {
       processor->put_csr(csr_num, new_val);
 #endif
       break;
+    }
+    case CSR_MCAUSE: {
+      uint32_t any_interrupt = csr_val & 0x80000000;
+      uint32_t int_interrupt = csr_val & 0x40000000;
+
+      reg_t new_val = (csr_val & 0x0000001f) | any_interrupt;
+
+      if (any_interrupt && int_interrupt) {
+        new_val |= 0x7fffffe0;
+      }
+
+#ifdef OLD_SPIKE
+      processor->set_csr(csr_num, new_val);
+#else
+      processor->put_csr(csr_num, new_val);
+#endif
+      break;
+    }
   }
 }
 

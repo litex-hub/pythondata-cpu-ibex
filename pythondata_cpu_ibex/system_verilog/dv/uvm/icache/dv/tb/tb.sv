@@ -91,6 +91,8 @@ module tb #(
       .ic_data_wdata_o     ( ram_if.ic_data_wdata       ),
       .ic_data_rdata_i     ( ram_if.ic_data_rdata_o     ),
       .ic_scr_key_valid_i  ( scramble_key_valid_q       ),
+      // TODO: Hook up to monitor and appropriate checking
+      .ic_scr_key_req_o    (                            ),
 
       // TODO: Probe this and verify functionality
       .ecc_error_o         ( ram_if.ecc_err             )
@@ -198,7 +200,7 @@ module tb #(
   end
 
 
-  // Initiate push pull interface for the OTP<->OTBN connections
+  // Initiate push pull interface for connection between Icache and a scrambling key provider.
   push_pull_if #(
     .DeviceDataWidth(194)
   ) scrambling_key_if (

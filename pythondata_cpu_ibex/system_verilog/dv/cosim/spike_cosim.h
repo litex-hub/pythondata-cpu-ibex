@@ -5,17 +5,20 @@
 #ifndef SPIKE_COSIM_H_
 #define SPIKE_COSIM_H_
 
+#include <stdint.h>
+
+#include <deque>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "cosim.h"
 #include "riscv/devices.h"
 #include "riscv/log_file.h"
 #include "riscv/processor.h"
 #include "riscv/simif.h"
 
-#include <stdint.h>
-#include <deque>
-#include <memory>
-#include <string>
-#include <vector>
+#define IBEX_MARCHID 22
 
 class SpikeCosim : public simif_t, public Cosim {
  private:
@@ -66,12 +69,15 @@ class SpikeCosim : public simif_t, public Cosim {
 
   void leave_nmi_mode();
 
+  void initial_proc_setup(uint32_t start_pc, uint32_t start_mtvec);
+
   int insn_cnt;
 
  public:
   SpikeCosim(const std::string &isa_string, uint32_t start_pc,
              uint32_t start_mtvec, const std::string &trace_log_path,
-             bool secure_ibex, bool icache_en);
+             bool secure_ibex, bool icache_en, uint32_t pmp_num_regions,
+             uint32_t pmp_granularity);
 
   // simif_t implementation
   virtual char *addr_to_mem(reg_t addr) override;

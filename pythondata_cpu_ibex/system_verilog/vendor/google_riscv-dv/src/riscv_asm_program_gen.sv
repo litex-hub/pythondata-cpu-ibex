@@ -62,6 +62,11 @@ class riscv_asm_program_gen extends uvm_object;
 
   // This is the main function to generate all sections of the program.
   virtual function void gen_program();
+    // Prevent generation of PMP exception handling code where PMP is not supported
+    if (!support_pmp) begin
+      cfg.pmp_cfg.enable_pmp_exception_handler = 1'b0;
+    end
+
     instr_stream.delete();
     // Generate program header
     gen_program_header();
@@ -824,8 +829,15 @@ class riscv_asm_program_gen extends uvm_object;
   virtual function void setup_pmp(int hart);
     string instr[$];
     if (riscv_instr_pkg::support_pmp) begin
-      cfg.pmp_cfg.setup_pmp();
-      cfg.pmp_cfg.gen_pmp_instr('{cfg.scratch_reg, cfg.gpr[0]}, instr);
+      if(cfg.pmp_cfg.suppress_pmp_setup) begin
+        // When PMP setup is suppressed generate a configuration that gives unrestricted access to
+        // all memory for both M and U mode
+        cfg.pmp_cfg.gen_pmp_enable_all(cfg.scratch_reg, instr);
+      end else begin
+        cfg.pmp_cfg.setup_pmp();
+        cfg.pmp_cfg.gen_pmp_instr('{cfg.scratch_reg, cfg.gpr[0]}, instr);
+      end
+
       gen_section(get_label("pmp_setup", hart), instr);
     end
   endfunction

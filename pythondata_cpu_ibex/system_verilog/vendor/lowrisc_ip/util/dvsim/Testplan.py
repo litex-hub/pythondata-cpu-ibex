@@ -18,10 +18,17 @@ from tabulate import tabulate
 class Result:
     '''The results for a single test'''
 
-    def __init__(self, name, passing=0, total=0):
+    def __init__(self,
+                 name,
+                 passing=0,
+                 total=0,
+                 job_runtime=None,
+                 simulated_time=None):
         self.name = name
         self.passing = passing
         self.total = total
+        self.job_runtime = job_runtime
+        self.simulated_time = simulated_time
         self.mapped = False
 
 
@@ -31,10 +38,10 @@ class Element():
     This is either a testpoint or a covergroup.
     """
     # Type of the testplan element. Must be set by the extended class.
-    kind = None
+    kind = "none"
 
     # Mandatory fields in a testplan element.
-    fields = ("name", "desc")
+    fields = ["name", "desc"]
 
     def __init__(self, raw_dict):
         """Initialize the testplan element.
@@ -123,14 +130,14 @@ class Testpoint(Element):
     It captures following information:
     - name of the planned test
     - a brief description indicating intent, stimulus and checking procedure
-    - the targeted milestone
+    - the targeted stage
     - the list of actual developed tests that verify it
     """
     kind = "testpoint"
-    fields = Element.fields + ("milestone", "tests")
+    fields = Element.fields + ["stage", "tests"]
 
-    # Verification milestones.
-    milestones = ("N.A.", "V1", "V2", "V2S", "V3")
+    # Verification stages.
+    stages = ("N.A.", "V1", "V2", "V2S", "V3")
 
     def __init__(self, raw_dict):
         super().__init__(raw_dict)
@@ -146,15 +153,15 @@ class Testpoint(Element):
             self.not_mapped = True
 
     def __str__(self):
-        return super().__str__() + (f"  Milestone: {self.milestone}\n"
+        return super().__str__() + (f"  Stage: {self.stage}\n"
                                     f"  Tests: {self.tests}\n")
 
     def _validate(self):
         super()._validate()
-        if self.milestone not in Testpoint.milestones:
-            raise ValueError(f"Testpoint milestone {self.milestone} is "
+        if self.stage not in Testpoint.stages:
+            raise ValueError(f"Testpoint stage {self.stage} is "
                              f"invalid:\n{self}\nLegal values: "
-                             f"Testpoint.milestones")
+                             f"Testpoint.stages")
 
         # "tests" key must be list.
         if not isinstance(self.tests, list):
@@ -202,7 +209,7 @@ class Testpoint(Element):
         # If no written tests were indicated for this testpoint, then reuse
         # the testpoint name to count towards "not run".
         if not self.tests:
-            self.test_results = [Result(name=self.name, passing=0, total=0)]
+            self.test_results = [Result(name=self.name)]
             return
 
         # Skip if this testpoint is not meant to be mapped to the simulation
@@ -221,7 +228,7 @@ class Testpoint(Element):
         tests_mapped = [tr.name for tr in self.test_results]
         for test in self.tests:
             if test not in tests_mapped:
-                self.test_results.append(Result(name=test, passing=0, total=0))
+                self.test_results.append(Result(name=test))
 
 
 class Testplan:
@@ -339,10 +346,10 @@ class Testplan:
             print("Error: the testplan 'name' is not set!")
             sys.exit(1)
 
-        # Represents current progress towards each milestone. Milestone = N.A.
+        # Represents current progress towards each stage. Stage = N.A.
         # is used to indicate the unmapped tests.
         self.progress = {}
-        for key in Testpoint.milestones:
+        for key in Testpoint.stages:
             self.progress[key] = {
                 "total": 0,
                 "written": 0,
@@ -456,17 +463,17 @@ class Testplan:
         self._sort()
 
     def _sort(self):
-        """Sort testpoints by milestone and covergroups by name."""
-        self.testpoints.sort(key=lambda x: x.milestone)
+        """Sort testpoints by stage and covergroups by name."""
+        self.testpoints.sort(key=lambda x: x.stage)
         self.covergroups.sort(key=lambda x: x.name)
 
-    def get_milestone_regressions(self):
+    def get_stage_regressions(self):
         regressions = defaultdict(set)
         for tp in self.testpoints:
             if tp.not_mapped:
                 continue
-            if tp.milestone in tp.milestones[1:]:
-                regressions[tp.milestone].update({t for t in tp.tests if t})
+            if tp.stage in tp.stages[1:]:
+                regressions[tp.stage].update({t for t in tp.tests if t})
 
         # Build regressions dict into a hjson like data structure
         return [{
@@ -499,7 +506,7 @@ class Testplan:
 
         if self.testpoints:
             lines = [formatter("\n### Testpoints\n")]
-            header = ["Milestone", "Name", "Tests", "Description"]
+            header = ["Stage", "Name", "Tests", "Description"]
             colalign = ("center", "center", "left", "left")
             table = []
             for tp in self.testpoints:
@@ -510,7 +517,7 @@ class Testplan:
                 # Markdown and HTML mode by interspersing with '<br>' tags.
                 tests = "<br>\n".join(tp.tests)
 
-                table.append([tp.milestone, tp.name, tests, desc])
+                table.append([tp.stage, tp.name, tests, desc])
             lines += [
                 tabulate(table,
                          headers=header,
@@ -551,11 +558,11 @@ class Testplan:
             """Computes the testplan progress and the sim footprint.
 
             totals is a list of Testpoint items that represent the total number
-            of tests passing for each milestone. The sim footprint is simply
+            of tests passing for each stage. The sim footprint is simply
             the sum total of all tests run in the simulation, counted for each
-            milestone and also the grand total.
+            stage and also the grand total.
             """
-            ms = testpoint.milestone
+            ms = testpoint.stage
             for tr in testpoint.test_results:
                 if not tr:
                     continue
@@ -571,7 +578,7 @@ class Testplan:
                         self.progress[ms]["passing"] += 1
                     self.progress[ms]["written"] += 1
 
-                # Compute the milestone total & the grand total.
+                # Compute the stage total & the grand total.
                 totals[ms].test_results[0].passing += tr.passing
                 totals[ms].test_results[0].total += tr.total
                 if ms != "N.A.":
@@ -579,13 +586,13 @@ class Testplan:
                     totals["N.A."].test_results[0].total += tr.total
 
         totals = {}
-        # Create testpoints to represent the total for each milestone & the
+        # Create testpoints to represent the total for each stage & the
         # grand total.
-        for ms in Testpoint.milestones:
+        for ms in Testpoint.stages:
             arg = {
                 "name": "N.A.",
                 "desc": f"Total {ms} tests",
-                "milestone": ms,
+                "stage": ms,
                 "tests": [],
             }
             totals[ms] = Testpoint(arg)
@@ -596,7 +603,7 @@ class Testplan:
         arg = {
             "name": "Unmapped tests",
             "desc": "Unmapped tests",
-            "milestone": "N.A.",
+            "stage": "N.A.",
             "tests": [],
         }
         unmapped = Testpoint(arg)
@@ -610,8 +617,8 @@ class Testplan:
         unmapped.test_results = [tr for tr in test_results if not tr.mapped]
         _process_testpoint(unmapped, totals)
 
-        # Add milestone totals back into 'testpoints' and sort.
-        for ms in Testpoint.milestones[1:]:
+        # Add stage totals back into 'testpoints' and sort.
+        for ms in Testpoint.stages[1:]:
             self.testpoints.append(totals[ms])
         self._sort()
 
@@ -620,11 +627,11 @@ class Testplan:
             self.testpoints.append(unmapped)
         self.testpoints.append(totals["N.A."])
 
-        # Compute the progress rate fpr each milestone.
-        for ms in Testpoint.milestones:
+        # Compute the progress rate for each stage.
+        for ms in Testpoint.stages:
             stat = self.progress[ms]
 
-            # Remove milestones that are not targeted.
+            # Remove stages that are not targeted.
             if stat["total"] == 0:
                 self.progress.pop(ms)
                 continue
@@ -667,22 +674,29 @@ class Testplan:
 
         assert self.test_results_mapped, "Have you invoked map_test_results()?"
         header = [
-            "Milestone", "Name", "Tests", "Passing", "Total", "Pass Rate"
+            "Stage", "Name", "Tests", "Max Job Runtime", "Simulated Time",
+            "Passing", "Total", "Pass Rate"
         ]
-        colalign = ("center", "center", "left", "center", "center", "center")
+        colalign = ('center', ) * 2 + ('left', ) + ('center', ) * 5
         table = []
         for tp in self.testpoints:
-            milestone = "" if tp.milestone == "N.A." else tp.milestone
+            stage = "" if tp.stage == "N.A." else tp.stage
             tp_name = "" if tp.name == "N.A." else tp.name
             for tr in tp.test_results:
                 if tr.total == 0 and not map_full_testplan:
                     continue
                 pass_rate = self._get_percentage(tr.passing, tr.total)
+
+                job_runtime = "" if tr.job_runtime is None else str(
+                    tr.job_runtime)
+                simulated_time = "" if tr.simulated_time is None else str(
+                    tr.simulated_time)
+
                 table.append([
-                    milestone, tp_name, tr.name, tr.passing, tr.total,
-                    pass_rate
+                    stage, tp_name, tr.name, job_runtime, simulated_time,
+                    tr.passing, tr.total, pass_rate
                 ])
-                milestone = ""
+                stage = ""
                 tp_name = ""
 
         text = "\n### Test Results\n"
@@ -749,7 +763,7 @@ class Testplan:
         # return the results summary as a dict.
         total = self.testpoints[-1]
         assert total.name == "N.A."
-        assert total.milestone == "N.A."
+        assert total.stage == "N.A."
 
         tr = total.test_results[0]
 
