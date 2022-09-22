@@ -4,30 +4,36 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2553"
-version_tuple = (0, 0, 2553)
+version_str = "0.0.post2555"
+version_tuple = (0, 0, 2555)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2553")
+    pversion = V("0.0.post2555")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2411"
-data_version_tuple = (0, 0, 2411)
+data_version_str = "0.0.post2413"
+data_version_tuple = (0, 0, 2413)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2411")
+    pdata_version = V("0.0.post2413")
 except ImportError:
     pass
-data_git_hash = "02ccf9e5d066fbb8132ba712314558da974c3601"
-data_git_describe = "v0.0-2411-g02ccf9e5"
+data_git_hash = "70186c57aeff46ff47b80e8f3d6e2c3d849f2e5b"
+data_git_describe = "v0.0-2413-g70186c57"
 data_git_msg = """\
-commit 02ccf9e5d066fbb8132ba712314558da974c3601
+commit 70186c57aeff46ff47b80e8f3d6e2c3d849f2e5b
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Sep 7 13:01:43 2022 +0100
+Date:   Fri Sep 9 11:06:36 2022 +0100
 
-    [ci] Bump cosim version for privilege spec updates
+    [rtl] Add ic_scr_key_valid field to CPUCTRL (renamed CPUCTRLSTS)
+    
+    The ic_scr_key_valid field indicates whether the ICache scrambling key
+    is valid.
+    
+    CPUCTRL is also renamed CPUCTRLSTS as it contains both control and
+    status bits.
 
 """
 
