@@ -4,37 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2556"
-version_tuple = (0, 0, 2556)
+version_str = "0.0.post2558"
+version_tuple = (0, 0, 2558)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2556")
+    pversion = V("0.0.post2558")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2414"
-data_version_tuple = (0, 0, 2414)
+data_version_str = "0.0.post2416"
+data_version_tuple = (0, 0, 2416)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2414")
+    pdata_version = V("0.0.post2416")
 except ImportError:
     pass
-data_git_hash = "d35ff67df650633795ead001ea5f285c44b73078"
-data_git_describe = "v0.0-2414-gd35ff67d"
+data_git_hash = "7b1be3354d650bc5b23dff6f439459c353288e4f"
+data_git_describe = "v0.0-2416-g7b1be335"
 data_git_msg = """\
-commit d35ff67df650633795ead001ea5f285c44b73078
+commit 7b1be3354d650bc5b23dff6f439459c353288e4f
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Thu Sep 22 22:19:33 2022 +0100
+Date:   Wed Sep 21 15:25:02 2022 +0100
 
-    [dv] Fix timeout issues
+    [rtl] Don't cache instructions in debug mode
     
-    core_ibex_directed_test has a 'disable fork' that was killing processes
-    that were running sequences. Another part of the testbench waits for
-    those sequences to finish. When this 'disable fork' happens too early
-    the sequences are killed before they finish so the testbench never
-    terminated and times out. Instead ensure the sequences have finished
-    before doing the 'disable fork'.
+    RISC-V debug modules may utilise dynamically changing code. Don't cache
+    any instructions in debug mode to correctly support this.
+    
+    Fixes #1472
 
 """
 
