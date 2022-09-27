@@ -4,36 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2555"
-version_tuple = (0, 0, 2555)
+version_str = "0.0.post2556"
+version_tuple = (0, 0, 2556)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2555")
+    pversion = V("0.0.post2556")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2413"
-data_version_tuple = (0, 0, 2413)
+data_version_str = "0.0.post2414"
+data_version_tuple = (0, 0, 2414)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2413")
+    pdata_version = V("0.0.post2414")
 except ImportError:
     pass
-data_git_hash = "70186c57aeff46ff47b80e8f3d6e2c3d849f2e5b"
-data_git_describe = "v0.0-2413-g70186c57"
+data_git_hash = "d35ff67df650633795ead001ea5f285c44b73078"
+data_git_describe = "v0.0-2414-gd35ff67d"
 data_git_msg = """\
-commit 70186c57aeff46ff47b80e8f3d6e2c3d849f2e5b
+commit d35ff67df650633795ead001ea5f285c44b73078
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Sep 9 11:06:36 2022 +0100
+Date:   Thu Sep 22 22:19:33 2022 +0100
 
-    [rtl] Add ic_scr_key_valid field to CPUCTRL (renamed CPUCTRLSTS)
+    [dv] Fix timeout issues
     
-    The ic_scr_key_valid field indicates whether the ICache scrambling key
-    is valid.
-    
-    CPUCTRL is also renamed CPUCTRLSTS as it contains both control and
-    status bits.
+    core_ibex_directed_test has a 'disable fork' that was killing processes
+    that were running sequences. Another part of the testbench waits for
+    those sequences to finish. When this 'disable fork' happens too early
+    the sequences are killed before they finish so the testbench never
+    terminated and times out. Instead ensure the sequences have finished
+    before doing the 'disable fork'.
 
 """
 
