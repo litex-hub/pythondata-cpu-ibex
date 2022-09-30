@@ -4,35 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2558"
-version_tuple = (0, 0, 2558)
+version_str = "0.0.post2561"
+version_tuple = (0, 0, 2561)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2558")
+    pversion = V("0.0.post2561")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2416"
-data_version_tuple = (0, 0, 2416)
+data_version_str = "0.0.post2419"
+data_version_tuple = (0, 0, 2419)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2416")
+    pdata_version = V("0.0.post2419")
 except ImportError:
     pass
-data_git_hash = "7b1be3354d650bc5b23dff6f439459c353288e4f"
-data_git_describe = "v0.0-2416-g7b1be335"
+data_git_hash = "1313104bade1302ee651610b8536209255654cc4"
+data_git_describe = "v0.0-2419-g1313104b"
 data_git_msg = """\
-commit 7b1be3354d650bc5b23dff6f439459c353288e4f
+commit 1313104bade1302ee651610b8536209255654cc4
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Sep 21 15:25:02 2022 +0100
+Date:   Wed Sep 28 11:59:48 2022 +0100
 
-    [rtl] Don't cache instructions in debug mode
+    [ci] Fix pmp_smoke_test
     
-    RISC-V debug modules may utilise dynamically changing code. Don't cache
-    any instructions in debug mode to correctly support this.
-    
-    Fixes #1472
+    It was renamed pmp_smoke_test from pmp_exception_test in the software
+    build but not the actual test run
 
 """
 
