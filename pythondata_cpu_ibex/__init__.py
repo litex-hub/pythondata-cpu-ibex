@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2562"
-version_tuple = (0, 0, 2562)
+version_str = "0.0.post2563"
+version_tuple = (0, 0, 2563)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2562")
+    pversion = V("0.0.post2563")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2420"
-data_version_tuple = (0, 0, 2420)
+data_version_str = "0.0.post2421"
+data_version_tuple = (0, 0, 2421)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2420")
+    pdata_version = V("0.0.post2421")
 except ImportError:
     pass
-data_git_hash = "3943a4eca3917d0a00406abb36f4951304c0b394"
-data_git_describe = "v0.0-2420-g3943a4ec"
+data_git_hash = "43dc5e85726908cedbc4f3b6798b6ebd8dd1b720"
+data_git_describe = "v0.0-2421-g43dc5e85"
 data_git_msg = """\
-commit 3943a4eca3917d0a00406abb36f4951304c0b394
+commit 43dc5e85726908cedbc4f3b6798b6ebd8dd1b720
 Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Tue Sep 27 11:36:50 2022 +0100
+Date:   Mon Oct 3 15:25:49 2022 +0100
 
-    [pmp] Remove off mode from pmp_*_mode_cross coverpoints
+    [formal] Added missing prim secded package
 
 """
 
