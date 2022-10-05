@@ -4,30 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2566"
-version_tuple = (0, 0, 2566)
+version_str = "0.0.post2570"
+version_tuple = (0, 0, 2570)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2566")
+    pversion = V("0.0.post2570")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2424"
-data_version_tuple = (0, 0, 2424)
+data_version_str = "0.0.post2428"
+data_version_tuple = (0, 0, 2428)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2424")
+    pdata_version = V("0.0.post2428")
 except ImportError:
     pass
-data_git_hash = "1cdd403564f4b2e4352919f591ee9182cebcfb67"
-data_git_describe = "v0.0-2424-g1cdd4035"
+data_git_hash = "0e396d594435c0acca9df785ac40309c76576cc3"
+data_git_describe = "v0.0-2428-g0e396d59"
 data_git_msg = """\
-commit 1cdd403564f4b2e4352919f591ee9182cebcfb67
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Tue Oct 4 10:20:13 2022 +0100
+commit 0e396d594435c0acca9df785ac40309c76576cc3
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Wed Oct 5 11:23:06 2022 +0100
 
-    [formal] Remove build infrastructure for instruction cache assertions
+    Change failure modes and add comments with more clarifying details
 
 """
 
