@@ -4,30 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2570"
-version_tuple = (0, 0, 2570)
+version_str = "0.0.post2571"
+version_tuple = (0, 0, 2571)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2570")
+    pversion = V("0.0.post2571")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2428"
-data_version_tuple = (0, 0, 2428)
+data_version_str = "0.0.post2429"
+data_version_tuple = (0, 0, 2429)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2428")
+    pdata_version = V("0.0.post2429")
 except ImportError:
     pass
-data_git_hash = "0e396d594435c0acca9df785ac40309c76576cc3"
-data_git_describe = "v0.0-2428-g0e396d59"
+data_git_hash = "7ab2571bea0daca3f14155d82f0124fb0b118799"
+data_git_describe = "v0.0-2429-g7ab2571b"
 data_git_msg = """\
-commit 0e396d594435c0acca9df785ac40309c76576cc3
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Wed Oct 5 11:23:06 2022 +0100
+commit 7ab2571bea0daca3f14155d82f0124fb0b118799
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Wed Oct 5 18:28:35 2022 +0100
 
-    Change failure modes and add comments with more clarifying details
+    [if,pmp] Check second bit instead of third for instruction alignment
+    
+    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
 
 """
 
