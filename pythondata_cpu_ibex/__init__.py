@@ -4,34 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2573"
-version_tuple = (0, 0, 2573)
+version_str = "0.0.post2575"
+version_tuple = (0, 0, 2575)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2573")
+    pversion = V("0.0.post2575")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2431"
-data_version_tuple = (0, 0, 2431)
+data_version_str = "0.0.post2433"
+data_version_tuple = (0, 0, 2433)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2431")
+    pdata_version = V("0.0.post2433")
 except ImportError:
     pass
-data_git_hash = "3c11ef10b98a73c06345bd0f2fcb8d94226b4f31"
-data_git_describe = "v0.0-2431-g3c11ef10"
+data_git_hash = "574d993dcde5d734e85e9698337aa8096152c58d"
+data_git_describe = "v0.0-2433-g574d993d"
 data_git_msg = """\
-commit 3c11ef10b98a73c06345bd0f2fcb8d94226b4f31
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Thu Sep 29 17:42:47 2022 +0100
+commit 574d993dcde5d734e85e9698337aa8096152c58d
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Wed Sep 28 17:53:49 2022 +0100
 
-    single_step test : only drive debug_req_i after stepping finishes
+    [ci] Switch to downloading verilator from GCP bucket
     
-    This addresses a current testbench issue where asserting debug_req_i close to
-    when single_stepping over an instruction causes an incorrect 'cause' to be
-    recorded within DCSR.
+    Previously it was sourced from the OpenSUSE build service. This has
+    produced some reliability issues. Downloading pre-built binaries from a
+    GCP bucket should improve things.
 
 """
 
