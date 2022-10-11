@@ -4,32 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2579"
-version_tuple = (0, 0, 2579)
+version_str = "0.0.post2581"
+version_tuple = (0, 0, 2581)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2579")
+    pversion = V("0.0.post2581")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2437"
-data_version_tuple = (0, 0, 2437)
+data_version_str = "0.0.post2439"
+data_version_tuple = (0, 0, 2439)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2437")
+    pdata_version = V("0.0.post2439")
 except ImportError:
     pass
-data_git_hash = "7c28d3caf3860408d6ef016e9e18e862e70d971a"
-data_git_describe = "v0.0-2437-g7c28d3ca"
+data_git_hash = "4608df46060dc1fe916d71ac001ed23d2c23f490"
+data_git_describe = "v0.0-2439-g4608df46"
 data_git_msg = """\
-commit 7c28d3caf3860408d6ef016e9e18e862e70d971a
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Mon Oct 10 10:39:45 2022 +0100
+commit 4608df46060dc1fe916d71ac001ed23d2c23f490
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Fri Oct 7 15:03:45 2022 +0100
 
-    [ci] Update IBEX_COSIM_VERSION to latest
+    [dv] Shellcheck prettify script
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
 
 """
 
