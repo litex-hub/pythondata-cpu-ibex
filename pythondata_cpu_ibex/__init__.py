@@ -4,30 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2577"
-version_tuple = (0, 0, 2577)
+version_str = "0.0.post2579"
+version_tuple = (0, 0, 2579)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2577")
+    pversion = V("0.0.post2579")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2435"
-data_version_tuple = (0, 0, 2435)
+data_version_str = "0.0.post2437"
+data_version_tuple = (0, 0, 2437)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2435")
+    pdata_version = V("0.0.post2437")
 except ImportError:
     pass
-data_git_hash = "08115056f9da99f5df14d72d0909e1637bdd25b5"
-data_git_describe = "v0.0-2435-g08115056"
+data_git_hash = "7c28d3caf3860408d6ef016e9e18e862e70d971a"
+data_git_describe = "v0.0-2437-g7c28d3ca"
 data_git_msg = """\
-commit 08115056f9da99f5df14d72d0909e1637bdd25b5
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Mon Oct 10 12:20:19 2022 +0100
+commit 7c28d3caf3860408d6ef016e9e18e862e70d971a
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Mon Oct 10 10:39:45 2022 +0100
 
-    [doc] Add NAPOT address mode to coverage plan
+    [ci] Update IBEX_COSIM_VERSION to latest
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
