@@ -4,34 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2575"
-version_tuple = (0, 0, 2575)
+version_str = "0.0.post2577"
+version_tuple = (0, 0, 2577)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2575")
+    pversion = V("0.0.post2577")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2433"
-data_version_tuple = (0, 0, 2433)
+data_version_str = "0.0.post2435"
+data_version_tuple = (0, 0, 2435)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2433")
+    pdata_version = V("0.0.post2435")
 except ImportError:
     pass
-data_git_hash = "574d993dcde5d734e85e9698337aa8096152c58d"
-data_git_describe = "v0.0-2433-g574d993d"
+data_git_hash = "08115056f9da99f5df14d72d0909e1637bdd25b5"
+data_git_describe = "v0.0-2435-g08115056"
 data_git_msg = """\
-commit 574d993dcde5d734e85e9698337aa8096152c58d
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Sep 28 17:53:49 2022 +0100
+commit 08115056f9da99f5df14d72d0909e1637bdd25b5
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Mon Oct 10 12:20:19 2022 +0100
 
-    [ci] Switch to downloading verilator from GCP bucket
-    
-    Previously it was sourced from the OpenSUSE build service. This has
-    produced some reliability issues. Downloading pre-built binaries from a
-    GCP bucket should improve things.
+    [doc] Add NAPOT address mode to coverage plan
 
 """
 
