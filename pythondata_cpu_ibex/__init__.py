@@ -4,32 +4,38 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2581"
-version_tuple = (0, 0, 2581)
+version_str = "0.0.post2582"
+version_tuple = (0, 0, 2582)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2581")
+    pversion = V("0.0.post2582")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2439"
-data_version_tuple = (0, 0, 2439)
+data_version_str = "0.0.post2440"
+data_version_tuple = (0, 0, 2440)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2439")
+    pdata_version = V("0.0.post2440")
 except ImportError:
     pass
-data_git_hash = "4608df46060dc1fe916d71ac001ed23d2c23f490"
-data_git_describe = "v0.0-2439-g4608df46"
+data_git_hash = "25d81afef664351f6fd14fd4ed7a19bba2224b55"
+data_git_describe = "v0.0-2440-g25d81afe"
 data_git_msg = """\
-commit 4608df46060dc1fe916d71ac001ed23d2c23f490
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Fri Oct 7 15:03:45 2022 +0100
+commit 25d81afef664351f6fd14fd4ed7a19bba2224b55
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Tue Oct 11 16:50:16 2022 +0100
 
-    [dv] Shellcheck prettify script
+    Update google_riscv-dv to google/riscv-dv@c6acc18
     
-    Signed-off-by: Marno van der Maas <mvdmaas+git@lowrisc.org>
+    Update code from upstream repository https://github.com/google/riscv-
+    dv to revision c6acc1897429f5245cc89b2ecee2e3eefdefd18d
+    
+    * Add plusarg to enable ECALL insn in main randomized body (Harry
+      Callahan)
+    
+    Signed-off-by: Harry Callahan <hcallahan@lowrisc.org>
 
 """
 
