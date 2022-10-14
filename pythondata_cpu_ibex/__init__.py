@@ -4,36 +4,39 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2586"
-version_tuple = (0, 0, 2586)
+version_str = "0.0.post2587"
+version_tuple = (0, 0, 2587)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2586")
+    pversion = V("0.0.post2587")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2444"
-data_version_tuple = (0, 0, 2444)
+data_version_str = "0.0.post2445"
+data_version_tuple = (0, 0, 2445)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2444")
+    pdata_version = V("0.0.post2445")
 except ImportError:
     pass
-data_git_hash = "d7ce0827790bc2b551f55670103c516257a4ca8c"
-data_git_describe = "v0.0-2444-gd7ce0827"
+data_git_hash = "298c8789da80b08f6b67f789a087f383c9197789"
+data_git_describe = "v0.0-2445-g298c8789"
 data_git_msg = """\
-commit d7ce0827790bc2b551f55670103c516257a4ca8c
+commit 298c8789da80b08f6b67f789a087f383c9197789
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Oct 14 08:29:07 2022 +0100
+Date:   Tue Oct 4 15:39:19 2022 +0100
 
-    [dv] Remove riscv_perf_counter_test
+    [rtl/dv] Bring back data integrity check on write responses
     
-    This test doesn't actually check the performance counters, it just runs
-    a random instruction test and dumps the performance counters at the end
-    for some final checking. That checking does not exist. The test is
-    currently broken as well so just remove it as it adds nothing to the
-    regression.
+    Previously Ibex signalled a major alert on an integrity error (where
+    incoming read data doesn't match its integrity bits) for both read and
+    write responses. This was removed as the data part of a response to a
+    write is ignored.
+    
+    This brings it back in a more measured way. This provides a little extra
+    fault injection hardening as an attacker glitching the memory bus will
+    generate an alert on both read and write responses.
 
 """
 
