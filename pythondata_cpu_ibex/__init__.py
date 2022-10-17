@@ -4,32 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2593"
-version_tuple = (0, 0, 2593)
+version_str = "0.0.post2597"
+version_tuple = (0, 0, 2597)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2593")
+    pversion = V("0.0.post2597")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2451"
-data_version_tuple = (0, 0, 2451)
+data_version_str = "0.0.post2455"
+data_version_tuple = (0, 0, 2455)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2451")
+    pdata_version = V("0.0.post2455")
 except ImportError:
     pass
-data_git_hash = "083fe2a54f087235a09f4c90bc1560d798b9685e"
-data_git_describe = "v0.0-2451-g083fe2a5"
+data_git_hash = "33f1d0a702bac8f1fbd18bda0c447a0329d1d6d3"
+data_git_describe = "v0.0-2455-g33f1d0a7"
 data_git_msg = """\
-commit 083fe2a54f087235a09f4c90bc1560d798b9685e
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Sat Oct 15 20:36:49 2022 +0100
+commit 33f1d0a702bac8f1fbd18bda0c447a0329d1d6d3
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Fri Oct 14 16:16:52 2022 +0100
 
-    [dv] Use fetch enable sequence by default
+    Update google_riscv-dv to google/riscv-dv@e0eae9e
     
-    This sequence randomly toggles the fetch enable.
+    Update code from upstream repository https://github.com/google/riscv-
+    dv to revision e0eae9e0ca69770c519c82c48421005f65521eac
+    
+    * [sv] Explicit type casting for VCS compability (Canberk Topal)
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
