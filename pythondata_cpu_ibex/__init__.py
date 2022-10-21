@@ -4,32 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2599"
-version_tuple = (0, 0, 2599)
+version_str = "0.0.post2600"
+version_tuple = (0, 0, 2600)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2599")
+    pversion = V("0.0.post2600")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2457"
-data_version_tuple = (0, 0, 2457)
+data_version_str = "0.0.post2458"
+data_version_tuple = (0, 0, 2458)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2457")
+    pdata_version = V("0.0.post2458")
 except ImportError:
     pass
-data_git_hash = "ce536ae47677e952de02b7421e1b78efb5761ab2"
-data_git_describe = "v0.0-2457-gce536ae4"
+data_git_hash = "a376f85f26df52cd4ae0767fbebfdaa0dd0d0e07"
+data_git_describe = "v0.0-2458-ga376f85f"
 data_git_msg = """\
-commit ce536ae47677e952de02b7421e1b78efb5761ab2
-Author: Andreas Kurth <adk@lowrisc.org>
-Date:   Fri Oct 14 12:03:26 2022 +0000
+commit a376f85f26df52cd4ae0767fbebfdaa0dd0d0e07
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Fri Oct 14 11:22:50 2022 +0100
 
-    [rtl] Assert that dummy instructions only write R0
-    
-    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
+    [lint] Shellcheck bash scripts in repo
 
 """
 
