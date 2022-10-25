@@ -4,36 +4,42 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2607"
-version_tuple = (0, 0, 2607)
+version_str = "0.0.post2608"
+version_tuple = (0, 0, 2608)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2607")
+    pversion = V("0.0.post2608")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2465"
-data_version_tuple = (0, 0, 2465)
+data_version_str = "0.0.post2466"
+data_version_tuple = (0, 0, 2466)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2465")
+    pdata_version = V("0.0.post2466")
 except ImportError:
     pass
-data_git_hash = "f385d4d6b1d1a2455baf0bec7cc77d3073c37cff"
-data_git_describe = "v0.0-2465-gf385d4d6"
+data_git_hash = "28935490c28923f486314e61696820bf45e23aae"
+data_git_describe = "v0.0-2466-g28935490"
 data_git_msg = """\
-commit f385d4d6b1d1a2455baf0bec7cc77d3073c37cff
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Fri Sep 9 18:55:07 2022 +0100
+commit 28935490c28923f486314e61696820bf45e23aae
+Author: Pirmin Vogel <vogelpi@lowrisc.org>
+Date:   Fri Oct 21 17:23:08 2022 +0200
 
-    [dv] Add cpuctrlsts writes to riscv_rand_instr_test
+    [rtl] Protect core_busy_o with a multi-bit encoding
     
-    This will have the effect of randomly enabling/disabling
+    This commit protects the core_busy_o signal using a multi-bit encoding
+    to reduce the chances of an adversary for glitching this signal to low,
+    thereby putting the core to sleep and e.g. not handling an alert.
     
-     - The ICache
-     - Dummy instruction insertion
-     - Data independent timing
+    Without this commit, the glitch would only be detected once both the
+    main core and the shadow core wake up again and the comparison of the
+    core_busy_o signals continues.
+    
+    This resolves lowRISC/Ibex#1827.
+    
+    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
 
 """
 
