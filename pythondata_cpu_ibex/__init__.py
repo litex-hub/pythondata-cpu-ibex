@@ -4,42 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2608"
-version_tuple = (0, 0, 2608)
+version_str = "0.0.post2610"
+version_tuple = (0, 0, 2610)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2608")
+    pversion = V("0.0.post2610")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2466"
-data_version_tuple = (0, 0, 2466)
+data_version_str = "0.0.post2468"
+data_version_tuple = (0, 0, 2468)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2466")
+    pdata_version = V("0.0.post2468")
 except ImportError:
     pass
-data_git_hash = "28935490c28923f486314e61696820bf45e23aae"
-data_git_describe = "v0.0-2466-g28935490"
+data_git_hash = "659dc458f2a8d32cbb04ca4b43f793f51faf1ee8"
+data_git_describe = "v0.0-2468-g659dc458"
 data_git_msg = """\
-commit 28935490c28923f486314e61696820bf45e23aae
-Author: Pirmin Vogel <vogelpi@lowrisc.org>
-Date:   Fri Oct 21 17:23:08 2022 +0200
+commit 659dc458f2a8d32cbb04ca4b43f793f51faf1ee8
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Tue Oct 25 14:46:50 2022 +0100
 
-    [rtl] Protect core_busy_o with a multi-bit encoding
+    Fix bug in passing cosim_agent handle to the data_intf_seq
     
-    This commit protects the core_busy_o signal using a multi-bit encoding
-    to reduce the chances of an adversary for glitching this signal to low,
-    thereby putting the core to sleep and e.g. not handling an alert.
-    
-    Without this commit, the glitch would only be detected once both the
-    main core and the shadow core wake up again and the comparison of the
-    core_busy_o signals continues.
-    
-    This resolves lowRISC/Ibex#1827.
-    
-    Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+    The handle was passed before the cosim was constructed, so when it came to use
+    the handle it caused a null pointer exception.
 
 """
 
