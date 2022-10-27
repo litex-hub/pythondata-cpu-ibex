@@ -4,33 +4,40 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2614"
-version_tuple = (0, 0, 2614)
+version_str = "0.0.post2615"
+version_tuple = (0, 0, 2615)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2614")
+    pversion = V("0.0.post2615")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2472"
-data_version_tuple = (0, 0, 2472)
+data_version_str = "0.0.post2473"
+data_version_tuple = (0, 0, 2473)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2472")
+    pdata_version = V("0.0.post2473")
 except ImportError:
     pass
-data_git_hash = "bbda68a0df2f896e920e820a2f759f6855b34148"
-data_git_describe = "v0.0-2472-gbbda68a0"
+data_git_hash = "5f5a70fca90917cc6152be4b1e4d9679d0357a3b"
+data_git_describe = "v0.0-2473-g5f5a70fc"
 data_git_msg = """\
-commit bbda68a0df2f896e920e820a2f759f6855b34148
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Tue Oct 25 19:29:33 2022 +0100
+commit 5f5a70fca90917cc6152be4b1e4d9679d0357a3b
+Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
+Date:   Tue Oct 11 11:42:21 2022 +0100
 
-    [dv] Disable bad integrity on uninitialised memory for selected tests
+    Tweak regressions around PMP, allow for double_faults, uninit_accesses
     
-    From an initial triage and test regression run these tests benefit from
-    this.
+    Add 180s timeout for pmp_full_random tests (this sees a reasonable pass-rate)
+    
+    Tweaked to latest api for double_fault detector
+    
+    Squashed changes from Marno's ongoing work:
+    [pmp] Adjust full random PMP to use random memory addresses
+    [pmp] Enable double fault detecter for MML read only test
+    [dv,pmp] Add double fault pass flag
+    [dv,pmp] Different parameters for pmp full random test
 
 """
 
