@@ -4,40 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2615"
-version_tuple = (0, 0, 2615)
+version_str = "0.0.post2621"
+version_tuple = (0, 0, 2621)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2615")
+    pversion = V("0.0.post2621")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2473"
-data_version_tuple = (0, 0, 2473)
+data_version_str = "0.0.post2479"
+data_version_tuple = (0, 0, 2479)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2473")
+    pdata_version = V("0.0.post2479")
 except ImportError:
     pass
-data_git_hash = "5f5a70fca90917cc6152be4b1e4d9679d0357a3b"
-data_git_describe = "v0.0-2473-g5f5a70fc"
+data_git_hash = "ed927be38770b3478f34d4eace6edc1d74decaa8"
+data_git_describe = "v0.0-2479-ged927be3"
 data_git_msg = """\
-commit 5f5a70fca90917cc6152be4b1e4d9679d0357a3b
-Author: Marno van der Maas <mvdmaas+git@lowrisc.org>
-Date:   Tue Oct 11 11:42:21 2022 +0100
+commit ed927be38770b3478f34d4eace6edc1d74decaa8
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Thu Oct 27 15:56:25 2022 +0100
 
-    Tweak regressions around PMP, allow for double_faults, uninit_accesses
+    [cov] Remove ignored_csrs coverpoints
     
-    Add 180s timeout for pmp_full_random tests (this sees a reasonable pass-rate)
-    
-    Tweaked to latest api for double_fault detector
-    
-    Squashed changes from Marno's ongoing work:
-    [pmp] Adjust full random PMP to use random memory addresses
-    [pmp] Enable double fault detecter for MML read only test
-    [dv,pmp] Add double fault pass flag
-    [dv,pmp] Different parameters for pmp full random test
+    These related to unimplemented CSRs. These are already captured by one
+    of the illegal instruction categories.
 
 """
 
