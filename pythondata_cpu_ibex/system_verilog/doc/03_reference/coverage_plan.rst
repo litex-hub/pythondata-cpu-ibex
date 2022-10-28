@@ -177,24 +177,22 @@ Each pipeline stage has some associated state.
 * Controller (within ID stage) state machine states
 
   * ``cp_controller_fsm`` - Possible transitions between these states.
-    Those marked with a '*' are of particular interest and should be crossed with instruction categories and other coverpoints as appropriate to fully explore the transitions.
 
     * ``RESET`` -> ``BOOT_SET``
     * ``BOOT_SET`` -> ``FIRST_FETCH``
     * ``FIRST_FETCH`` -> ``DECODE``
     * ``FIRST_FETCH`` -> ``IRQ_TAKEN``
     * ``FIRST_FETCH`` -> ``DBG_TAKEN_IF``
-    * ``DECODE`` -> ``FLUSH`` *
-    * ``DECODE`` -> ``DBG_TAKEN_IF`` *
-    * ``DECODE`` -> ``IRQ_TAKEN`` *
+    * ``DECODE`` -> ``FLUSH``
+    * ``DECODE`` -> ``DBG_TAKEN_IF``
+    * ``DECODE`` -> ``IRQ_TAKEN``
     * ``IRQ_TAKEN`` -> ``DECODE``
     * ``DBG_TAKEN_IF`` -> ``DECODE``
     * ``DBG_TAKEN_ID`` -> ``DECODE``
-    * ``FLUSH`` -> ``DECODE`` *
+    * ``FLUSH`` -> ``DECODE``
     * ``FLUSH`` -> ``DBG_TAKEN_ID``
     * ``FLUSH`` -> ``WAIT_SLEEP``
-    * ``FLUSH`` -> ``IRQ_TAKEN`` *
-    * ``FLUSH`` -> ``DBG_TAKEN_IF`` *
+    * ``FLUSH`` -> ``DBG_TAKEN_IF``
     * ``WAIT_SLEEP`` -> ``SLEEP``
     * ``SLEEP`` -> ``FIRST_FETCH``
 
@@ -297,8 +295,6 @@ Basic read/write functionality must be tested on all implemented CSRs.
 
   * Access to CSR disallowed due to privilege levels/debug mode
     Covered by ensuring within the crosses
-
-* ``cp_ignored_csrs_ro``, ``cp_ignored_csrs_w`` - Read and write from/to an unimplemented CSR
 
 CSRs addresses do not need to be crossed with the variety of CSR instructions as these all use the same basic read & write interface into ``ibex_cs_registers``.
 Coverage of the above points will be sampled at the ``ibex_cs_registers`` interface (as opposed to sampling CSR instructions).
