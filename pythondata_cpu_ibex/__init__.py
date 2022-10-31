@@ -4,37 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2632"
-version_tuple = (0, 0, 2632)
+version_str = "0.0.post2633"
+version_tuple = (0, 0, 2633)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2632")
+    pversion = V("0.0.post2633")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2490"
-data_version_tuple = (0, 0, 2490)
+data_version_str = "0.0.post2491"
+data_version_tuple = (0, 0, 2491)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2490")
+    pdata_version = V("0.0.post2491")
 except ImportError:
     pass
-data_git_hash = "980f73b047f961df470d6c26146f82447b606839"
-data_git_describe = "v0.0-2490-g980f73b0"
+data_git_hash = "e63bb13d0ab2dad4ee608323617a7467cf8f5816"
+data_git_describe = "v0.0-2491-ge63bb13d"
 data_git_msg = """\
-commit 980f73b047f961df470d6c26146f82447b606839
+commit e63bb13d0ab2dad4ee608323617a7467cf8f5816
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Oct 26 22:08:07 2022 +0100
+Date:   Mon Oct 31 16:19:42 2022 +0000
 
-    [cosim] Fixup ebreak behaviour
+    [ci] Bump cosim version to latest
     
-    When DCSR is set such that ebreak will enter debug mode we were getting
-    cosim mismatches. This was because Ibex produces the ebreak on the RVFI
-    interface and spike effectively skips right over it and executes the
-    first instruction of the debug handler immediately. Traps have similar
-    but not identical behaviour so we need a special case in the step
-    function to handle this.
+    This integrates in the ebreak behaviour changes in spike
 
 """
 
