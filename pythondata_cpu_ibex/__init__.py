@@ -4,40 +4,39 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2624"
-version_tuple = (0, 0, 2624)
+version_str = "0.0.post2625"
+version_tuple = (0, 0, 2625)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2624")
+    pversion = V("0.0.post2625")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2482"
-data_version_tuple = (0, 0, 2482)
+data_version_str = "0.0.post2483"
+data_version_tuple = (0, 0, 2483)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2482")
+    pdata_version = V("0.0.post2483")
 except ImportError:
     pass
-data_git_hash = "0c0626ebbf6ded92fe84dbb8cdb558383c99adf2"
-data_git_describe = "v0.0-2482-g0c0626eb"
+data_git_hash = "eca86aef03539bc297ab4879c58a33632d8c48e3"
+data_git_describe = "v0.0-2483-geca86aef"
 data_git_msg = """\
-commit 0c0626ebbf6ded92fe84dbb8cdb558383c99adf2
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Fri Oct 28 14:19:39 2022 +0100
+commit eca86aef03539bc297ab4879c58a33632d8c48e3
+Author: Greg Chadwick <gac@lowrisc.org>
+Date:   Sat Oct 29 10:58:39 2022 +0100
 
-    Update google_riscv-dv to google/riscv-dv@be9c75f
+    [rtl] Fix id_exception_o signal
     
-    Update code from upstream repository https://github.com/google/riscv-
-    dv to revision be9c75fe6911504c0e6e9b89dc2a7766e367c500
+    Previously it was asserted when an instruction in ID would cause an
+    exception but an earlier instruction in WB also causes an exception
+    which takes priority.
     
-    * Reserve one extra word when pushing GPRs to kernel stack (Harry
-      Callahan)
-    * Store user-stack-pointer on kernel stack when pushing/popping GPRs
-      (Harry Callahan)
-    
-    Signed-off-by: Harry Callahan <hcallahan@lowrisc.org>
+    This didn't cause a functional bug as the `id_exception_o` signal was
+    used in a single place ORed with `wb_exception_o`. However it was
+    confusing behaviour and could cause killed instructions to appear on the
+    RVFI causing false cosim mismatches.
 
 """
 
