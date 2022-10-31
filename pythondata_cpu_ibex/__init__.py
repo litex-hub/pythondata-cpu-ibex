@@ -4,39 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2625"
-version_tuple = (0, 0, 2625)
+version_str = "0.0.post2632"
+version_tuple = (0, 0, 2632)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2625")
+    pversion = V("0.0.post2632")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2483"
-data_version_tuple = (0, 0, 2483)
+data_version_str = "0.0.post2490"
+data_version_tuple = (0, 0, 2490)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2483")
+    pdata_version = V("0.0.post2490")
 except ImportError:
     pass
-data_git_hash = "eca86aef03539bc297ab4879c58a33632d8c48e3"
-data_git_describe = "v0.0-2483-geca86aef"
+data_git_hash = "980f73b047f961df470d6c26146f82447b606839"
+data_git_describe = "v0.0-2490-g980f73b0"
 data_git_msg = """\
-commit eca86aef03539bc297ab4879c58a33632d8c48e3
+commit 980f73b047f961df470d6c26146f82447b606839
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Sat Oct 29 10:58:39 2022 +0100
+Date:   Wed Oct 26 22:08:07 2022 +0100
 
-    [rtl] Fix id_exception_o signal
+    [cosim] Fixup ebreak behaviour
     
-    Previously it was asserted when an instruction in ID would cause an
-    exception but an earlier instruction in WB also causes an exception
-    which takes priority.
-    
-    This didn't cause a functional bug as the `id_exception_o` signal was
-    used in a single place ORed with `wb_exception_o`. However it was
-    confusing behaviour and could cause killed instructions to appear on the
-    RVFI causing false cosim mismatches.
+    When DCSR is set such that ebreak will enter debug mode we were getting
+    cosim mismatches. This was because Ibex produces the ebreak on the RVFI
+    interface and spike effectively skips right over it and executes the
+    first instruction of the debug handler immediately. Traps have similar
+    but not identical behaviour so we need a special case in the step
+    function to handle this.
 
 """
 
