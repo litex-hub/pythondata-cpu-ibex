@@ -4,32 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2633"
-version_tuple = (0, 0, 2633)
+version_str = "0.0.post2639"
+version_tuple = (0, 0, 2639)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2633")
+    pversion = V("0.0.post2639")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2491"
-data_version_tuple = (0, 0, 2491)
+data_version_str = "0.0.post2497"
+data_version_tuple = (0, 0, 2497)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2491")
+    pdata_version = V("0.0.post2497")
 except ImportError:
     pass
-data_git_hash = "e63bb13d0ab2dad4ee608323617a7467cf8f5816"
-data_git_describe = "v0.0-2491-ge63bb13d"
+data_git_hash = "b278e5b26747ef85cdda660ab7f48e0aadfe432c"
+data_git_describe = "v0.0-2497-gb278e5b2"
 data_git_msg = """\
-commit e63bb13d0ab2dad4ee608323617a7467cf8f5816
+commit b278e5b26747ef85cdda660ab7f48e0aadfe432c
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Mon Oct 31 16:19:42 2022 +0000
+Date:   Sat Oct 29 10:48:35 2022 +0100
 
-    [ci] Bump cosim version to latest
+    [dv] Fix riscv_mem_error_test
     
-    This integrates in the ebreak behaviour changes in spike
+    Memory errors trigger the same exception as PMP failures. For this test
+    we simply need to return to the failing instructions rather than the
+    more complex handling from the PMP exception handler.
 
 """
 
