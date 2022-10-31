@@ -259,7 +259,7 @@ class core_ibex_debug_intr_basic_test extends core_ibex_base_test;
   virtual task send_irq_stimulus_end();
     // As Ibex interrupts are level sensitive, core must write to memory mapped address to
     // indicate that irq stimulus be dropped
-    check_next_core_status(FINISHED_IRQ, "Core did not signal end of interrupt properly", 3000);
+    check_next_core_status(FINISHED_IRQ, "Core did not signal end of interrupt properly", 6000);
     // Will receive irq_seq_item indicating that lines have been dropped
     vseq.start_irq_drop_seq();
     // Want to skip this .get() call on the second MRET of nested interrupt scenarios
@@ -901,6 +901,7 @@ class core_ibex_nested_irq_test extends core_ibex_directed_test;
     bit valid_irq;
     bit valid_nested_irq;
     int unsigned initial_irq_delay;
+    vseq.irq_raise_seq_h.max_delay = 5000;
     forever begin
       send_irq_stimulus_start(1'b1, 1'b0, valid_irq);
       if (valid_irq) begin
@@ -1158,6 +1159,21 @@ class core_ibex_debug_single_step_test extends core_ibex_directed_test;
       end
     join_none
   endtask
+
+endclass
+
+
+class core_ibex_single_debug_pulse_test extends core_ibex_directed_test;
+
+  `uvm_component_utils(core_ibex_single_debug_pulse_test)
+  `uvm_component_new
+
+    virtual task check_stimulus();
+      vseq.debug_seq_single_h.max_interval = 0;
+      // Start as soon as device is initialized.
+      vseq.start_debug_single_seq();
+      wait (test_done === 1'b1);
+    endtask
 
 endclass
 
