@@ -4,34 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2639"
-version_tuple = (0, 0, 2639)
+version_str = "0.0.post2642"
+version_tuple = (0, 0, 2642)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2639")
+    pversion = V("0.0.post2642")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2497"
-data_version_tuple = (0, 0, 2497)
+data_version_str = "0.0.post2500"
+data_version_tuple = (0, 0, 2500)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2497")
+    pdata_version = V("0.0.post2500")
 except ImportError:
     pass
-data_git_hash = "b278e5b26747ef85cdda660ab7f48e0aadfe432c"
-data_git_describe = "v0.0-2497-gb278e5b2"
+data_git_hash = "c145ac398539d40ddec533d192dc39dc0cdcd4bd"
+data_git_describe = "v0.0-2500-gc145ac39"
 data_git_msg = """\
-commit b278e5b26747ef85cdda660ab7f48e0aadfe432c
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Sat Oct 29 10:48:35 2022 +0100
+commit c145ac398539d40ddec533d192dc39dc0cdcd4bd
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Fri Oct 28 23:51:32 2022 +0100
 
-    [dv] Fix riscv_mem_error_test
+    [dv] Add a matching NA4 in pmp_full_random_test
     
-    Memory errors trigger the same exception as PMP failures. For this test
-    we simply need to return to the failing instructions rather than the
-    more complex handling from the PMP exception handler.
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
