@@ -4,35 +4,30 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2644"
-version_tuple = (0, 0, 2644)
+version_str = "0.0.post2652"
+version_tuple = (0, 0, 2652)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2644")
+    pversion = V("0.0.post2652")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2502"
-data_version_tuple = (0, 0, 2502)
+data_version_str = "0.0.post2510"
+data_version_tuple = (0, 0, 2510)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2502")
+    pdata_version = V("0.0.post2510")
 except ImportError:
     pass
-data_git_hash = "63be01b6082d335f04d98056760f029faf60a424"
-data_git_describe = "v0.0-2502-g63be01b6"
+data_git_hash = "31cc8e0b5a8ede3f9876e93dd0194e29aae93bf6"
+data_git_describe = "v0.0-2510-g31cc8e0b"
 data_git_msg = """\
-commit 63be01b6082d335f04d98056760f029faf60a424
-Author: Andreas Kurth <adk@lowrisc.org>
-Date:   Wed Oct 26 10:40:39 2022 +0000
+commit 31cc8e0b5a8ede3f9876e93dd0194e29aae93bf6
+Author: Harry Callahan <hcallahan@lowrisc.org>
+Date:   Tue Nov 1 09:46:02 2022 +0000
 
-    [dv] Add test glitching PC
-    
-    This commit addresses #1755 by verifying that a glitch on the PC of Ibex
-    raises an internal major alert in the core.
-    
-    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
+    Increase iterations for PMP tests to improve coverage
 
 """
 
