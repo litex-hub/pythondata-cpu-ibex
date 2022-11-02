@@ -4,32 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2642"
-version_tuple = (0, 0, 2642)
+version_str = "0.0.post2644"
+version_tuple = (0, 0, 2644)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2642")
+    pversion = V("0.0.post2644")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2500"
-data_version_tuple = (0, 0, 2500)
+data_version_str = "0.0.post2502"
+data_version_tuple = (0, 0, 2502)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2500")
+    pdata_version = V("0.0.post2502")
 except ImportError:
     pass
-data_git_hash = "c145ac398539d40ddec533d192dc39dc0cdcd4bd"
-data_git_describe = "v0.0-2500-gc145ac39"
+data_git_hash = "63be01b6082d335f04d98056760f029faf60a424"
+data_git_describe = "v0.0-2502-g63be01b6"
 data_git_msg = """\
-commit c145ac398539d40ddec533d192dc39dc0cdcd4bd
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Fri Oct 28 23:51:32 2022 +0100
+commit 63be01b6082d335f04d98056760f029faf60a424
+Author: Andreas Kurth <adk@lowrisc.org>
+Date:   Wed Oct 26 10:40:39 2022 +0000
 
-    [dv] Add a matching NA4 in pmp_full_random_test
+    [dv] Add test glitching PC
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    This commit addresses #1755 by verifying that a glitch on the PC of Ibex
+    raises an internal major alert in the core.
+    
+    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
 
 """
 
