@@ -4,32 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2653"
-version_tuple = (0, 0, 2653)
+version_str = "0.0.post2654"
+version_tuple = (0, 0, 2654)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2653")
+    pversion = V("0.0.post2654")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2511"
-data_version_tuple = (0, 0, 2511)
+data_version_str = "0.0.post2512"
+data_version_tuple = (0, 0, 2512)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2511")
+    pdata_version = V("0.0.post2512")
 except ImportError:
     pass
-data_git_hash = "e5a6c9f38cdc5fabcb51b91bc24e1081a93198a0"
-data_git_describe = "v0.0-2511-ge5a6c9f3"
+data_git_hash = "120607f4f2d96c6f7cdade85144463ffc3864d84"
+data_git_describe = "v0.0-2512-g120607f4"
 data_git_msg = """\
-commit e5a6c9f38cdc5fabcb51b91bc24e1081a93198a0
+commit 120607f4f2d96c6f7cdade85144463ffc3864d84
 Author: Andreas Kurth <adk@lowrisc.org>
-Date:   Thu Nov 3 08:42:16 2022 +0000
+Date:   Wed Nov 2 17:11:47 2022 +0000
 
-    [doc] Add RF write enable glitch detection
+    [xlm] Enable access to signals without dumping waves
     
-    This resolves #1893.
+    The `-access rw` option allows Xcelium to access signals in the design
+    (e.g., with `uvm_hdl_read` or `uvm_hdl_force`) without having to dump
+    waves (which substantially increases the run time).  See [1] for the
+    background discussion.
+    
+    [1]: https://github.com/lowRISC/ibex/pull/1879#issuecomment-1300216022
     
     Signed-off-by: Andreas Kurth <adk@lowrisc.org>
 
