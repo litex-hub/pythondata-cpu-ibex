@@ -4,30 +4,34 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2652"
-version_tuple = (0, 0, 2652)
+version_str = "0.0.post2653"
+version_tuple = (0, 0, 2653)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2652")
+    pversion = V("0.0.post2653")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2510"
-data_version_tuple = (0, 0, 2510)
+data_version_str = "0.0.post2511"
+data_version_tuple = (0, 0, 2511)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2510")
+    pdata_version = V("0.0.post2511")
 except ImportError:
     pass
-data_git_hash = "31cc8e0b5a8ede3f9876e93dd0194e29aae93bf6"
-data_git_describe = "v0.0-2510-g31cc8e0b"
+data_git_hash = "e5a6c9f38cdc5fabcb51b91bc24e1081a93198a0"
+data_git_describe = "v0.0-2511-ge5a6c9f3"
 data_git_msg = """\
-commit 31cc8e0b5a8ede3f9876e93dd0194e29aae93bf6
-Author: Harry Callahan <hcallahan@lowrisc.org>
-Date:   Tue Nov 1 09:46:02 2022 +0000
+commit e5a6c9f38cdc5fabcb51b91bc24e1081a93198a0
+Author: Andreas Kurth <adk@lowrisc.org>
+Date:   Thu Nov 3 08:42:16 2022 +0000
 
-    Increase iterations for PMP tests to improve coverage
+    [doc] Add RF write enable glitch detection
+    
+    This resolves #1893.
+    
+    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
 
 """
 
