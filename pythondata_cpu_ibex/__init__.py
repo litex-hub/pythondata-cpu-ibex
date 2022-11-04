@@ -4,33 +4,37 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2656"
-version_tuple = (0, 0, 2656)
+version_str = "0.0.post2661"
+version_tuple = (0, 0, 2661)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2656")
+    pversion = V("0.0.post2661")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2514"
-data_version_tuple = (0, 0, 2514)
+data_version_str = "0.0.post2519"
+data_version_tuple = (0, 0, 2519)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2514")
+    pdata_version = V("0.0.post2519")
 except ImportError:
     pass
-data_git_hash = "ef43917dec825e9c86aa8e086734465f7c1a3bf2"
-data_git_describe = "v0.0-2514-gef43917d"
+data_git_hash = "66b3ed1ac1df79cc6d285e586135fd1e68ab198f"
+data_git_describe = "v0.0-2519-g66b3ed1a"
 data_git_msg = """\
-commit ef43917dec825e9c86aa8e086734465f7c1a3bf2
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Nov 2 11:06:27 2022 +0000
+commit 66b3ed1ac1df79cc6d285e586135fd1e68ab198f
+Author: Andreas Kurth <adk@lowrisc.org>
+Date:   Fri Oct 28 20:24:31 2022 +0000
 
-    [dv] Fix random data on uninit accesses
+    [dv] Add test glitching register file read data
     
-    Previously the memory model writes didn't work correctly leaving an
-    incoherent view of memory.
+    This commit addresses the integrity checking part of #1756 by verifying
+    that a glitch on the data read from the register file raises a major
+    alert by the core (if the data read from the register file is used by
+    the core).
+    
+    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
 
 """
 
