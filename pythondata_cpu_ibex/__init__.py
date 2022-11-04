@@ -4,30 +4,33 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2655"
-version_tuple = (0, 0, 2655)
+version_str = "0.0.post2656"
+version_tuple = (0, 0, 2656)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2655")
+    pversion = V("0.0.post2656")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2513"
-data_version_tuple = (0, 0, 2513)
+data_version_str = "0.0.post2514"
+data_version_tuple = (0, 0, 2514)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2513")
+    pdata_version = V("0.0.post2514")
 except ImportError:
     pass
-data_git_hash = "455dbe30f1791ac08ba2a2e9e36f96e0ee294678"
-data_git_describe = "v0.0-2513-g455dbe30"
+data_git_hash = "ef43917dec825e9c86aa8e086734465f7c1a3bf2"
+data_git_describe = "v0.0-2514-gef43917d"
 data_git_msg = """\
-commit 455dbe30f1791ac08ba2a2e9e36f96e0ee294678
+commit ef43917dec825e9c86aa8e086734465f7c1a3bf2
 Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Nov 2 10:29:28 2022 +0000
+Date:   Wed Nov 2 11:06:27 2022 +0000
 
-    [dv] Add missing isolation forks
+    [dv] Fix random data on uninit accesses
+    
+    Previously the memory model writes didn't work correctly leaving an
+    incoherent view of memory.
 
 """
 
