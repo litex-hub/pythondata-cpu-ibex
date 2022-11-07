@@ -4,37 +4,32 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2664"
-version_tuple = (0, 0, 2664)
+version_str = "0.0.post2665"
+version_tuple = (0, 0, 2665)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2664")
+    pversion = V("0.0.post2665")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2522"
-data_version_tuple = (0, 0, 2522)
+data_version_str = "0.0.post2523"
+data_version_tuple = (0, 0, 2523)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2522")
+    pdata_version = V("0.0.post2523")
 except ImportError:
     pass
-data_git_hash = "7b0921e14cca9bcba02e9492b22f9a185dbfdc7a"
-data_git_describe = "v0.0-2522-g7b0921e1"
+data_git_hash = "bd8bee8a729cdc6e26d81061ef3c1f2eba49513f"
+data_git_describe = "v0.0-2523-gbd8bee8a"
 data_git_msg = """\
-commit 7b0921e14cca9bcba02e9492b22f9a185dbfdc7a
-Author: Andreas Kurth <adk@lowrisc.org>
-Date:   Fri Oct 28 10:09:02 2022 +0000
+commit bd8bee8a729cdc6e26d81061ef3c1f2eba49513f
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Fri Nov 4 17:40:25 2022 +0000
 
-    [dv] Add test glitching icache data or tag
+    [dv] Don't set sync_exc_seen in Debug Mode
     
-    This commit addresses the integrity part of #1759 by verifying that a
-    glitch on the data or tag response from the instruction cache raises a
-    minor alert by the core (if the data/tag returned from the cache is used
-    by the core).
-    
-    Signed-off-by: Andreas Kurth <adk@lowrisc.org>
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
