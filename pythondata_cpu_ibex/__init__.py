@@ -4,30 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2676"
-version_tuple = (0, 0, 2676)
+version_str = "0.0.post2680"
+version_tuple = (0, 0, 2680)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2676")
+    pversion = V("0.0.post2680")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2534"
-data_version_tuple = (0, 0, 2534)
+data_version_str = "0.0.post2538"
+data_version_tuple = (0, 0, 2538)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2534")
+    pdata_version = V("0.0.post2538")
 except ImportError:
     pass
-data_git_hash = "7592bb9478653a04a59c1ab14c009b14be9f72e9"
-data_git_describe = "v0.0-2534-g7592bb94"
+data_git_hash = "56268c675a9f160f01a0f5a1f548c0db716b2a40"
+data_git_describe = "v0.0-2538-g56268c67"
 data_git_msg = """\
-commit 7592bb9478653a04a59c1ab14c009b14be9f72e9
-Author: Greg Chadwick <gac@lowrisc.org>
-Date:   Wed Nov 2 16:35:18 2022 +0000
+commit 56268c675a9f160f01a0f5a1f548c0db716b2a40
+Author: Canberk Topal <ctopal@lowrisc.org>
+Date:   Fri Nov 4 17:44:19 2022 +0000
 
-    [dv] Disable bad integrity on uninit accesses for mem error tests
+    [dv] Generate random writes in custom CSRs
+    
+    This commit adds random custom CSR writes to debug_single_step_test
+    and riscv_mem_error_test.
+    
+    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
 
 """
 
