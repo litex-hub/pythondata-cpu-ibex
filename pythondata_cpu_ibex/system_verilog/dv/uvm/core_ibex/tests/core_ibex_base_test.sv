@@ -323,6 +323,9 @@ class core_ibex_base_test extends uvm_test;
         `uvm_fatal(`gfn,
                    $sformatf("Test failed due to wall-clock timeout. [%0ds]", timeout_seconds))
       end
+      begin
+        wait_for_custom_test_done();
+      end
     join_any
 
     test_done = 1'b1;
@@ -452,6 +455,16 @@ class core_ibex_base_test extends uvm_test;
       wait_for_mem_txn(cfg.signature_addr, CORE_STATUS);
       signature_data = signature_data_q.pop_front();
     end while (signature_data != core_status);
+  endtask
+
+  virtual task wait_for_core_exception(ibex_pkg::exc_cause_t exc_cause);
+    wait(dut_vif.ctrl_fsm_cs == ibex_pkg::FLUSH && dut_vif.exc_cause == exc_cause &&
+      dut_vif.csr_save_cause);
+    wait(dut_vif.ctrl_fsm_cs != ibex_pkg::FLUSH);
+  endtask
+
+  virtual task wait_for_custom_test_done();
+    wait (test_done == 1'b1);
   endtask
 
 endclass

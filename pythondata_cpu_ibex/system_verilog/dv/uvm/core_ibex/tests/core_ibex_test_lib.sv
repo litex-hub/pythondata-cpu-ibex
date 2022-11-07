@@ -1630,93 +1630,52 @@ class core_ibex_mem_error_test extends core_ibex_directed_test;
   `uvm_component_utils(core_ibex_mem_error_test)
   `uvm_component_new
 
-  int err_delay;
+  int illegal_instruction_threshold = 20;
+  int illegal_instruction_exceptions_seen = 0;
 
-  // check memory error inputs and verify that core jumps to correct exception handler
   virtual task check_stimulus();
+    memory_error_seq memory_error_seq_h;
+    memory_error_seq_h = memory_error_seq::type_id::create("memory_error_seq_h", this);
+
+    `uvm_info(`gfn, "Running core_ibex_mem_error_test", UVM_LOW)
+    memory_error_seq_h.vseq = vseq;
+    memory_error_seq_h.iteration_modes = InfiniteRuns;
+    memory_error_seq_h.stimulus_delay_cycles_min = 800; // Interval between injected errors
+    memory_error_seq_h.stimulus_delay_cycles_max = 5000;
+    memory_error_seq_h.intg_err_pct = cfg.enable_mem_intg_err ? 75 : 0;
+    memory_error_seq_h.skip_on_exc = 1'b1;
+    fork
+      run_illegal_instr_watcher();
+      memory_error_seq_h.start(env.vseqr);
+    join_none
+  endtask
+
+  task run_illegal_instr_watcher();
+    // When integrity errors are present loads that see them won't write to the register file.
+    // Generated code from RISC-DV may be using the loads to produce known constants in register
+    // that are then used elsewhere, in particular for jump targets. As the register write doesn't
+    // occur this results in jumping to places that weren't intended which in turn can result in
+    // illegal instruction exceptions.
+    //
+    // As a simple fix for this we observe illegal instruction exceptions and terminate the test
+    // with a pass after hitting a certain threshold when the test is generating integrity errors.
+    //
+    // We don't terminate immediately as sometimes the test hits an illegal instruction exception
+    // but finds its way back to generated code and terminates as usual. Sometimes it doesn't. The
+    // treshold allows for normal test termination in cases where that's possible.
+    if (!cfg.enable_mem_intg_err) begin
+      return;
+    end
+
     forever begin
-      while (!vseq.data_intf_seq.get_error_synch()) begin
-        clk_vif.wait_clks(1);
-      end
-      vseq.data_intf_seq.inject_error();
-      `uvm_info(`gfn, "Injected dmem error", UVM_LOW)
-      // Dmem interface error could be either a load or store operation
-      check_dmem_fault();
-      // Random delay before injecting instruction fetch fault
-      `DV_CHECK_STD_RANDOMIZE_WITH_FATAL(err_delay, err_delay inside { [50:200] };)
-      clk_vif.wait_clks(err_delay);
-      inject_imem_error();
-      check_imem_fault();
-      // Random delay before injecting this series of errors again
-      `DV_CHECK_STD_RANDOMIZE_WITH_FATAL(err_delay, err_delay inside { [250:750] };)
-      clk_vif.wait_clks(err_delay);
+      wait_for_core_exception(ibex_pkg::ExcCauseIllegalInsn);
+      ++illegal_instruction_exceptions_seen;
     end
   endtask
 
-  virtual task inject_imem_error();
-    while (!vseq.instr_intf_seq.get_error_synch()) begin
-      clk_vif.wait_clks(1);
-    end
-    `uvm_info(`gfn, "Injecting imem fault", UVM_LOW)
-    vseq.instr_intf_seq.inject_error();
-  endtask
-
-  virtual task check_dmem_fault();
-    bit[ibex_mem_intf_agent_pkg::DATA_WIDTH-1:0] mcause;
-    core_status_t mem_status;
-    ibex_pkg::exc_cause_t exc_type;
-    // Don't impose a timeout period for dmem check, since dmem errors injected by the sequence are
-    // not guaranteed to be reflected in RTL state until the next memory instruction is executed,
-    // and the frequency of which is not controllable by the testbench
-    check_next_core_status(HANDLING_EXCEPTION, "Core did not jump to exception handler");
-    check_priv_mode(PRIV_LVL_M);
-    // Next write of CORE_STATUS will be the load/store fault type
-    wait_for_mem_txn(cfg.signature_addr, CORE_STATUS);
-    mem_status = core_status_t'(signature_data_q.pop_front());
-    if (mem_status == LOAD_FAULT_EXCEPTION) begin
-      exc_type = ExcCauseLoadAccessFault;
-    end else if (mem_status == STORE_FAULT_EXCEPTION) begin
-      exc_type = ExcCauseStoreAccessFault;
-    end
-    check_mcause(1'b0, exc_type.lower_cause);
-    wait (dut_vif.dut_cb.mret === 1'b1);
-    `uvm_info(`gfn, "exiting mem fault checker", UVM_LOW)
-  endtask
-
-  virtual task check_imem_fault();
-    bit latched_imem_err = 1'b0;
-    core_status_t mem_status;
-    ibex_pkg::exc_cause_t exc_type;
-    // Need to account for case where imem_error is asserted during an instruction fetch that gets
-    // killed - due to jumps and control flow changes
-    do begin
-      fork
-        begin
-          fork : imem_fork
-            begin
-              check_next_core_status(HANDLING_EXCEPTION, "Core did not jump to exception handler");
-              check_priv_mode(PRIV_LVL_M);
-              latched_imem_err = 1'b1;
-              `uvm_info(`gfn, $sformatf("latched_imem_err: 0x%0x", latched_imem_err), UVM_LOW)
-            end
-            begin
-              clk_vif.wait_clks(5000);
-            end
-          join_any
-          disable fork;
-        end
-      join
-      if (latched_imem_err === 1'b0) begin
-        cur_run_phase.drop_objection(this);
-        inject_imem_error();
-      end
-    end while (latched_imem_err === 1'b0);
-    check_next_core_status(INSTR_FAULT_EXCEPTION,
-                           "Core did not register correct memory fault type", 5000);
-    exc_type = ExcCauseInstrAccessFault;
-    check_mcause(1'b0, exc_type.lower_cause);
-    wait (dut_vif.dut_cb.mret === 1'b1);
-    `uvm_info(`gfn, "exiting mem fault checker", UVM_LOW)
+  virtual task wait_for_custom_test_done();
+    wait(illegal_instruction_exceptions_seen == illegal_instruction_threshold);
+    `uvm_info(`gfn, "Terminating test early due to illegal instruction threshold reached", UVM_LOW)
   endtask
 
 endclass
