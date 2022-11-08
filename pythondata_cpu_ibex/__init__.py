@@ -4,35 +4,35 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2680"
-version_tuple = (0, 0, 2680)
+version_str = "0.0.post2681"
+version_tuple = (0, 0, 2681)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2680")
+    pversion = V("0.0.post2681")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2538"
-data_version_tuple = (0, 0, 2538)
+data_version_str = "0.0.post2539"
+data_version_tuple = (0, 0, 2539)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2538")
+    pdata_version = V("0.0.post2539")
 except ImportError:
     pass
-data_git_hash = "56268c675a9f160f01a0f5a1f548c0db716b2a40"
-data_git_describe = "v0.0-2538-g56268c67"
+data_git_hash = "2c15b96a353aeb42dbcaeadec4a92a8f4b54fe63"
+data_git_describe = "v0.0-2539-g2c15b96a"
 data_git_msg = """\
-commit 56268c675a9f160f01a0f5a1f548c0db716b2a40
-Author: Canberk Topal <ctopal@lowrisc.org>
-Date:   Fri Nov 4 17:44:19 2022 +0000
+commit 2c15b96a353aeb42dbcaeadec4a92a8f4b54fe63
+Author: Saad Khalid <saad.khalid@lowrisc.org>
+Date:   Thu Nov 3 14:28:59 2022 +0000
 
-    [dv] Generate random writes in custom CSRs
+    [dv] added functional coverpoints
     
-    This commit adds random custom CSR writes to debug_single_step_test
-    and riscv_mem_error_test.
+    Coverpoints for priv modes with interrupts and mstatus.MIE, and with exceptions.
+    Also, fixed a checker for scenarios when interrupt is taken from lower priv modes.
     
-    Signed-off-by: Canberk Topal <ctopal@lowrisc.org>
+    Signed-off-by: Saad Khalid <saad.khalid@lowrisc.org>
 
 """
 
