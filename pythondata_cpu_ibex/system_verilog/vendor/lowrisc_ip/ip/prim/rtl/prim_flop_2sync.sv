@@ -1,4 +1,4 @@
-// Copyright lowRISC contributors.
+// Copyright lowRISC contributors (OpenTitan project).
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -33,7 +33,9 @@ module prim_flop_2sync #(
     .dst_data_o(d_o)
   );
 `else // !`ifdef SIMULATION
-   always_comb d_o = d_i;
+  logic unused_sig;
+  assign unused_sig = EnablePrimCdcRand;
+  always_comb d_o = d_i;
 `endif // !`ifdef SIMULATION
 
   prim_flop #(

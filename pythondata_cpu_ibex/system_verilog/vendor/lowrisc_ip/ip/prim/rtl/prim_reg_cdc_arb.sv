@@ -1,4 +1,4 @@
-// Copyright lowRISC contributors.
+// Copyright lowRISC contributors (OpenTitan project).
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -93,7 +93,7 @@ module prim_reg_cdc_arb #(
   } state_e;
 
 
-  // Only honor the incoming destinate update request if the incoming
+  // Only honor the incoming destination update request if the incoming
   // value is actually different from what is already completed in the
   // handshake
   logic dst_update;
@@ -107,7 +107,6 @@ module prim_reg_cdc_arb #(
     req_sel_e id_q;
 
     state_e state_q, state_d;
-    // Make sure to indent the following later
     always_ff @(posedge clk_dst_i or negedge rst_dst_ni) begin
       if (!rst_dst_ni) begin
         state_q <= StIdle;
@@ -245,10 +244,13 @@ module prim_reg_cdc_arb #(
     assign src_update_o = src_req & (id_q == SelHwReq);
 
     // once hardware makes an update request, we must eventually see an update pulse
-    `ASSERT(ReqTimeout_A, $rose(id_q == SelHwReq) |-> s_eventually(src_update_o),
-            clk_src_i, !rst_src_ni)
+    `ifdef FPV_ON
+      `ASSERT(ReqTimeout_A, $rose(id_q == SelHwReq) |-> s_eventually(src_update_o),
+              clk_src_i, !rst_src_ni)
+      // TODO: #14913 check if we can add additional sim assertions.
+    `endif
 
-    `ifdef INC_ASSERT
+    `ifdef FPV_ON
       //VCS coverage off
       // pragma coverage off
 
@@ -267,6 +269,7 @@ module prim_reg_cdc_arb #(
       // pragma coverage on
 
       // once hardware makes an update request, we must eventually see an update pulse
+      // TODO: #14913 check if we can add additional sim assertions.
       `ASSERT(UpdateTimeout_A, $rose(async_flag) |-> s_eventually(src_update_o),
               clk_src_i, !rst_src_ni)
     `endif

@@ -50,6 +50,14 @@ class riscv_pmp_cfg extends uvm_object;
   // ePMP machine security configuration - RLB, MMWP, MML
   rand mseccfg_reg_t mseccfg = '{1'b1, 1'b0, 1'b0};
 
+  // allow regions that start above 32-bit address space when XLEN == 32
+  rand bit allow_high_addrs;
+
+  // percentage of configs that will allow high address regions. Set low by default as for cores
+  // where physical addresses do not go beyond 32 bits high regions don't do anything interesting
+  // (though you want some to ensure they're handled correctly).
+  int high_addr_proportion = 10;
+
   // pmp CSR configurations
   rand pmp_cfg_reg_t pmp_cfg[];
 
@@ -95,14 +103,27 @@ class riscv_pmp_cfg extends uvm_object;
 
   constraint xwr_c {
     foreach (pmp_cfg[i]) {
+      solve mseccfg.mml before pmp_cfg[i].w, pmp_cfg[i].r;
       !(!mseccfg.mml && pmp_cfg[i].w && !pmp_cfg[i].r);
+    }
+  }
+
+  constraint allow_high_addrs_c {
+    allow_high_addrs dist { 0 := 100 - high_addr_proportion,
+                            1 := high_addr_proportion };
+    if (XLEN == 64) {
+      allow_high_addrs == 1'b1;
     }
   }
 
   constraint address_modes_c {
     foreach (pmp_cfg[i]) {
       pmp_cfg[i].addr_mode >= 0;
-      pmp_cfg[i].addr_mode <= XLEN;
+      if (allow_high_addrs) {
+        pmp_cfg[i].addr_mode <= XLEN;
+      } else {
+        pmp_cfg[i].addr_mode <= XLEN - 3;
+      }
     }
   }
 
@@ -125,6 +146,7 @@ class riscv_pmp_cfg extends uvm_object;
 
   constraint modes_before_addr_c {
     foreach (pmp_cfg[i]) {
+      solve allow_high_addrs before pmp_cfg[i].addr, pmp_cfg[i].addr_mode;
       solve pmp_cfg[i].a before pmp_cfg[i].addr;
       solve pmp_cfg[i].addr_mode before pmp_cfg[i].addr;
     }
@@ -136,6 +158,10 @@ class riscv_pmp_cfg extends uvm_object;
       // remove the constraint for 1 in every XLEN entries.
       if (i > 0 && pmp_cfg[i].a == TOR && (!pmp_allow_illegal_tor || pmp_cfg[i].addr_mode > 0)) {
         pmp_cfg[i].addr > pmp_cfg[i-1].addr;
+      }
+
+      if (!allow_high_addrs) {
+        pmp_cfg[i].addr[31:29] == '0;
       }
     }
   }
@@ -150,6 +176,20 @@ class riscv_pmp_cfg extends uvm_object;
         if (pmp_cfg[i].addr_mode < XLEN) {
           // Unless the largest region is selected make sure the bit just before the ones is set to 0.
           (pmp_cfg[i].addr & (1 << pmp_cfg[i].addr_mode)) == 0;
+        }
+
+        if (!allow_high_addrs) {
+          pmp_cfg[i].addr[31:29] == '0;
+        }
+      }
+    }
+  }
+
+  constraint addr_na4_mode_c {
+    foreach (pmp_cfg[i]) {
+      if (pmp_cfg[i].a == NA4) {
+        if (!allow_high_addrs) {
+          pmp_cfg[i].addr[31:29] == '0;
         }
       }
     }
@@ -724,15 +764,26 @@ class riscv_pmp_cfg extends uvm_object;
              // if counter < pmp_num_regions => branch to beginning of loop,
              // otherwise jump to the end of the loop
              $sformatf("ble x%0d, x%0d, 19f", scratch_reg[1], scratch_reg[0]),
-             $sformatf("j 0b"),
-             // If we reach here, it means that no PMP entry has matched the request.
-             // We must immediately jump to <test_done> since the CPU is taking a PMP exception,
-             // but this routine is unable to find a matching PMP region for the faulting access -
-             // there is a bug somewhere.
-             // In case of MMWP mode this is expected behavior, we should try to continue.
-             $sformatf("19: csrr x%0d, 0x%0x", scratch_reg[0], MSECCFG),
-             $sformatf("andi x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]),
-             $sformatf("bnez x%0d, 27f", scratch_reg[0]),
+             $sformatf("j 0b")
+    };
+
+    // If we reach here, it means that no PMP entry has matched the request.
+    // We must immediately jump to <test_done> since the CPU is taking a PMP exception,
+    // but this routine is unable to find a matching PMP region for the faulting access -
+    // there is a bug somewhere.
+    // In case of MMWP mode this is expected behavior, we should try to continue.
+    if (riscv_instr_pkg::support_epmp) begin
+      instr = {instr,
+               $sformatf("19: csrr x%0d, 0x%0x", scratch_reg[0], MSECCFG),
+               $sformatf("andi x%0d, x%0d, 2", scratch_reg[0], scratch_reg[0]),
+               $sformatf("bnez x%0d, 27f", scratch_reg[0])
+              };
+    end else begin
+      instr = {instr,
+               $sformatf("19: nop")
+              };
+    end
+    instr = {instr,
              $sformatf("la x%0d, test_done", scratch_reg[0]),
              $sformatf("jalr x0, x%0d, 0", scratch_reg[0])
             };
@@ -799,16 +850,24 @@ class riscv_pmp_cfg extends uvm_object;
              // If masked_fault_addr != masked_pmpaddr[i] : mismatch, so continue looping
              $sformatf("bne x%0d, x%0d, 18b", scratch_reg[0], scratch_reg[4]),
              $sformatf("j 26f")
-           };
+            };
 
     // Sub-section that is common to the address modes deciding what to do what to do when hitting
     // a locked region
+    if (riscv_instr_pkg::support_epmp) begin
+      instr = {instr,
+               // If we get here there is an address match.
+               // First check whether we are in MML mode.
+               $sformatf("26: csrr x%0d, 0x%0x", scratch_reg[4], MSECCFG),
+               $sformatf("andi x%0d, x%0d, 1", scratch_reg[4], scratch_reg[4]),
+               $sformatf("bnez x%0d, 27f", scratch_reg[4])
+              };
+    end else begin
+      instr = {instr,
+               $sformatf("26: nop")
+              };
+    end
     instr = {instr,
-             // If we get here there is an address match.
-             // First check whether we are in MML mode.
-             $sformatf("26: csrr x%0d, 0x%0x", scratch_reg[4], MSECCFG),
-             $sformatf("andi x%0d, x%0d, 1", scratch_reg[4], scratch_reg[4]),
-             $sformatf("bnez x%0d, 27f", scratch_reg[4]),
              // Then check whether the lock bit is set.
              $sformatf("andi x%0d, x%0d, 128", scratch_reg[4], scratch_reg[3]),
              $sformatf("bnez x%0d, 27f", scratch_reg[4]),

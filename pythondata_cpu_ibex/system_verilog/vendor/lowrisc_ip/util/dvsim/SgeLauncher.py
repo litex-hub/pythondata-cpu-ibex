@@ -1,4 +1,4 @@
-# Copyright lowRISC contributors.
+# Copyright lowRISC contributors (OpenTitan project).
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 # ------------------------------------
@@ -22,9 +22,6 @@ class SgeLauncher(Launcher):
     """
     Implementation of Launcher to launch jobs in the user's local workstation.
     """
-
-    # Misc common SgeLauncher settings.
-    max_odirs = 5
 
     def __init__(self, deploy):
         '''Initialize common class members.'''
@@ -80,6 +77,7 @@ class SgeLauncher(Launcher):
             sgeJob.args.b = 'y'  # This is a binary file
             sgeJob.args.o = self.deploy.get_log_path() + '.sge'
             cmd = str(sgeJob.execute(mode='echo'))
+            print('INFO: SGE command line : "' + str(cmd) + '"')
             # ---------------
             self.process = subprocess.Popen(shlex.split(cmd),
                                             bufsize=4096,
@@ -114,7 +112,7 @@ class SgeLauncher(Launcher):
         # copy SGE jobb results to log file
         if os.path.exists(self.deploy.get_log_path() + '.sge'):
 
-            file1 = open(self.deploy.get_log_path() + '.sge', 'r')
+            file1 = open(self.deploy.get_log_path() + '.sge', 'r', errors='replace')
             Lines = file1.readlines()
             file1.close()
             f = open(self.deploy.get_log_path(),

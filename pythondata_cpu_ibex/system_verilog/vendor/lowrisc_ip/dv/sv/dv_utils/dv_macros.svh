@@ -1,4 +1,4 @@
-// Copyright lowRISC contributors.
+// Copyright lowRISC contributors (OpenTitan project).
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -360,14 +360,13 @@
   `define GET_PARITY(val, odd=0) (^val ^ odd)
 `endif
 
-// Wait a task or statement with exit condition
-// Kill the thread when either the wait statement is completed or exit condition occurs
-// input WAIT_ need to be a statement. Here are some examples
-// `DV_SPINWAIT(wait(...);, "Wait for ...")
-// `DV_SPINWAIT(
-//              while (1) begin
-//                ...
-//              end)
+// Wait for a statement but stop early if the EXIT statement completes.
+//
+// Example usage:
+//
+//    `DV_SPINWAIT_EXIT(do_something_time_consuming();,
+//                      wait(stop_now_flag);,
+//                      "The stop flag was set when we were working")
 `ifndef DV_SPINWAIT_EXIT
 `define DV_SPINWAIT_EXIT(WAIT_, EXIT_, MSG_ = "exit condition occurred!", ID_ =`gfn) \
   begin \
@@ -398,7 +397,7 @@
   end
 `endif
 
-// wait a task or statement with timer watchdog
+// Wait for a statement, but exit early after a timeout
 `ifndef DV_SPINWAIT
 `define DV_SPINWAIT(WAIT_, MSG_ = "timeout occurred!", TIMEOUT_NS_ = default_spinwait_timeout_ns, ID_ =`gfn) \
   `DV_SPINWAIT_EXIT(WAIT_, `DV_WAIT_TIMEOUT(TIMEOUT_NS_, ID_, MSG_);, "", ID_)
@@ -438,6 +437,7 @@
       end else begin \
         `uvm_info(ID_, $sformatf("Disabling assertions: %0s", `DV_STRINGIFY(HIER_)), UVM_LOW) \
         $assertoff(LEVELS_, HIER_); \
+        $assertkill(LEVELS_, HIER_); \
       end \
     end \
   end
@@ -456,12 +456,33 @@
 `define DV_GET_ENUM_PLUSARG(ENUM_, VAR_, PLUSARG_, CHECK_EXISTS_ = 0, ID_ = `gfn) \
   begin \
     string str; \
-    if ($value$plusargs("``PLUSARG_``=%0s", str)) begin \
+    if ($value$plusargs(`"``PLUSARG_``=%0s`", str)) begin \
       if (!uvm_enum_wrapper#(ENUM_)::from_name(str, VAR_)) begin \
-        `uvm_fatal(ID_, $sformatf("Cannot find %s from enum ``ENUM_``", VAR_.name())) \
+        `uvm_fatal(ID_, $sformatf(`"Cannot find %s from enum ``ENUM_```", VAR_.name())) \
       end \
     end else if (CHECK_EXISTS_) begin \
-      `uvm_fatal(ID_, "Please pass the plusarg +``PLUSARG_``=<``ENUM_``-literal>") \
+      `uvm_fatal(ID_, `"Please pass the plusarg +``PLUSARG_``=<``ENUM_``-literal>`") \
+    end \
+  end
+`endif
+
+// Retrieves a queue of plusarg value from a string.
+//
+// The plusarg is parsed as a string, which needs to be converted into a queue of string which given delimiter.
+// This functionality is provided by the UVM helper function below.
+//
+// QUEUE_: The queue of string to which the plusarg value will be set (must be declared already).
+// PLUSARG_: the name of the plusarg (as raw text). This is typically the same as the enum variable.
+// DELIMITER_: the delimiter that separate each item in the plusarg string value.
+// CHECK_EXISTS_: Throws a fatal error if the plusarg is not set.
+`ifndef DV_GET_QUEUE_PLUSARG
+`define DV_GET_QUEUE_PLUSARG(QUEUE_, PLUSARG_, DELIMITER_ = ",", CHECK_EXISTS_ = 0, ID_ = `gfn) \
+  begin \
+    string str; \
+    if ($value$plusargs(`"``PLUSARG_``=%0s`", str)) begin \
+      str_split(str, QUEUE_, DELIMITER_); \
+    end else if (CHECK_EXISTS_) begin \
+      `uvm_fatal(ID_, `"Please pass the plusarg +``PLUSARG_``=<``ENUM_``-literal>`") \
     end \
   end
 `endif
@@ -469,7 +490,7 @@
 // Enable / disable assertions at a module hierarchy identified by LABEL_.
 //
 // This goes in conjunction with `DV_ASSERT_CTRL() macro above, but is invoked in the entity that is
-// sending the req to turn on / off the assertions. Note that that piece of code invoking this macro
+// sending the req to turn on / off the assertions. Note that piece of code invoking this macro
 // does not have the information on the actual hierarchical path to the module or the levels - this
 // is 'wrapped' into the LABEL_ instead. DV user needs to uniquify the label sufficienly enough to
 // reflect it.
@@ -545,16 +566,20 @@
 `ifndef dv_fatal
   // verilog_lint: waive macro-name-style
   `define dv_fatal(MSG_, ID_ = $sformatf("%m")) \
-    $fatal("%0t: (%0s:%0d) [%0s] %0s", $time, `__FILE__, `__LINE__, ID_, MSG_);
+    $fatal(1, "%0t: (%0s:%0d) [%0s] %0s", $time, `__FILE__, `__LINE__, ID_, MSG_);
 `endif
 
 `endif // UVM
 
 // Macros for constrain clk with common frequencies
-// constrain clock to run at 24Mhz - 100Mhz and use higher weights on 24, 25, 48, 50, 100
+//
+// Nominal clock frequency range is 24Mhz - 100Mhz and use higher weights on 24, 25, 48, 50, 100,
+// To mimic manufacturing conditions (when clocks are uncalibrated), we need to be able to go as
+// low as 5MHz.
 `ifndef DV_COMMON_CLK_CONSTRAINT
 `define DV_COMMON_CLK_CONSTRAINT(FREQ_) \
   FREQ_ dist { \
+    [5:23]  :/ 2, \
     [24:25] :/ 2, \
     [26:47] :/ 1, \
     [48:50] :/ 2, \
@@ -608,4 +633,14 @@
     endcase                                                                                   \
     return SIGNAL_PATH_;                                                                      \
   endfunction
+`endif
+
+// Usage:`OTDBG(( string ))
+// This macro has unque keyword 'OTDBG'and timestemp only.
+// Use for the temporary print to distinguish from `uvm_info.
+// Do not leave this macro in other source files in the remote repo.
+`ifndef OTDBG
+  `define OTDBG(x) \
+  $write($sformatf("%t:OTDBG:%s:%d:",$time,`__FILE__, `__LINE__));\
+  $display($sformatf x);
 `endif

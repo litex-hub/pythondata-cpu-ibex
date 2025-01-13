@@ -21,6 +21,8 @@
 ${PRJ_DIR}/dv/uvm/core_ibex/common/prim/prim_pkg.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_assert.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_util_pkg.sv
+${LOWRISC_IP_DIR}/ip/prim/rtl/prim_count_pkg.sv
+${LOWRISC_IP_DIR}/ip/prim/rtl/prim_count.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_pkg.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_22_16_dec.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_22_16_enc.sv
@@ -32,6 +34,7 @@ ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_hamming_39_32_dec.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_hamming_39_32_enc.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_hamming_72_64_dec.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_hamming_72_64_enc.sv
+${LOWRISC_IP_DIR}/ip/prim/rtl/prim_mubi_pkg.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_ram_1p_pkg.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_ram_1p_adv.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_ram_1p_scr.sv
@@ -45,6 +48,8 @@ ${LOWRISC_IP_DIR}/ip/prim_generic/rtl/prim_generic_clock_mux2.sv
 ${PRJ_DIR}/dv/uvm/core_ibex/common/prim/prim_clock_mux2.sv
 ${LOWRISC_IP_DIR}/ip/prim_generic/rtl/prim_generic_flop.sv
 ${PRJ_DIR}/dv/uvm/core_ibex/common/prim/prim_flop.sv
+${LOWRISC_IP_DIR}/ip/prim_generic/rtl/prim_generic_and2.sv
+${PRJ_DIR}/dv/uvm/core_ibex/common/prim/prim_and2.sv
 
 // Shared lowRISC code
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_cipher_pkg.sv
@@ -64,7 +69,8 @@ ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_39_32_dec.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_72_64_enc.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_secded_72_64_dec.sv
 ${LOWRISC_IP_DIR}/ip/prim/rtl/prim_onehot_check.sv
-${LOWRISC_IP_DIR}/ip/prim/rtl/prim_mubi_pkg.sv
+${LOWRISC_IP_DIR}/ip/prim/rtl/prim_onehot_enc.sv
+${LOWRISC_IP_DIR}/ip/prim/rtl/prim_onehot_mux.sv
 
 // ibex CORE RTL files
 +incdir+${PRJ_DIR}/rtl
@@ -119,6 +125,7 @@ ${PRJ_DIR}/vendor/google_riscv-dv/src/riscv_signature_pkg.sv
 +incdir+${PRJ_DIR}/dv/uvm/core_ibex/common/ibex_cosim_agent
 +incdir+${PRJ_DIR}/dv/cosim
 ${PRJ_DIR}/dv/uvm/bus_params_pkg/bus_params_pkg.sv
+${LOWRISC_IP_DIR}/dv/sv/common_ifs/common_ifs_pkg.sv
 ${LOWRISC_IP_DIR}/dv/sv/common_ifs/clk_rst_if.sv
 ${LOWRISC_IP_DIR}/dv/sv/common_ifs/pins_if.sv
 ${LOWRISC_IP_DIR}/dv/sv/str_utils/str_utils_pkg.sv

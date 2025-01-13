@@ -28,6 +28,17 @@ class core_ibex_env_cfg extends uvm_object;
   // If '1', reaching either threshold fatally ends the test.
   // If '0', we end the test with a pass.
   bit                          is_double_fault_detected_fatal = 1;
+  // If '1', reaching the timeout in seconds fatally ends the test.
+  // If '0', we end the test with a pass.
+  bit                          is_timeout_s_fatal = 1;
+  // If '1' core_ibex_vseq will randomly choose to enable spurious responses in the data side memory
+  // agent. This will also disable assertions that check the memory interface protocol as spurious
+  // responses violate them.
+  bit                          enable_spurious_dside_responses = 1;
+
+  // If spurious responses are enabled what percentage of tests will enable them
+  int unsigned spurious_response_pct = 20;
+
 
   `uvm_object_utils_begin(core_ibex_env_cfg)
     `uvm_field_int(enable_double_fault_detector, UVM_DEFAULT)
@@ -50,6 +61,7 @@ class core_ibex_env_cfg extends uvm_object;
     super.new(name);
     void'($value$plusargs("enable_double_fault_detector=%0d", enable_double_fault_detector));
     void'($value$plusargs("is_double_fault_detected_fatal=%0d", is_double_fault_detected_fatal));
+    void'($value$plusargs("is_timeout_s_fatal=%0d", is_timeout_s_fatal));
     void'($value$plusargs("enable_mem_intg_err=%0d", enable_mem_intg_err));
     void'($value$plusargs("enable_irq_single_seq=%0d", enable_irq_single_seq));
     void'($value$plusargs("enable_irq_multiple_seq=%0d", enable_irq_multiple_seq));

@@ -39,16 +39,22 @@ def find_cov_dbs(start_dir: pathlib.Path, simulator: str) -> Set[pathlib.Path]:
 
 
 def merge_cov_vcs(md: RegressionMetadata, cov_dirs: Set[pathlib.Path]) -> int:
-    logging.info("Generating merged coverage directory")
     cmd = (['urg', '-full64',
             '-format', 'both',
-            '-dbname', str(md.cov_dir/'merged.vdb'),
-            '-report', str(md.cov_dir/'report'),
-            '-log', str(md.cov_dir/'merge.log'),
+            '-dbname', str(md.dir_cov/'merged.vdb'),
+            '-report', str(md.dir_cov/'report'),
+            '-log', str(md.dir_cov/'merge.log'),
             '-dir'] +
-           list(cov_dirs))
-    return run_one(md.verbose, cmd, redirect_stdstreams='/dev/null')
+           [str(cov_dir) for cov_dir in list(cov_dirs)])
 
+    with LockedMetadata(md.dir_metadata, __file__) as md:
+        md.cov_merge_log = md.dir_cov / 'merge.log'
+        md.cov_merge_stdout = md.dir_cov / 'merge.log.stdout'
+        md.cov_merge_cmds = [cmd]
+
+    with open(md.cov_merge_stdout, 'wb') as fd:
+        logging.info("Generating merged coverage directory")
+        return run_one(md.verbose, cmd, redirect_stdstreams=fd)
 
 def merge_cov_xlm(md: RegressionMetadata, cov_dbs: Set[pathlib.Path]) -> int:
     """Merge xcelium-generated coverage using the OT scripts.
@@ -72,6 +78,7 @@ def merge_cov_xlm(md: RegressionMetadata, cov_dbs: Set[pathlib.Path]) -> int:
         md.cov_report_log = md.dir_cov / 'report.log'
         md.cov_report_stdout = md.dir_cov / 'report.log.stdout'
         md.cov_report_cmds = [(imc_cmd + ["-load", str(md.dir_cov_merged),
+                                          "-init", str(md.ibex_dv_root/"waivers"/"coverage_waivers_xlm.tcl"),
                                           "-exec", str(xcelium_scripts/"cov_report.tcl"),
                                           "-logfile", str(md.dir_cov/'report.log')])]
 
@@ -89,7 +96,8 @@ def merge_cov_xlm(md: RegressionMetadata, cov_dbs: Set[pathlib.Path]) -> int:
         'cov_merge_db_dir': str(md.dir_cov_merged),
         'cov_report_dir': str(md.dir_cov_report),
         'cov_db_dirs': "",
-        'cov_db_runfile': str(md.cov_merge_db_list)
+        'cov_db_runfile': str(md.cov_merge_db_list),
+        "DUT_TOP": md.dut_cov_rtl_path
     }
     xlm_env = os.environ.copy()
     xlm_env.update(xlm_cov_dirs)

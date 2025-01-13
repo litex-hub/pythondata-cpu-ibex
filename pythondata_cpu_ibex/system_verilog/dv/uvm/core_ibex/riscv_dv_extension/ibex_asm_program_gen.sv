@@ -12,7 +12,6 @@ class ibex_asm_program_gen extends riscv_asm_program_gen;
   `uvm_object_new
 
   virtual function void gen_program();
-    string instr[$];
     bit disable_pmp_exception_handler = 0;
 
     default_include_csr_write = {
@@ -55,24 +54,12 @@ class ibex_asm_program_gen extends riscv_asm_program_gen;
 
     riscv_csr_instr::create_csr_filter(cfg);
 
-    if ($value$plusargs("disable_pmp_exception_handler", disable_pmp_exception_handler) &&
+    if ($value$plusargs("disable_pmp_exception_handler=%d", disable_pmp_exception_handler) &&
         disable_pmp_exception_handler) begin
       cfg.pmp_cfg.enable_pmp_exception_handler = 0;
     end
 
     super.gen_program();
-
-    // Override the main gen_program() routine to append our own custom test_done/test_fail routines
-    // Generate test_done and test_fail routines at the end of the baseclass program.
-    gen_test_end(.result(TEST_PASS), .instr(instr));
-    instr_stream = {instr_stream,
-                    {format_string("test_done:", LABEL_STR_LEN)},
-                    instr};
-    instr.delete();
-    gen_test_end(.result(TEST_FAIL), .instr(instr));
-    instr_stream = {instr_stream,
-                    {format_string("test_fail:", LABEL_STR_LEN)},
-                    instr};
   endfunction
 
   // ECALL trap handler
@@ -157,6 +144,31 @@ class ibex_asm_program_gen extends riscv_asm_program_gen;
     end
 
     instr.push_back(str);
+  endfunction
+
+  virtual function void gen_init_section(int hart);
+    // This is a good location to put the test done and fail because PMP tests expect these
+    // sequences to be before the main function.
+    string instr[$];
+
+    super.gen_init_section(hart);
+
+    // RISCV-DV assumes main is immediately after init when riscv_instr_pkg::support_pmp isn't set.
+    // This override of gen_init_section breaks that assumption so add a jump to main here so the
+    // test starts correctly for configurations that don't support PMP.
+    if (!riscv_instr_pkg::support_pmp) begin
+      instr_stream.push_back({indent, "j main"});
+    end
+
+    gen_test_end(.result(TEST_PASS), .instr(instr));
+    instr_stream = {instr_stream,
+                    {format_string("test_done:", LABEL_STR_LEN)},
+                    instr};
+    instr.delete();
+    gen_test_end(.result(TEST_FAIL), .instr(instr));
+    instr_stream = {instr_stream,
+                    {format_string("test_fail:", LABEL_STR_LEN)},
+                    instr};
   endfunction
 
 endclass
