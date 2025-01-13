@@ -4,44 +4,41 @@ data_location = os.path.join(__dir__, "system_verilog")
 src = "https://github.com/lowRISC/ibex"
 
 # Module version
-version_str = "0.0.post2681"
-version_tuple = (0, 0, 2681)
+version_str = "0.0.post2937"
+version_tuple = (0, 0, 2937)
 try:
     from packaging.version import Version as V
-    pversion = V("0.0.post2681")
+    pversion = V("0.0.post2937")
 except ImportError:
     pass
 
 # Data version info
-data_version_str = "0.0.post2539"
-data_version_tuple = (0, 0, 2539)
+data_version_str = "0.0.post2787"
+data_version_tuple = (0, 0, 2787)
 try:
     from packaging.version import Version as V
-    pdata_version = V("0.0.post2539")
+    pdata_version = V("0.0.post2787")
 except ImportError:
     pass
-data_git_hash = "2c15b96a353aeb42dbcaeadec4a92a8f4b54fe63"
-data_git_describe = "v0.0-2539-g2c15b96a"
+data_git_hash = "5da1679f360b00ae330aab33cc8d79d73dfabb98"
+data_git_describe = "v0.0-2787-g5da1679f360b"
 data_git_msg = """\
-commit 2c15b96a353aeb42dbcaeadec4a92a8f4b54fe63
-Author: Saad Khalid <saad.khalid@lowrisc.org>
-Date:   Thu Nov 3 14:28:59 2022 +0000
+commit 5da1679f360b00ae330aab33cc8d79d73dfabb98
+Author: Robert Schilling <rschilling@rivosinc.com>
+Date:   Thu Jan 9 20:34:42 2025 +0100
 
-    [dv] added functional coverpoints
+    [ibex_tracer] Use static variables in always/final blocks
     
-    Coverpoints for priv modes with interrupts and mstatus.MIE, and with exceptions.
-    Also, fixed a checker for scenarios when interrupt is taken from lower priv modes.
-    
-    Signed-off-by: Saad Khalid <saad.khalid@lowrisc.org>
+    Signed-off-by: Robert Schilling <rschilling@rivosinc.com>
 
 """
 
 # Tool version info
-tool_version_str = "0.0.post142"
-tool_version_tuple = (0, 0, 142)
+tool_version_str = "0.0.post150"
+tool_version_tuple = (0, 0, 150)
 try:
     from packaging.version import Version as V
-    ptool_version = V("0.0.post142")
+    ptool_version = V("0.0.post150")
 except ImportError:
     pass
 
